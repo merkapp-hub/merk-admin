@@ -39,9 +39,9 @@ function Inventory(props) {
   const getProduct = async (page = 1, limit = 10) => {
     props.loader(true);
     let url;
-    if (user?.type === "ADMIN") {
+    if (user?.role === "admin") {
       url = `getProduct?page=${page}&limit=${limit}`;
-    } else if (user?.type === "SELLER") {
+    } else if (user?.role === "seller") {
       url = `getProduct?seller_id=${user?._id}&page=${page}&limit=${limit}`;
     }
 
@@ -404,7 +404,7 @@ function Inventory(props) {
   };
 
   return (
-    <div  className="w-full h-full bg-transparent pt-1 pb-5 pl-5 pr-5">
+    <div className="w-full h-full bg-transparent pt-1 pb-5 pl-5 pr-5">
       {/* pb-[120px] */}
       {viewPopup && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50">

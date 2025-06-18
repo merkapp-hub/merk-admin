@@ -1,8 +1,8 @@
 import axios from "axios";
 // const ConstantsUrl = "https://marketapi.moveex.co/v1/api/";
 // const ConstantsUrl = "http://localhost:5000/api/";
-const ConstantsUrl = "http://localhost:5000/api/";
-// const ConstantsUrl = "https://api.merkapp.net/v1/api/";
+const ConstantsUrl = "http://localhost:3005/api/";
+// const ConstantsUrl = "https://api.merkapp.net/api/";
 //https://api.lojava.es/
 
 // const isBrowser = typeof window !== "undefined";

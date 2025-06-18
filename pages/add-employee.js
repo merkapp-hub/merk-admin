@@ -281,7 +281,7 @@ function AddProduct(props) {
           const data = new FormData();
           data.append("file", compressedResult);
           props.loader(true);
-          ApiFormData("post", "user/fileupload", data, router).then(
+          ApiFormData("post", "auth/user/fileupload", data, router).then(
             (res) => {
               props.loader(false);
               console.log("res================>", res);

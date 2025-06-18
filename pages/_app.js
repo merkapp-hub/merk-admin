@@ -10,14 +10,14 @@ export const dataContext = createContext()
 export default function App({ Component, pageProps }) {
 
   const [user, setUser] = useState({});
-  const [data,setData] = useState({})
+  const [data, setData] = useState({})
   const [open, setOpen] = useState(false);
   const [toast, setToast] = useState({
     type: "",
     message: "",
   });
   const router = useRouter();
-  
+
   useEffect(() => {
     setToast(toast);
     if (!!toast.message) {
@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }) {
       // if (JSON.parse(user)?.id === "6450e9bef4d2cc08c2ec0431") {
       //   router.push("/festaevent");
       // } else {
-      router.push("/");
+      // router.push("/");
       // }
     } else {
       if (router.route !== "/login" && router.route !== "/signup") {
@@ -48,10 +48,10 @@ export default function App({ Component, pageProps }) {
   };
 
   return (
-    <> <dataContext.Provider value={[data,setData]}>
+    <> <dataContext.Provider value={[data, setData]}>
       <userContext.Provider value={[user, setUser]}>
-       
-          <Loader open={open} />
+
+        <Loader open={open} />
         <div className="fixed right-5 top-20 min-w-max z-50">
           {!!toast.message && (
             <Toaster type={toast.type} message={toast.message} />
@@ -71,7 +71,7 @@ export default function App({ Component, pageProps }) {
             user={user}
           />}
         </Layout>
-      
+
       </userContext.Provider>  </dataContext.Provider>
     </>
   )

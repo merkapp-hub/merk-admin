@@ -242,7 +242,7 @@ function Wallet(props) {
           <p className="font-bold md:text-lg text-sm text-black">
             Transanction History
           </p>
-          {user?.type === "ADMIN" && (
+          {user?.role === "admin" && (
             <button
               className="h-[38px] md:w-[180px] w-[90px] bg-custom-darkpurple text-white md:text-base text-sm font-normal rounded-[8px]"
               onClick={() => {

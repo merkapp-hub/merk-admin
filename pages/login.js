@@ -41,8 +41,8 @@ export default function Login(props) {
             //   return
             // }
 
-            localStorage.setItem("userDetail", JSON.stringify(res));
-            setUser(res);
+            localStorage.setItem("userDetail", JSON.stringify(res.user));
+            setUser(res.user);
             setUserDetail({
               email: "",
               password: "",

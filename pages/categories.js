@@ -179,7 +179,7 @@ function Categories(props) {
           const data = new FormData();
           data.append("file", compressedResult);
           props.loader(true);
-          ApiFormData("post", "user/fileupload", data, router).then(
+          ApiFormData("post", "auth/user/fileupload", data, router).then(
             (res) => {
               props.loader(false);
               console.log("res================>", res);
@@ -406,8 +406,8 @@ function Categories(props) {
                   {item?.name}
                 </p>
               </div>
-                <p className={`col-span-2 mx-auto text-base text-black font-semibold ${item?.is_refundable ? "text-green-500" : "text-red-500"}`}>
-                  {item?.is_refundable ? "Refundable" : "Not Refundable"}
+              <p className={`col-span-2 mx-auto text-base text-black font-semibold ${item?.is_refundable ? "text-green-500" : "text-red-500"}`}>
+                {item?.is_refundable ? "Refundable" : "Not Refundable"}
               </p>
               <div className="col-span-2 flex justify-end items-center">
                 <FiEdit
