@@ -121,6 +121,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       access: ["admin"],
     },
     {
+      href: "/contact",
+      title: "Contact",
+      img: <IoBarbell className="text-3xl" />,
+      access: ["admin"],
+    },
+    {
       href: "/ContentManagement",
       title: "Our Content",
       img: <MdContentPaste className="text-3xl" />,
@@ -149,10 +155,10 @@ const SidePannel = ({ setOpenTab, openTab }) => {
   return (
     <>
       <div className="bg-custom-darkpurple xl:w-[250px] fixed top-0 left-0 z-20  md:w-[250px] sm:w-[200px] hidden sm:grid grid-rows-5 h-screen overflow-hidden">
-        <div className="bg-custom-darkpurple overflow-y-scroll h-screen  scrollbar-hide">
-          <div className="bg-custom-darkpurple min-h-screen h-full py-5 2xl:h-full">
-            <div className="bg-white pt-5 pb-5 row-span-1 flex items-center justify-center cursor-pointer mx-5 rounded" onClick={() => router.push("/")}>
-              <img className="object-contain w-[210px] h-[40px] lg:scale-150" src="/logo.jpeg" alt="" />
+        <div className="bg-blue-500 overflow-y-scroll h-screen  scrollbar-hide">
+          <div className="bg-blue-500 min-h-screen h-full py-5 2xl:h-full">
+            <div className=" pt-5 pb-5 row-span-1 flex items-center justify-center cursor-pointer mx-5 rounded" onClick={() => router.push("/")}>
+              <img className="object-contain w-[210px] h-[40px] lg:scale-150" src="/logo-1.png" alt="" />
             </div>
 
             <div className="flex flex-col justify-between row-span-4 pb-4 w-full">
