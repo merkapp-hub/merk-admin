@@ -211,7 +211,7 @@ function AddProduct(props) {
     const requestData = {
       ...productData,
       userid: user?._id,
-      variants,
+      varients:variants,
     };
 
     try {
@@ -242,7 +242,7 @@ function AddProduct(props) {
     const requestData = {
       ...productData,
       userid: user?._id,
-      variants,
+     varients: variants,
       id: router?.query?.id,
     };
 

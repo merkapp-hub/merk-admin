@@ -141,7 +141,7 @@ const SidePannel = ({ setOpenTab, openTab }) => {
     {
       href: "/wallet",
       title: "Wallet",
-      // img: <IoSettings className='text-3xl' />,
+      img: <IoSettings className='text-3xl' />,
       access: ["seller"],
     },
     {
@@ -158,7 +158,7 @@ const SidePannel = ({ setOpenTab, openTab }) => {
         <div className="bg-custom-blueoverflow-y-scroll h-screen  scrollbar-hide">
           <div className="bg-custom-blue min-h-screen h-full py-5 2xl:h-full">
             <div className="bg-white pt-5 pb-5 row-span-1 flex items-center justify-center cursor-pointer mx-5 rounded" onClick={() => router.push("/")}>
-              <img className="object-contain w-[210px] h-[40px] lg:scale-150" src="/logo-1.png" alt="" />
+              <img className="object-contain w-[210px] h-[50px] lg:scale-150" src="/logo-1.png" alt="" />
             </div>
 
             <div className="flex flex-col justify-between row-span-4 pb-4 w-full">
