@@ -81,7 +81,7 @@ function Sellers(props) {
   // ]
 
   const getuserlist = async (page = 1, limit = 10, search) => {
-    let url = `getSellerList?page=${page}&limit=${limit}`;
+    let url = `auth/getSellerListt?page=${page}&limit=${limit}`;
     if (search) {
       url += `&search=${search}`;
     }
@@ -284,7 +284,7 @@ function Sellers(props) {
       },
       {
         Header: "NAME",
-        accessor: "username",
+        accessor: "firstName",
         Cell: name,
       },
       {

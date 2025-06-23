@@ -245,12 +245,12 @@ function SellerOrders(props) {
       },
       {
         Header: "Seller Name",
-        accessor: "seller_id.username",
+        accessor: "seller_id.name",
         Cell: name,
       },
       {
         Header: "Customer Name",
-        accessor: "user.username",
+        accessor: "user.name",
         Cell: email,
       },
       {
@@ -445,7 +445,7 @@ function SellerOrders(props) {
               ))}
 
               <div className="w-full">
-                <div className="w-full flex justify-between items-center">
+                {/* <div className="w-full flex justify-between items-center">
                   <p className="text-black text-sm">Barcode:</p>
                   <p className="text-black text-sm font-normal">
                     <Barcode
@@ -456,7 +456,7 @@ function SellerOrders(props) {
                     // displayValue={false}
                     />
                   </p>
-                </div>
+                </div> */}
                 <div className="w-full flex justify-between items-center">
                   <p className="text-black text-sm">Tax:</p>
                   <p className="text-black text-sm font-normal">
