@@ -303,7 +303,7 @@ function Inventory(props) {
       },
       {
         Header: "Price",
-        accessor: "price_slot[0].our_price",
+        accessor: "price_slot[0].Offerprice",
         Cell: price,
       },
       // {
@@ -348,7 +348,7 @@ function Inventory(props) {
       },
       {
         Header: "Price",
-        accessor: "price_slot[0].our_price",
+       accessor: "price_slot[0].Offerprice",
         Cell: price,
       },
       // {
@@ -361,11 +361,11 @@ function Inventory(props) {
       //     accessor: "pieces",
       //     Cell: piece,
       // },
-      // {
-      //     Header: "Available Color",
-      //     accessor: "varients",
-      //     Cell: availableColor,
-      // },
+      {
+          Header: "Available Color",
+          accessor: "varients",
+          Cell: availableColor,
+      },
       {
         Header: "ACTION",
         Cell: actionHandler2,
@@ -502,26 +502,18 @@ function Inventory(props) {
           <div className="">
             <div className="flex md:flex-row flex-col md:justify-end md:items-end gap-3">
               <button
-                className="text-white bg-custom-darkpurple px-5 py-2 rounded"
+                className="text-white bg-custom-yellow px-5 py-2 rounded"
                 onClick={() => router.push("/add-product")}
               >
                 Add Product
               </button>
 
-              <button
-                className="text-white bg-custom-darkpurple px-5 py-2 rounded capitalize"
+              {/* <button
+                className="text-white bg-custom-yellow px-5 py-2 rounded capitalize"
                 onClick={() => router.push("/upload-product-from-file")}
               >
                 Add inventory from excel
-              </button>
-
-              {/* <div className='flex justify-center gap-2 items-center border rounded px-4 cursor-pointer py-2'>
-                                <span className='text-custom-darkGray text-xl'><IoFilterOutline /></span>
-                                <span className='text-custom-darkGray font-medium'>Filters</span>
-                            </div>
-                            <div className='flex justify-center gap-2 items-center border rounded px-4 cursor-pointer py-2'>
-                                <span className='text-custom-darkGray font-medium'>Download all</span>
-                            </div> */}
+              </button> */}
             </div>
 
             <Table

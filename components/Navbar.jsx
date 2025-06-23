@@ -29,8 +29,8 @@ const Navbar = ({ setOpenTab, openTab }) => {
         <div className="md:hidden bg-white rounded">
           {/* w-14 */}
           <img
-            className="object-contain w-[66px] h-[40px] -mt-2"
-            src="/Logo.jpeg"
+            className="object-contain w-[110px] h-[50px] mt-2"
+            src="/logo-1.png"
             alt=""
           />
           {/* <p className="py-2 text-5xl md:text-4xl lg:text-5xl font-semibold text-custom-black">Logo</p> */}
@@ -38,7 +38,7 @@ const Navbar = ({ setOpenTab, openTab }) => {
         {user?.token && (
           <div className=" w-full md:flex items-center gap-3 hidden  justify-between  cursor-pointer">
             <div className="flex items-center gap-3  cursor-pointer">
-              <div className="w-12 h-12 rounded-full overflow-hidden">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-custom-yellow">
                 <img
                   src={user?.profile || "/userprofile.png"}
                   alt=""
@@ -47,7 +47,7 @@ const Navbar = ({ setOpenTab, openTab }) => {
                 />
               </div>
               <div className="flex flex-col text-left justify-center p-0">
-                <p className="text-lg font-semibold text-black">{user?.username}</p>
+                <p className="text-lg font-semibold text-black uppercase">{user?.role}</p>
               </div>
             </div>
             {user?.token ? (

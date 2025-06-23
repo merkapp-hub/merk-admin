@@ -1,19 +1,12 @@
 import axios from "axios";
 // const ConstantsUrl = "https://marketapi.moveex.co/v1/api/";
-const ConstantsUrl = "http://localhost:5000/api/";
+// const ConstantsUrl = "http://localhost:5000/api/";
 // const ConstantsUrl = "http://localhost:3005/api/";
-// const ConstantsUrl = "https://api.merkapp.net/api/";
+const ConstantsUrl = "https://api.merkapp.net/api/";
 //https://api.lojava.es/
 
-// const isBrowser = typeof window !== "undefined";
 
-// const ConstantsUrl = isBrowser && window.location.hostname === "localhost"
-//   ? "http://localhost:5000/v1/api/"
-//   : "https://marketapi.moveex.co/v1/api/";
 
-// const ConstantsUrl = process.env.NODE_ENV === 'development'
-//   ? "http://localhost:5000/v1/api/"
-//   : "https://marketapi.moveex.co/v1/api/";
 
 function Api(method, url, data, router) {
   return new Promise(function (resolve, reject) {

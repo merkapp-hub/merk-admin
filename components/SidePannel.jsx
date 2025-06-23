@@ -141,7 +141,7 @@ const SidePannel = ({ setOpenTab, openTab }) => {
     {
       href: "/wallet",
       title: "Wallet",
-      // img: <IoSettings className='text-3xl' />,
+      img: <IoSettings className='text-3xl' />,
       access: ["seller"],
     },
     {
@@ -154,11 +154,11 @@ const SidePannel = ({ setOpenTab, openTab }) => {
 
   return (
     <>
-      <div className="bg-custom-darkpurple xl:w-[250px] fixed top-0 left-0 z-20  md:w-[250px] sm:w-[200px] hidden sm:grid grid-rows-5 h-screen overflow-hidden">
-        <div className="bg-blue-500 overflow-y-scroll h-screen  scrollbar-hide">
-          <div className="bg-blue-500 min-h-screen h-full py-5 2xl:h-full">
-            <div className=" pt-5 pb-5 row-span-1 flex items-center justify-center cursor-pointer mx-5 rounded" onClick={() => router.push("/")}>
-              <img className="object-contain w-[210px] h-[40px] lg:scale-150" src="/logo-1.png" alt="" />
+      <div className="bg-custom-blue xl:w-[250px] fixed top-0 left-0 z-20  md:w-[250px] sm:w-[200px] hidden sm:grid grid-rows-5 h-screen overflow-hidden">
+        <div className="bg-custom-blueoverflow-y-scroll h-screen  scrollbar-hide">
+          <div className="bg-custom-blue min-h-screen h-full py-5 2xl:h-full">
+            <div className="bg-white pt-5 pb-5 row-span-1 flex items-center justify-center cursor-pointer mx-5 rounded" onClick={() => router.push("/")}>
+              <img className="object-contain w-[210px] h-[50px] lg:scale-150" src="/logo-1.png" alt="" />
             </div>
 
             <div className="flex flex-col justify-between row-span-4 pb-4 w-full">
@@ -172,7 +172,7 @@ const SidePannel = ({ setOpenTab, openTab }) => {
                         <div onClick={handleCollapse} className={`${item?.access?.includes(user?.role)
                           ? "flex"
                           : "hidden"
-                          }  items-center mx-5 cursor-pointer group hover:bg-custom-darkRed/80 
+                          }  items-center mx-5 cursor-pointer group hover:bg-custom-yellow 
                           `}
                         >
                           <div className="py-3 ml-[40px] mr-6 text-white font-semibold flex justify-between w-full items-center gap-4">
@@ -194,9 +194,9 @@ const SidePannel = ({ setOpenTab, openTab }) => {
                               className={`${item?.access?.includes(user?.role)
                                 ? "flex"
                                 : "hidden"
-                                }  items-center mx-5 px-6 cursor-pointer group hover:bg-custom-darkRed/80 my-1
+                                }  items-center mx-5 px-6 cursor-pointer group hover:bg-custom-yellow my-1
                                   ${router.pathname === child.href
-                                  ? "bg-custom-darkRed text-white rounded-[8px]"
+                                  ? "bg-custom-yellow text-white rounded-[8px]"
                                   : "text-custom-blue"
                                 }
                                 `}
@@ -221,9 +221,9 @@ const SidePannel = ({ setOpenTab, openTab }) => {
                       href={item.href}
                       passHref
                       className={`${item?.access?.includes(user?.role) ? "flex" : "hidden"
-                        }  items-center mx-5 cursor-pointer group hover:bg-custom-darkRed/80 
+                        }  items-center mx-5 cursor-pointer group hover:bg-custom-yellow 
                           ${router.pathname === item.href
-                          ? "bg-custom-darkRed text-white rounded-[8px]"
+                          ? "bg-custom-yellow text-white rounded-[8px]"
                           : "text-custom-blue"
                         }
                         `}
@@ -242,7 +242,7 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       </div>
 
       <div
-        className={`w-full absolute top-0 left-0 z-40 sm:hidden flex flex-col h-screen max-h-screen overflow-hidden  bg-custom-darkRed ${openTab ? "scale-x-100" : "scale-x-0"
+        className={`w-full absolute top-0 left-0 z-40 sm:hidden flex flex-col h-screen max-h-screen overflow-hidden  bg-custom-blue ${openTab ? "scale-x-100" : "scale-x-0"
           } transition-all duration-300 origin-left`}
       >
         <div className=" row-span-1  w-full text-white  relative ">
@@ -252,10 +252,10 @@ const SidePannel = ({ setOpenTab, openTab }) => {
           />
           <div className="flex items-center gap-3 w-full  p-3">
             <div className="bg-white p-1 rounded overflow-hidden">
-              <img className="w-[182px] h-[44px] object-cover" src="/Logo.jpeg" alt="" />
+              <img className="w-[182px] h-[44px] object-cover" src="/logo-1.png"alt="" />
             </div>
             <div className="flex flex-col text-left justify-center">
-              <p className="-mt-2 text-sm">{user?.fullName}</p>
+              <p className="-mt-2 text-sm">{user?.name}</p>
             </div>
           </div>
         </div>
