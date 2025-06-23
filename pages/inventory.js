@@ -303,7 +303,7 @@ function Inventory(props) {
       },
       {
         Header: "Price",
-        accessor: "price_slot[0].our_price",
+        accessor: "price_slot[0].Offerprice",
         Cell: price,
       },
       // {
@@ -348,7 +348,7 @@ function Inventory(props) {
       },
       {
         Header: "Price",
-        accessor: "price_slot[0].our_price",
+       accessor: "price_slot[0].Offerprice",
         Cell: price,
       },
       // {
@@ -361,11 +361,11 @@ function Inventory(props) {
       //     accessor: "pieces",
       //     Cell: piece,
       // },
-      // {
-      //     Header: "Available Color",
-      //     accessor: "varients",
-      //     Cell: availableColor,
-      // },
+      {
+          Header: "Available Color",
+          accessor: "varients",
+          Cell: availableColor,
+      },
       {
         Header: "ACTION",
         Cell: actionHandler2,

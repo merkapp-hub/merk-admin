@@ -30,7 +30,7 @@ const Navbar = ({ setOpenTab, openTab }) => {
           {/* w-14 */}
           <img
             className="object-contain w-[66px] h-[40px] -mt-2"
-            src="/Logo.jpeg"
+            src="/logo-1.png"
             alt=""
           />
           {/* <p className="py-2 text-5xl md:text-4xl lg:text-5xl font-semibold text-custom-black">Logo</p> */}
