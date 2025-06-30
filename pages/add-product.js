@@ -83,6 +83,8 @@ const DEFAULT_WEIGHT = {
 function AddProduct(props) {
   const router = useRouter();
   const fileInputRef = useRef(null);
+  const [selectedImageFiles, setSelectedImageFiles] = useState([]);
+
 
   const [productData, setProductData] = useState({
     name: "",
@@ -205,68 +207,107 @@ function AddProduct(props) {
     }
   };
 
-  const handleCreateProduct = async (e) => {
+const handleCreateProduct = async (e) => {
     e.preventDefault();
 
-    const requestData = {
-      ...productData,
-      userid: user?._id,
-      varients:variants,
-    };
+    const formData = new FormData();
+    
+    // Add simple text fields
+    formData.append('name', productData.name);
+    formData.append('category', productData.category);
+    formData.append('origin', productData.origin);
+    formData.append('expirydate', productData.expirydate);
+    formData.append('manufacturername', productData.manufacturername);
+    formData.append('manufactureradd', productData.manufactureradd);
+    formData.append('short_description', productData.short_description);
+    formData.append('long_description', productData.long_description);
+    formData.append('userid', user?._id);
+    
+    // Add complex objects as JSON strings
+    formData.append('price_slot', JSON.stringify(productData.price_slot));
+    formData.append('attributes', JSON.stringify(productData.attributes || []));
+    formData.append('varients', JSON.stringify(variants));
+    
+    // Add image files if any
+    if (selectedImageFiles && selectedImageFiles.length > 0) {
+        selectedImageFiles.forEach(file => {
+            formData.append('images', file);
+        });
+    }
 
     try {
-      props.loader(true);
-      const response = await Api("post", "createProduct", requestData, router);
-
-      if (response.status) {
-        resetForm();
-        router.push("/inventory");
-        props.toaster({ type: "success", message: response.data?.message });
-      } else {
-        props.toaster({ type: "error", message: response?.data?.message });
-      }
+        props.loader(true);
+        const response = await ApiFormData("post", "createProduct", formData, router);
+        
+        if (response.status) {
+            resetForm();
+            router.push("/inventory");
+            props.toaster({ type: "success", message: response.data?.message });
+        } else {
+            props.toaster({ type: "error", message: response?.data?.message });
+        }
     } catch (error) {
-      console.error("Error creating product:", error);
-      props.toaster({
-        type: "error",
-        message: error?.message || "Failed to create product",
-      });
+        console.error("Error creating product:", error);
+        props.toaster({
+            type: "error",
+            message: error?.message || "Failed to create product",
+        });
     } finally {
-      props.loader(false);
+        props.loader(false);
     }
-  };
+};
 
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
-
-    const requestData = {
-      ...productData,
-      userid: user?._id,
-     varients: variants,
-      id: router?.query?.id,
-    };
-
-    try {
-      props.loader(true);
-      const response = await Api("post", "updateProduct", requestData, router);
-
-      if (response.status) {
-        resetForm();
-        router.push("/inventory");
-        props.toaster({ type: "success", message: response.data?.message });
-      } else {
-        props.toaster({ type: "error", message: response?.data?.message });
-      }
-    } catch (error) {
-      console.error("Error updating product:", error);
-      props.toaster({
-        type: "error",
-        message: error?.message || "Failed to update product",
-      });
-    } finally {
-      props.loader(false);
+    
+    const formData = new FormData();
+    
+  
+    formData.append('name', productData.name);
+    formData.append('category', productData.category);
+    formData.append('origin', productData.origin);
+    formData.append('expirydate', productData.expirydate);
+    formData.append('manufacturername', productData.manufacturername);
+    formData.append('manufactureradd', productData.manufactureradd);
+    formData.append('short_description', productData.short_description);
+    formData.append('long_description', productData.long_description);
+    formData.append('userid', user?._id);
+    formData.append('id', router?.query?.id);
+    
+    // Add complex objects as JSON strings
+    formData.append('price_slot', JSON.stringify(productData.price_slot));
+    formData.append('attributes', JSON.stringify(productData.attributes || []));
+    formData.append('varients', JSON.stringify(variants));
+    
+    // Add image files if any
+    if (selectedImageFiles && selectedImageFiles.length > 0) {
+        selectedImageFiles.forEach(file => {
+            formData.append('images', file);
+        });
+    
     }
-  };
+    
+    try {
+        props.loader(true);
+        const response = await ApiFormData("post", "updateProduct", formData, router);
+        
+        if (response.status) {
+            resetForm();
+            router.push("/inventory");
+            props.toaster({ type: "success", message: response.data?.message });
+        } else {
+            props.toaster({ type: "error", message: response?.data?.message });
+        }
+    } catch (error) {
+        console.error("Error updating product:", error);
+        props.toaster({
+            type: "error",
+            message: error?.message || "Failed to update product",
+        });
+    } finally {
+        props.loader(false);
+    }
+};
 
   const resetForm = () => {
     setProductData({
@@ -468,50 +509,23 @@ function AddProduct(props) {
     );
   };
 
-  const handleImageChange = (event, i) => {
-    const file = event.target.files[0];
-    console.log(file)
-    if (!file) return;
-    const fileSizeInMb = file.size / (1024 * 1024);
-    if (fileSizeInMb > 1) {
-      props.toaster({ type: "error", message: "Too large file. Please upload a smaller image" });
-      return;
-    } else {
-      new Compressor(file, {
-        quality: 0.6,
-        success: (compressedResult) => {
-          console.log(compressedResult)
-          const data = new FormData()
-          data.append('file', compressedResult)
-          props.loader(true);
-          console.log(data,"dtaa")
-          ApiFormData("post", "auth/user/fileupload", data, router).then(
-            (res) => {
-              props.loader(false);
-              console.log("res================>", res);
-              if (res.status) {
-                // setVariants(
-                //   produce((draft) => {
-                //     draft[i].image.push(res.data.file);
-                //   })
-                // );
-                // setvarients(res.data.file)
-                setSingleImageUrl(res.data.file)
-                props.toaster({ type: "success", message: res.data.message });
-              }
-            },
-            (err) => {
-              props.loader(false);
-              console.log(err);
-              props.toaster({ type: "error", message: err?.message });
-            }
-          );
-        
-        },
-      });
-    }
-    const reader = new FileReader();
-  };
+const handleImageChange = (event, i) => {
+    const files = Array.from(event.target.files);
+    setSelectedImageFiles(prev => [...prev, ...files]);
+    
+    // Show preview
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setVariants(
+                produce((draft) => {
+                    draft[i].image.push(e.target.result); // For preview
+                })
+            );
+        };
+        reader.readAsDataURL(file);
+    });
+};
 
   const removeImage = (imageUrl, imageIndex, variantIndex) => {
     setVariants(

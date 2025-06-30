@@ -76,7 +76,7 @@ export default function Login(props) {
           <div className="flex bg-white py-2 mt-4 rounded-md border  border-custom-gray md:h-14 sm:h-10 w-64 md:min-w-full ">
             <div className="flex md:mx-4 mx-2.5 justify-center md:h-10 sm:h-8 items-center ">
               <div className="md:w-5 md:h-5 w-4 h-4 relative">
-                <MdEmail className="text-xl text-custom-gray" />
+                <MdEmail className="text-xl text-custom-darkpurple " />
               </div>
             </div>
             <input
@@ -100,7 +100,7 @@ export default function Login(props) {
           <div className="flex bg-white py-2 mt-4 rounded-md  border  border-custom-gray md:h-14 sm:h-10 min-w-full relative items-center w-64 md:min-w-full ">
             <div className="flex md:mx-4 mx-2.5  justify-center md:h-10 sm:h-8 items-center ">
               <div className="md:w-5 md:h-5 w-4 h-4 relative">
-                <MdPassword className="text-xl text-custom-gray" />
+                <MdPassword className="text-xl text-custom-darkpurple " />
               </div>
             </div>
             <input

@@ -248,11 +248,11 @@ function SellerOrders(props) {
         accessor: "seller_id.name",
         Cell: name,
       },
-      {
-        Header: "Customer Name",
-        accessor: "user.name",
-        Cell: email,
-      },
+     {
+      Header: "Customer Name",
+      accessor: row => `${row.user?.firstName || ''} ${row.user?.lastName || ''}`.trim(),
+      Cell: name, 
+    },
       {
         Header: "Order Date",
         accessor: "createdAt",

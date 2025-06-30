@@ -37,6 +37,7 @@ function AddSale(props) {
     
     Api("get", `getProduct?seller_id=${user?._id}`, router).then(
       (res) => {
+        console.log("seller products",res)
         props.loader(false);
         setProductsList(res.data);
       },
@@ -50,7 +51,7 @@ function AddSale(props) {
 
   const productOptions = productsList.map((product) => ({
     value: product._id,
-    label: `${product.name} - ${product.categoryName} - IQD${product.price_slot[0].our_price}`,
+    label: `${product.name} - ${product.category.name} - $${product.price_slot[0].Offerprice}`,
   }));
 
   const handleProductChange = (selectedOptions) => {

@@ -30,7 +30,7 @@ function SaleProduct(props) {
         Api("delete", `deleteSale?SellerId=${user._id}`, router).then(
             (res) => {
                 props.loader(false);
-                if (res.status) {
+                if (res.success) {
                     props.toaster({ type: "success", message: "Sale ended successfully" });
                     getSale()
                 }
@@ -67,7 +67,7 @@ function SaleProduct(props) {
                 Api("post", "deleteFlashSaleProduct", data, router).then(
                     (res) => {
                         props.loader(false);
-                        if (res.status) {
+                        if (res.success) {
                             props.toaster({ type: "success", message: "Product Remove from Sale successfully" });
                           getSale()
                         }
@@ -89,8 +89,9 @@ function SaleProduct(props) {
 
         Api("get", `getFlashSale?SellerId=${user._id}`, router).then(
             (res) => {
+                console.log('seller sale',res)
                 props.loader(false);
-                if (res.status) {
+                if (res.success) {
                     setSaleData(res.data)
                     console.log(res.data)
                     console.log(res.data[0]?.products)

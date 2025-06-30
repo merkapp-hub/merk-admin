@@ -44,49 +44,89 @@ function SellerInventory(props) {
       console.log("Fetching products for page:", currentPage, "pageSize:", pageSize); // Debug log
       getProduct(currentPage, pageSize);
     }
-  }, [user, searchText, currentPage, pageSize]); // Include pageSize here!
+  }, [user, searchText, currentPage, pageSize]); 
 
-  const getProduct = async (page = 1, limit = 10) => {
-    console.log("API call with page:", page, "limit:", limit);
-    props.loader(true);
-    let url;
-    if (user?.type === "ADMIN") {
-      url = `getSellerProductByAdmin?page=${page}&limit=${limit}`;
-    } else if (user?.type === "SELLER") {
-      url = `getSellerProductByAdmin?seller_id=${user?._id}&page=${page}&limit=${limit}`;
-    }
 
-    if (searchText.trim() !== "") {
-      url += `&search=${encodeURIComponent(searchText.trim())}`;
-    }
+const getProduct = async (page = 1, limit = 10) => {
+  console.log("API call with page:", page, "limit:", limit);
+  props.loader(true);
+  
+  let url = "";
+  
+  if (user?.role === "admin") {
+    url = `getSellerProductByAdmin?page=${page}&limit=${limit}`;
+  } else if (user?.role === "seller") {
+    url = `getSellerProductByAdmin?seller_id=${user?._id}&page=${page}&limit=${limit}`;
+  } else {
+    console.error("Invalid user type:", user?.role);
+    props.loader(false);
+    props.toaster({ type: "error", message: "Invalid user type" });
+    return;
+  }
 
-    Api("get", url, router).then(
-      (res) => {
-        props.loader(false);
-        console.log("res================>", res.data);
+  if (searchText.trim() !== "") {
+    url += `&search=${encodeURIComponent(searchText.trim())}`;
+  }
 
+  console.log("Final URL:", url);
+
+  Api("get", url, router).then(
+    (res) => {
+      props.loader(false);
+      console.log("res================>", res);
+
+    
+      if (res && res.data && Array.isArray(res.data)) {
         setProductsList(res.data);
-        console.log("res================>", res.data);
-
-        const selectednewIds = res.data.map((f) => {
-          if (f.sponsered && f._id) return f._id;
-        });
-        console.log(selectednewIds);
-
+        
+        const selectednewIds = res.data.filter(f => f.sponsered && f._id).map(f => f._id);
         setSelectedNewSeller(selectednewIds);
+        
+        // Handle pagination properly
+        if (res.pagination) {
+          setPagination({
+            ...res.pagination,
+            itemsPerPage: pageSize, 
+          });
+        } else {
+          // Default pagination if not provided
+          setPagination({
+            totalItems: res.data.length,
+            totalPages: Math.ceil(res.data.length / pageSize),
+            currentPage: page,
+            itemsPerPage: pageSize,
+          });
+        }
+      } else {
+        console.error("Invalid response data:", res);
+        setProductsList([]);
         setPagination({
-          ...res?.pagination,
-          itemsPerPage: pageSize, // force override to match dropdown
+          totalItems: 0,
+          totalPages: 1,
+          currentPage: 1,
+          itemsPerPage: pageSize,
         });
-
-      },
-      (err) => {
-        props.loader(false);
-        console.log(err);
-        props.toaster({ type: "error", message: err?.message });
       }
-    );
-  };
+    },
+    (err) => {
+      props.loader(false);
+      console.log("API Error:", err);
+      
+      // Handle error properly
+      const errorMessage = err?.response?.data?.message || err?.message || "An error occurred";
+      props.toaster({ type: "error", message: errorMessage });
+      
+      // Set empty state
+      setProductsList([]);
+      setPagination({
+        totalItems: 0,
+        totalPages: 1,
+        currentPage: 1,
+        itemsPerPage: pageSize,
+      });
+    }
+  );
+};
 
   const deleteProduct = (_id) => {
     Swal.fire({
@@ -295,7 +335,7 @@ function SellerInventory(props) {
       },
       {
         Header: "Price",
-        accessor: "price_slot[0].our_price",
+      accessor: "price_slot[0].price",
         Cell: price,
       },
       {

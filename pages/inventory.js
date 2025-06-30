@@ -165,13 +165,13 @@ function Inventory(props) {
     );
   };
 
-  const category = ({ row, value }) => {
-    return (
-      <div className="p-4 flex flex-col items-center justify-center">
-        <p className="text-black text-base font-normal">{value}</p>
-      </div>
-    );
-  };
+ const category = ({ row, value }) => {
+  return (
+    <div className="p-4 flex flex-col items-center justify-center">
+      <p className="text-black text-base font-normal">{row.original?.category?.name || 'N/A'}</p>
+    </div>
+  );
+};
 
   const price = ({ value }) => {
     return (
@@ -298,7 +298,7 @@ function Inventory(props) {
       },
       {
         Header: "Category",
-        accessor: "categoryName",
+       accessor: "category.name",
         Cell: category,
       },
       {
@@ -343,7 +343,7 @@ function Inventory(props) {
       },
       {
         Header: "Category",
-        accessor: "categoryName",
+       accessor: "category.name",
         Cell: category,
       },
       {

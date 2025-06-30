@@ -47,12 +47,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       img: <AiFillProduct className="text-3xl" />,
       access: ["seller"],
     },
-    {
-      href: "/employees",
-      title: "Employees",
-      img: <AiFillProduct className="text-3xl" />,
-      access: ["seller"],
-    },
+    // {
+    //   href: "/employees",
+    //   title: "Employees",
+    //   img: <AiFillProduct className="text-3xl" />,
+    //   access: ["seller"],
+    // },
     // {
     //     href: "/add-product",
     //     title: "Add Product",
@@ -71,12 +71,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       img: <FaShoppingBag className="text-3xl" />,
       access: ["seller"],
     },
-    {
-      href: "/returned-orders",
-      title: "Returned Orders",
-      img: <FaShoppingBag className="text-3xl" />,
-      access: ["seller"],
-    },
+    // {
+    //   href: "/returned-orders",
+    //   title: "Returned Orders",
+    //   img: <FaShoppingBag className="text-3xl" />,
+    //   access: ["seller"],
+    // },
     {
       href: "/sellers",
       title: "Sellers",
@@ -90,12 +90,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
         { href: "/sellers/seller-employee", title: "Seller Employee" },
       ],
     },
-    {
-      href: "/driver",
-      title: "Drivers",
-      img: <FaUserTie className="text-3xl" />,
-      access: ["admin"],
-    },
+    // {
+    //   href: "/driver",
+    //   title: "Drivers",
+    //   img: <FaUserTie className="text-3xl" />,
+    //   access: ["admin"],
+    // },
     {
       href: "/categories",
       title: "Categories",
@@ -114,39 +114,45 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       img: <IoSettings className="text-3xl" />,
       access: ["admin"],
     },
-    {
-      href: "/notifications",
-      title: "Notifications",
-      img: <IoBarbell className="text-3xl" />,
-      access: ["admin"],
-    },
+    // {
+    //   href: "/notifications",
+    //   title: "Notifications",
+    //   img: <IoBarbell className="text-3xl" />,
+    //   access: ["admin"],
+    // },
     {
       href: "/contact",
       title: "Contact",
       img: <IoBarbell className="text-3xl" />,
       access: ["admin"],
     },
-    {
-      href: "/ContentManagement",
-      title: "Our Content",
-      img: <MdContentPaste className="text-3xl" />,
-      access: ["admin"],
-    },
-    {
-      href: "/cashreceive",
-      title: "Cash Receive",
-      img: <BsCash className="text-3xl" />,
-      access: ["admin"],
-    },
+    // {
+    //   href: "/ContentManagement",
+    //   title: "Our Content",
+    //   img: <MdContentPaste className="text-3xl" />,
+    //   access: ["admin"],
+    // },
+    // {
+    //   href: "/cashreceive",
+    //   title: "Cash Receive",
+    //   img: <BsCash className="text-3xl" />,
+    //   access: ["admin"],
+    // },
     {
       href: "/wallet",
       title: "Wallet",
       img: <IoSettings className='text-3xl' />,
       access: ["seller"],
     },
-    {
-      href: "/withdrawalrequest",
-      title: "Withdrawal Request",
+    // {
+    //   href: "/withdrawalrequest",
+    //   title: "Withdrawal Request",
+    //   img: <PiHandWithdrawFill className="text-3xl" />,
+    //   access: ["admin"],
+    // },
+     {
+      href: "/reviews",
+      title: "Reviews",
       img: <PiHandWithdrawFill className="text-3xl" />,
       access: ["admin"],
     },
