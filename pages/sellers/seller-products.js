@@ -224,13 +224,15 @@ const getProduct = async (page = 1, limit = 10) => {
     );
   };
 
-  const category = ({ row, value }) => {
-    return (
-      <div className="flex flex-col items-center justify-center">
-        <p className="text-black text-base font-normal">{value}</p>
-      </div>
-    );
-  };
+const category = ({ row, value }) => {
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <p className="text-black text-base font-normal">
+        {row.original.category?.name || 'N/A'}
+      </p>
+    </div>
+  );
+};
 
   const seller = ({ row, value }) => {
     return (
@@ -330,7 +332,7 @@ const getProduct = async (page = 1, limit = 10) => {
       },
       {
         Header: "Category",
-        accessor: "categoryName",
+       accessor: "category.name",
         Cell: category,
       },
       {

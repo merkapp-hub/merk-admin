@@ -157,15 +157,15 @@ function Orders(props) {
     );
   }
 
-  function name({ value }) {
-    return (
-      <div>
-        <p className="text-custom-black text-base font-normal text-center">
-          {value}
-        </p>
-      </div>
-    );
-  }
+ function name({ value }) {
+  return (
+    <div>
+      <p className="text-custom-black text-base font-normal text-center">
+        {value || 'N/A'}
+      </p>
+    </div>
+  );
+}
 
   function email({ value }) {
     return (
@@ -187,15 +187,15 @@ function Orders(props) {
     );
   }
 
-  function mobile({ value }) {
-    return (
-      <div>
-        <p className="text-custom-black text-base font-normal text-center">
-          {value}
-        </p>
-      </div>
-    );
-  }
+  // function mobile({ value }) {
+  //   return (
+  //     <div>
+  //       <p className="text-custom-black text-base font-normal text-center">
+  //         {value}
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   const info = ({ value, row }) => {
     //console.log(row.original._id)
@@ -228,7 +228,7 @@ function Orders(props) {
       },
       {
         Header: "NAME",
-        accessor: "user.username",
+        accessor: row => `${row.user?.firstName || ''} ${row.user?.lastName || ''}`.trim(),
         Cell: name,
       },
       {
@@ -241,11 +241,11 @@ function Orders(props) {
         accessor: "createdAt",
         Cell: date,
       },
-      {
-        Header: "Mobile",
-        accessor: "user.number",
-        Cell: mobile,
-      },
+      // {
+      //   Header: "Mobile",
+      //   accessor: "user.number",
+      //   Cell: mobile,
+      // },
       {
         Header: "See Details",
         // accessor: "view",

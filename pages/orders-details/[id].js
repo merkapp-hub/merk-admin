@@ -196,7 +196,7 @@ function OrdersDetails(props) {
                             <p className='text-black pt-2'>phone Number : {" "}<span className='font-normal text-custom-darkGray'>{mainProductsData?.shipping_address?.phoneNumber}</span></p>
                              <p className='text-black pt-2'>Shipping Address : {" "}<span className='font-normal text-custom-darkGray'>{mainProductsData?.shipping_address?.address}</span></p>
                              <p className='text-black pt-2'>City : {" "}<span className='font-normal text-custom-darkGray'>{mainProductsData?.shipping_address?.city}</span></p>
-                             <p className='text-black pt-2'>Country : {" "}<span className='font-normal text-custom-darkGray'>{mainProductsData?.shipping_address?.country}</span></p>
+                            <p className='text-black pt-2'>Country : {" "}<span className='font-normal text-custom-darkGray'>{mainProductsData?.shipping_address?.country?.label}</span></p>
                             </div>
                         
                              
@@ -225,7 +225,7 @@ function OrdersDetails(props) {
                     <p className='text-black text-base font-normal md:pt-5 pt-3'>{mainProductsData?.user?.pinCode}</p>
                     <p className='text-black text-base font-normal md:pt-5 pt-3'>{mainProductsData?.user?.phoneNumber}</p>
                     <p className='text-black text-base font-normal md:pt-5 pt-3'>{mainProductsData?.user?.city}</p>
-                    <p className='text-black text-base font-normal md:pt-5 pt-3'>{mainProductsData?.user?.country}</p>
+                  <p className='text-black text-base font-normal md:pt-5 pt-3'>{mainProductsData?.user?.country?.label || mainProductsData?.user?.country}</p>
                 </section>
             </section>
         </>

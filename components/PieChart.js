@@ -35,7 +35,7 @@ const PieChart = ({ data }) => {
       dataLabels: {
         formatter: function (val, opts) {
           const raw = opts.w.config.series[opts.seriesIndex];
-          return `${raw}IQD`;
+          return `${raw}$`;
         },
         style: {
           colors: ["#ffffff"],

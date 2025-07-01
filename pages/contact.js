@@ -207,31 +207,31 @@ const CustomerQueries = () => {
                     </td>
                   </tr>
                 ) : (
-                  queries.map((query, index) => (
-                    <tr key={query._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                       {(currentPage - 1) * (pagination?.limit || 10) + index + 1}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {query.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {query.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatDate(query.createdAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <button
-                          onClick={() => handleViewDetails(query)}
-                          className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        >
-                          <Eye className="w-4 h-4 mr-1" />
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                 queries.map((query, index) => (
+  <tr key={query._id} className="hover:bg-gray-50">
+    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+      {query._id ? query._id.slice(-6) : (currentPage - 1) * (pagination?.limit || 10) + index + 1}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      {query.name}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      {query.email}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      {formatDate(query.createdAt)}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      <button
+        onClick={() => handleViewDetails(query)}
+        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+      >
+        <Eye className="w-4 h-4 mr-1" />
+        View
+      </button>
+    </td>
+  </tr>
+))
                 )}
               </tbody>
             </table>

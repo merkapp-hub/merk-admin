@@ -127,13 +127,15 @@ function SaleProduct(props) {
         );
     };
 
-    const category = ({ value }) => {
-        return (
-            <div className="p-4 flex flex-col items-center justify-center">
-                <p className="text-black text-base font-normal">{value}</p>
-            </div>
-        );
-    };
+   const category = ({ row }) => {
+    return (
+        <div className="p-4 flex flex-col items-center justify-center">
+            <p className="text-black text-base font-normal">
+                {row.original.category?.name || 'N/A'}
+            </p>
+        </div>
+    );
+};
 
     const actionHandler = ({ value, row }) => {
         return (
@@ -165,7 +167,7 @@ function SaleProduct(props) {
             },
             {
                 Header: "Category",
-                accessor: "categoryName",
+                accessor: "category.name",
                 Cell: category,
             },
             {

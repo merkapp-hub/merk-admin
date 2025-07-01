@@ -59,12 +59,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
     //     img: <AiFillProduct className='text-3xl' />,
     //     access: ["ADMIN", "SELLER"],
     // },
-    {
-      href: "/queries",
-      title: "Queries",
-      img: <FaCircleQuestion className="text-3xl" />,
-      access: ["admin", "seller"],
-    },
+    // {
+    //   href: "/queries",
+    //   title: "Queries",
+    //   img: <FaCircleQuestion className="text-3xl" />,
+    //   access: ["admin", "seller"],
+    // },
     {
       href: "/orders",
       title: "Orders",
@@ -87,7 +87,7 @@ const SidePannel = ({ setOpenTab, openTab }) => {
         { href: "/sellers/seller-orders", title: "Seller Orders" },
         { href: "/sellers/returned-orders", title: "Returned Orders" },
         { href: "/sellers/seller-products", title: "Seller Products" },
-        { href: "/sellers/seller-employee", title: "Seller Employee" },
+        // { href: "/sellers/seller-employee", title: "Seller Employee" },
       ],
     },
     // {
