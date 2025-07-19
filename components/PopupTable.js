@@ -685,7 +685,7 @@ function PopupTable(props) {
             </div>
 
             <div className="max-h-[400px] px-5 w-full py-3 overflow-y-scroll scrollbar-hide">
-              <p className="text-center mt-2 font-semibold text-xl text-custom-black">
+              <p className="text-center mt-2 font-semibold text-xl text-gray-800">
                 Returned Product Details
               </p>
 
@@ -704,10 +704,10 @@ function PopupTable(props) {
                         <div className="flex items-center gap-2">
                           <img src={item?.image[0]} className="w-10 h-10" />
                           <div className="flex flex-col items-start gap-0.5">
-                            <p className="text-custom-black text-base font-semibold">
+                            <p className="text-gray-800 text-base font-semibold">
                               {item?.product?.name}
                             </p>
-                            <p className="text-custom-black text-sm font-normal">
+                            <p className="text-gray-800 text-sm font-normal">
                               {currencySign(item?.total ?? item?.price ?? 0)}
                             </p>
                           </div>

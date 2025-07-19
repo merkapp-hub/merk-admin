@@ -144,7 +144,7 @@ function Notifications(props) {
   function indexID({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -154,7 +154,7 @@ function Notifications(props) {
   function name({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -164,7 +164,7 @@ function Notifications(props) {
   function email({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -174,7 +174,7 @@ function Notifications(props) {
   function date({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -184,7 +184,7 @@ function Notifications(props) {
   function mobile({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -198,7 +198,7 @@ function Notifications(props) {
     return (
       <div>
         <p
-          className={`text-custom-black text-base font-normal text-center
+          className={`text-gray-800 text-base font-normal text-center
                     ${value == "Verified" ? "text-green-500" : ""}
                      ${value == "Suspend" ? "text-red-500" : ""}
                      ${value == "Pending" ? "text-yellow-500" : ""}
@@ -270,7 +270,7 @@ function Notifications(props) {
 
   return (
     <section className=" w-full h-full bg-transparent pt-1 pb-5 pl-5 pr-5">
-      <p className="text-custom-black font-bold  md:text-[32px] text-2xl">
+      <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">
         Notifications
       </p>
       <section className="px-5 pt-1 md:pb-32 pb-28 bg-white h-full rounded-[12px] overflow-auto mt-3">
@@ -280,7 +280,7 @@ function Notifications(props) {
             <select
               value={sortValue}
               onChange={(e) => setSortValue(e.target.value)}
-              className="bg-transparent border border-custom-darkpurple p-2 rounded-md text-custom-black outline-none font-normal text-base ml-2"
+              className="bg-transparent border border-custom-darkpurple p-2 rounded-md text-gray-800 outline-none font-normal text-base ml-2"
             >
               <option value="all">All</option>
               <option value="users">Customers</option>

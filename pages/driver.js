@@ -89,7 +89,7 @@ function Driver(props) {
   function indexID({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -99,7 +99,7 @@ function Driver(props) {
   function name({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -109,7 +109,7 @@ function Driver(props) {
   function email({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -119,7 +119,7 @@ function Driver(props) {
   function date({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -129,7 +129,7 @@ function Driver(props) {
   function mobile({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -140,7 +140,7 @@ function Driver(props) {
     return (
       <div>
         <p
-          className={`text-custom-black text-base font-normal text-center
+          className={`text-gray-800 text-base font-normal text-center
                      ${value == "Verified" ? "text-green-500" : ""}
                      ${value == "Suspend" ? "text-red-500" : ""}
                      ${value == "Pending" ? "text-yellow-500" : ""}
@@ -221,7 +221,7 @@ function Driver(props) {
 
   return (
     <section className=" w-full h-full bg-transparent pt-1 pb-5 pl-5 pr-5">
-      <p className="text-custom-black font-bold md:text-[32px] text-2xl">
+      <p className="text-gray-800 font-bold md:text-[32px] text-2xl">
         Driver
       </p>
       {/* pl-2  */}
@@ -235,11 +235,11 @@ function Driver(props) {
                             <img className='w-[20px] h-[23px]' src='/filterImg.png' />
                         </div>
                         <div className='flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3'>
-                            <p className='text-custom-black text-sm	font-bold'>Filter By</p>
+                            <p className='text-gray-800 text-sm	font-bold'>Filter By</p>
                         </div>
                         <div className='col-span-8 flex justify-start items-center '>
-                            <p className='text-custom-black font-semibold text-sm md:pl-3'>Date</p>
-                            <input className='ml-3 text-custom-black' type='date' placeholder='Date' />
+                            <p className='text-gray-800 font-semibold text-sm md:pl-3'>Date</p>
+                            <input className='ml-3 text-gray-800' type='date' placeholder='Date' />
                         </div>
                     </div>
                 </div> */}
@@ -265,13 +265,13 @@ function Driver(props) {
                       sx={{ width: 60, height: 60 }}
                     />
                     <div className="flex flex-col justify-start items-start md:pl-5">
-                      <p className="text-base font-bold text-custom-black md:pt-0 pt-2">
+                      <p className="text-base font-bold text-gray-800 md:pt-0 pt-2">
                         {popupData?.username}
                       </p>
                       <p className="text-base font-semibold text-custom-newBlack pt-2">
                         {popupData?.email}
                       </p>
-                      <p className="text-sm font-semibold text-custom-black pt-2">
+                      <p className="text-sm font-semibold text-gray-800 pt-2">
                         {popupData?.number}
                       </p>
                     </div>
@@ -284,7 +284,7 @@ function Driver(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Delivered Items:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {popupData?.stats?.totalOrders}
                       </p>
                     </div>
@@ -292,7 +292,7 @@ function Driver(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Tips:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {currencySign(popupData?.stats?.totalTips)}
                       </p>
                     </div>
@@ -300,7 +300,7 @@ function Driver(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Earnings:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {currencySign(popupData?.stats?.totalEarnings)}
                       </p>
                     </div>
@@ -308,7 +308,7 @@ function Driver(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Wallet Balance:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {currencySign(popupData?.stats?.totalWalletBalance)}
                       </p>
                     </div>
@@ -328,24 +328,24 @@ function Driver(props) {
                 <div className="flex md:justify-center justify-start items-center min-w-[400px] md:border-l-2 md:border-l-gray-300 ">
                   <div className="flex flex-col justify-start items-start md:pl-5 w-[50%]">
                     <div className="flex justify-between items-center w-full md:pt-0 pt-2">
-                      <p className="text-sm text-custom-black font-bold">
+                      <p className="text-sm text-gray-800 font-bold">
                         Number Plate :{" "}
                         <span className="text-custom-darkGrayColor">
                           {popupData?.numberPlate || "N/A"}
                         </span>
                       </p>
-                      {/* <p className="text-sm font-normal text-custom-black">Licences : {" "} <span>{popupData?. }</span></p> */}
-                      {/* <p className="text-sm font-normal text-custom-black">Total Order</p>
-                                            <p className="text-sm font-normal text-custom-black">80</p> */}
+                      {/* <p className="text-sm font-normal text-gray-800">Licences : {" "} <span>{popupData?. }</span></p> */}
+                      {/* <p className="text-sm font-normal text-gray-800">Total Order</p>
+                                            <p className="text-sm font-normal text-gray-800">80</p> */}
                     </div>
                     <div className="flex justify-between items-center w-full pt-2">
-                      {/* <p className="text-sm font-normal text-custom-black">Total earning</p>
-                                            <p className="text-sm font-normal text-custom-black">150</p> */}
+                      {/* <p className="text-sm font-normal text-gray-800">Total earning</p>
+                                            <p className="text-sm font-normal text-gray-800">150</p> */}
                     </div>
                   </div>
                 </div>
               </div>
-              <p className="text-custom-black text-base font-bold pt-2">
+              <p className="text-gray-800 text-base font-bold pt-2">
                 Uploaded Document
               </p>
 

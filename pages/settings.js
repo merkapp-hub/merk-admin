@@ -685,7 +685,7 @@ function Settings(props) {
   return (
     <>
       <section className=" w-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5 h-[90vh] overflow-scroll no-scrollbar">
-        <p className="text-custom-black font-bold  md:text-[32px] text-2xl">
+        <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">
           Carousel
         </p>
 
@@ -828,7 +828,7 @@ function Settings(props) {
         </section>
 
         {/* Tax Calculation and function */}
-        <p className="text-custom-black font-bold  md:text-[32px] text-2xl mt-12 mb-1">
+        <p className="text-gray-800 font-bold  md:text-[32px] text-2xl mt-12 mb-1">
           Tax
         </p>
 
@@ -865,7 +865,7 @@ function Settings(props) {
             </div>
           </form>
         </section>
-        <p className="text-custom-black font-bold  md:text-[32px] text-2xl mt-12 mb-1">
+        <p className="text-gray-800 font-bold  md:text-[32px] text-2xl mt-12 mb-1">
           Service fee
         </p>
 
@@ -904,7 +904,7 @@ function Settings(props) {
         </section>
 
         {/* Time Slot Calculation and function */}
-        <p className="text-custom-black font-bold  md:text-[32px] text-2xl mt-12 mb-1">
+        <p className="text-gray-800 font-bold  md:text-[32px] text-2xl mt-12 mb-1">
           Time Slots
         </p>
 
@@ -990,7 +990,7 @@ function Settings(props) {
                 className="relative bg-gray-200 px-3 py-1 rounded-sm"
                 key={i}
               >
-                <p className="text-custom-black font-bold text-base">
+                <p className="text-gray-800 font-bold text-base">
                   {item.startTime} - {item.endTime}
                 </p>
                 <TiTimes
@@ -1035,7 +1035,7 @@ function Settings(props) {
           </ul>
         </section>
 
-        <p className="text-custom-black font-bold  md:text-[32px] text-2xl mt-12 mb-1">
+        <p className="text-gray-800 font-bold  md:text-[32px] text-2xl mt-12 mb-1">
           Delivery Charges
         </p>
 
@@ -1118,7 +1118,7 @@ function Settings(props) {
                 className="relative bg-gray-200 px-3 py-1 rounded-sm"
                 key={i}
               >
-                <p className="text-custom-black font-bold text-base">{item}</p>
+                <p className="text-gray-800 font-bold text-base">{item}</p>
                 <TiTimes
                   className="text-red-700 cursor-pointer h-5 w-5 absolute -right-[7px] -top-[7px]"
                   onClick={() => {
@@ -1131,7 +1131,7 @@ function Settings(props) {
         </section>
 
         {/* Tax Calculation and function */}
-        <p className="text-custom-black font-bold  md:text-[32px] text-2xl mt-12">
+        <p className="text-gray-800 font-bold  md:text-[32px] text-2xl mt-12">
           Update Admin Profile
         </p>
 

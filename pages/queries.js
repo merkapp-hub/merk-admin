@@ -102,7 +102,7 @@ function Queries(props) {
   function indexID({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -112,7 +112,7 @@ function Queries(props) {
   function name({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -122,7 +122,7 @@ function Queries(props) {
   function email({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -132,7 +132,7 @@ function Queries(props) {
   function date({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -142,7 +142,7 @@ function Queries(props) {
   function mobile({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -181,7 +181,7 @@ function Queries(props) {
   function type({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -253,7 +253,7 @@ function Queries(props) {
 
   return (
     <section className="w-full h-full bg-transparent md:pt-5 pt-5 pb-24 pl-5 pr-5">
-      <p className=" text-custom-black font-bold md:text-[32px] text-2xl">
+      <p className=" text-gray-800 font-bold md:text-[32px] text-2xl">
         Quries
       </p>
 
@@ -263,15 +263,15 @@ function Queries(props) {
             <img className="w-[20px] h-[23px]" src="/filterImg.png" />
           </div> */}
           <div className="flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3">
-            <p className="text-custom-black text-sm	font-bold">Filter By</p>
+            <p className="text-gray-800 text-sm	font-bold">Filter By</p>
           </div>
           <div className="col-span-8 flex md:flex-row flex-col md:justify-between justify-start md:items-center items-start">
             <div className="flex items-center">
-              <lable className="text-custom-black md:pl-3 font-semibold text-sm">
+              <lable className="text-gray-800 md:pl-3 font-semibold text-sm">
                 Date
               </lable>
               <input
-                className="text-custom-black pl-3"
+                className="text-gray-800 pl-3"
                 type="date"
                 placeholder="Date"
                 value={selctDate}
@@ -328,7 +328,7 @@ function Queries(props) {
               </div>
 
               <div className="px-5 w-full py-3">
-                <p className="text-center mt-2 font-semibold text-xl text-custom-black">
+                <p className="text-center mt-2 font-semibold text-xl text-gray-800">
                   Query
                 </p>
                 <p className="text-base mt-3 pb-3 text-center font-bold text-custom-newGray max-h-40 overflow-y-auto scrollbar-hide">

@@ -184,7 +184,7 @@ function Sellers(props) {
   function indexID({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -194,7 +194,7 @@ function Sellers(props) {
   function name({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -204,7 +204,7 @@ function Sellers(props) {
   function email({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -214,7 +214,7 @@ function Sellers(props) {
   function date({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -224,7 +224,7 @@ function Sellers(props) {
   function mobile({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -236,7 +236,7 @@ function Sellers(props) {
     return (
       <div>
         <p
-          className={`text-custom-black text-base font-normal text-center
+          className={`text-gray-800 text-base font-normal text-center
                     ${value == "Verified" ? "text-green-500" : ""}
                      ${value == "Suspend" ? "text-red-500" : ""}
                      ${value == "Pending" ? "text-yellow-500" : ""}
@@ -319,7 +319,7 @@ function Sellers(props) {
 
   return (
     <section  className=" w-full h-full bg-transparent pt-1 pb-5 pl-5 pr-5">
-      <p className="text-custom-black font-bold  md:text-[32px] text-2xl">
+      <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">
         Sellers
       </p>
       {/* pl-2 */}
@@ -333,11 +333,11 @@ function Sellers(props) {
                             <img className='w-[20px] h-[23px]' src='/filterImg.png' />
                         </div>
                         <div className='flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3'>
-                            <p className='text-custom-black text-sm	font-bold'>Filter By</p>
+                            <p className='text-gray-800 text-sm	font-bold'>Filter By</p>
                         </div>
                         <div className='col-span-8 flex justify-start items-center '>
-                            <p className='text-custom-black font-semibold text-sm md:pl-3'>Date</p>
-                            <input className='ml-3 text-custom-black' type='date' placeholder='Date' />
+                            <p className='text-gray-800 font-semibold text-sm md:pl-3'>Date</p>
+                            <input className='ml-3 text-gray-800' type='date' placeholder='Date' />
                         </div>
                     </div>
                 </div> */}
@@ -348,12 +348,12 @@ function Sellers(props) {
               <img className="w-[20px] h-[23px]" src="/filterImg.png" />
             </div> */}
             <div className="col-span-1 flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3">
-              <p className="text-custom-black text-sm	font-bold">Filter By</p>
+              <p className="text-gray-800 text-sm	font-bold">Filter By</p>
             </div>
             <div className="w-full col-span-9 flex md:flex-row flex-col md:justify-between justify-start md:items-center items-start">
               <div className="flex items-center ml-3">
                 {/* <div className="flex items-center">
-                 <lable className="text-custom-black md:pl-3 font-semibold text-sm">
+                 <lable className="text-gray-800 md:pl-3 font-semibold text-sm">
                   Date
                 </lable> 
                 <input
@@ -368,7 +368,7 @@ function Sellers(props) {
                 />
               </div> */}
                 <div className="flex flex-col gap-1 md:pl-3">
-                  {/* <label className="text-custom-black font-semibold text-base">
+                  {/* <label className="text-gray-800 font-semibold text-base">
                 Search
               </label> */}
                   <input
@@ -409,7 +409,7 @@ function Sellers(props) {
           </div>
           {/* <div className="flex flex-wrap justify-between gap-4 md:mt-5 mt-3 p-3">
             <div className="flex flex-col gap-1">
-              <label className="text-custom-black font-semibold text-base">
+              <label className="text-gray-800 font-semibold text-base">
                 Search
               </label>
               <input
@@ -447,13 +447,13 @@ function Sellers(props) {
                       sx={{ width: 60, height: 60 }}
                     />
                     <div className="flex flex-col justify-start items-start md:pl-5">
-                      <p className="text-base font-bold text-custom-black">
+                      <p className="text-base font-bold text-gray-800">
                         {popupData?.username}
                       </p>
                       <p className="text-base font-semibold text-custom-newBlack">
                         {popupData?.email}
                       </p>
-                      <p className="text-sm font-semibold text-custom-black">
+                      <p className="text-sm font-semibold text-gray-800">
                         {popupData?.number}
                       </p>
                       {/* <button
@@ -511,7 +511,7 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Order:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {popupData?.stats?.totalOrders}
                       </p>
                     </div>
@@ -526,7 +526,7 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Products:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {popupData?.stats?.totalProducts}
                       </p>
                     </div>
@@ -541,7 +541,7 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Employees:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {popupData?.stats?.totalEmployees}
                       </p>
                     </div>
@@ -556,7 +556,7 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Returned Items:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {popupData?.stats?.returnedItems}
                       </p>
                     </div>
@@ -564,7 +564,7 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Refunded Items:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {popupData?.stats?.refundedItems}
                       </p>
                     </div>
@@ -572,7 +572,7 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Refund Amount:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {currencySign(popupData?.stats?.totalRefundAmount)}
                       </p>
                     </div>
@@ -580,7 +580,7 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Income:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {currencySign(popupData?.stats?.totalIncome)}
                       </p>
                     </div>
@@ -588,7 +588,7 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-600">
                         Total Tax:
                       </p>
-                      <p className="text-sm font-normal text-custom-black">
+                      <p className="text-sm font-normal text-gray-800">
                         {currencySign(popupData?.stats?.totalTax)}
                       </p>
                     </div>
@@ -605,7 +605,7 @@ function Sellers(props) {
                   </div>
                 </div>
               </div>
-              <p className="text-custom-black text-base font-bold pt-2">
+              <p className="text-gray-800 text-base font-bold pt-2">
                 Uploaded Document
               </p>
 

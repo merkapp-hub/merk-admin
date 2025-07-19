@@ -140,7 +140,7 @@ function Orders(props) {
   function indexID({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -150,7 +150,7 @@ function Orders(props) {
   function orderId({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -160,7 +160,7 @@ function Orders(props) {
  function name({ value }) {
   return (
     <div>
-      <p className="text-custom-black text-base font-normal text-center">
+      <p className="text-gray-800 text-base font-normal text-center">
         {value || 'N/A'}
       </p>
     </div>
@@ -170,7 +170,7 @@ function Orders(props) {
   function email({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -180,7 +180,7 @@ function Orders(props) {
   function date({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -190,7 +190,7 @@ function Orders(props) {
   // function mobile({ value }) {
   //   return (
   //     <div>
-  //       <p className="text-custom-black text-base font-normal text-center">
+  //       <p className="text-gray-800 text-base font-normal text-center">
   //         {value}
   //       </p>
   //     </div>
@@ -257,7 +257,7 @@ function Orders(props) {
 
   return (
     <section className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
-      <p className="text-custom-black font-bold  md:text-[32px] text-2xl">
+      <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">
         Orders
       </p>
       {/* pl-2 */}
@@ -271,15 +271,15 @@ function Orders(props) {
               <img className="w-[20px] h-[23px]" src="/filterImg.png" />
             </div>
             <div className="flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3">
-              <p className="text-custom-black text-sm	font-bold">Filter By</p>
+              <p className="text-gray-800 text-sm	font-bold">Filter By</p>
             </div>
             <div className="col-span-8 flex md:flex-row flex-col md:justify-between justify-start md:items-center items-start">
               <div className="flex items-center">
-                <p className="text-custom-black font-semibold text-sm md:pl-3">
+                <p className="text-gray-800 font-semibold text-sm md:pl-3">
                   Date
                 </p>
                 <input
-                  className="text-custom-black ml-3"
+                  className="text-gray-800 ml-3"
                   type="date"
                   placeholder="Date"
                   value={selctDate}
@@ -309,15 +309,15 @@ function Orders(props) {
               <img className="w-[20px] h-[23px]" src="/filterImg.png" />
             </div>
             <div className="flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3">
-              <p className="text-custom-black text-sm	font-bold">Filter By</p>
+              <p className="text-gray-800 text-sm	font-bold">Filter By</p>
             </div>
             <div className="col-span-8 flex md:flex-row flex-col md:justify-between justify-start md:items-center items-start">
               <div className="flex items-center">
-                <lable className="text-custom-black md:pl-3 font-semibold text-sm">
+                <lable className="text-gray-800 md:pl-3 font-semibold text-sm">
                   Date
                 </lable>
                 <input
-                  className="text-custom-black pl-3"
+                  className="text-gray-800 pl-3"
                   type="date"
                   placeholder="Date"
                   value={selctDate}
@@ -341,7 +341,7 @@ function Orders(props) {
           </div>
           {/* <div className="flex flex-wrap justify-between gap-4 md:mt-5 mt-3 p-3">
             <div className="flex flex-col gap-1">
-              <label className="text-custom-black font-semibold text-base">
+              <label className="text-gray-800 font-semibold text-base">
                 Search
               </label>
               <input
@@ -503,12 +503,12 @@ function Orders(props) {
               </div>
 
               <div className="px-5 w-full py-3">
-                <p className="text-center mt-2 font-semibold text-xl text-custom-black">
+                <p className="text-center mt-2 font-semibold text-xl text-gray-800">
                   Assign Employee
                 </p>
                 <div className="flex flex-col gap-2 mt-5 mb-5">
                   <select
-                    className="bg-transparent border border-custom-darkpurple p-2 rounded-md text-custom-black outline-none font-normal text-base"
+                    className="bg-transparent border border-custom-darkpurple p-2 rounded-md text-gray-800 outline-none font-normal text-base"
                     onChange={(e) => {
                       setPopupData((prev) => ({
                         ...prev,

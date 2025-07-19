@@ -44,7 +44,7 @@ function Store(props) {
     function name({ value }) {
         return (
             < div>
-                <p className='text-custom-black text-base font-normal text-center'>{value}</p>
+                <p className='text-gray-800 text-base font-normal text-center'>{value}</p>
             </div>
         )
     }
@@ -52,7 +52,7 @@ function Store(props) {
     function email({ value }) {
         return (
             < div>
-                <p className='text-custom-black text-base font-normal text-center'>{value}</p>
+                <p className='text-gray-800 text-base font-normal text-center'>{value}</p>
             </div>
         )
     }
@@ -60,7 +60,7 @@ function Store(props) {
     function date({ value }) {
         return (
             < div>
-                <p className='text-custom-black text-base font-normal text-center'>{moment(value).format('DD MMM YYYY')}</p>
+                <p className='text-gray-800 text-base font-normal text-center'>{moment(value).format('DD MMM YYYY')}</p>
             </div>
         )
     }
@@ -68,7 +68,7 @@ function Store(props) {
     function mobile({ value }) {
         return (
             < div>
-                <p className='text-custom-black text-base font-normal text-center'>{value}</p>
+                <p className='text-gray-800 text-base font-normal text-center'>{value}</p>
             </div>
         )
     }
@@ -123,7 +123,7 @@ function Store(props) {
 
     return (
         <section className=" w-full h-full bg-transparent md:pt-5 pt-2 pb-5 pl-5 pr-5">
-            <p className="text-custom-black pl-2 font-bold  md:text-[32px] text-2xl md:pb-0 pb-3">Store</p>
+            <p className="text-gray-800 pl-2 font-bold  md:text-[32px] text-2xl md:pb-0 pb-3">Store</p>
 
             <section className='px-5 pt-5 md:pb-32 pb-28 bg-white h-full rounded-[12px] overflow-scroll md:mt-9 mt-5'>
                 {/* shadow-2xl  */}
@@ -133,11 +133,11 @@ function Store(props) {
                             <img className='w-[20px] h-[23px]' src='/filterImg.png' />
                         </div>
                         <div className='flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:px-0 px-5 md:pt-0 pt-5 md:pb-0 pb-3'>
-                            <p className='text-custom-black text-sm	font-bold'>Filter By</p>
+                            <p className='text-gray-800 text-sm	font-bold'>Filter By</p>
                         </div>
                         <div className='col-span-8 flex justify-start items-center '>
-                        <p className='text-custom-black font-semibold text-sm pl-3'>Date</p>
-                            <input className='px-5 border text-custom-black ml-3' type='date' placeholder='Date' />
+                        <p className='text-gray-800 font-semibold text-sm pl-3'>Date</p>
+                            <input className='px-5 border text-gray-800 ml-3' type='date' placeholder='Date' />
                         </div>
                     </div>
                 </div>

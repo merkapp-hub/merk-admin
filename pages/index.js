@@ -177,7 +177,7 @@ function Home(props) {
   const piece = ({ value }) => {
     return (
       <div className="p-4 flex flex-col items-center justify-center">
-        <p className="text-custom-black text-sm font-semibold">{value}</p>
+        <p className="text-gray-800 text-sm font-semibold">{value}</p>
       </div>
     );
   };
@@ -216,7 +216,7 @@ function Home(props) {
   return (
     <section className=" w-full h-full  bg-transparent md:pt-5 pt-5 pb-24 pl-5 pr-5">
       <div className="md:pt-[0px] pt-[0px] pb-10 sm:pb-0 h-full overflow-scroll no-scrollbar">
-        <p className=" text-custom-black font-bold md:text-[32px] text-2xl">
+        <p className=" text-gray-800 font-bold md:text-[32px] text-2xl">
           Dashboard
         </p>
         {/* mt-5  */}
@@ -227,50 +227,50 @@ function Home(props) {
               <div className="w-full bg-white boxShadow p-5 rounded-[20px]">
                 <div className="flex justify-between items-start">
                   <div className="flex flex-col justify-start items-start">
-                    <p className="text-custom-black text-base font-normal">Total User</p>
-                    <p className="text-custom-black md:text-[28px] text-xl font-bold pt-2">40,689</p>
+                    <p className="text-gray-800 text-base font-normal">Total User</p>
+                    <p className="text-gray-800 md:text-[28px] text-xl font-bold pt-2">40,689</p>
                   </div>
                   <img className="md:w-[60px]  w-[50px] md:h-[60px] h-[50px]" src="/totalUserImg.png" />
                 </div>
                 <div className="md:pt-5 pt-3 flex justify-start items-center">
                   <img className="w-[20px] h-[12px] " src="/totalUserImg-1.png" />
-                  <p className="text-base font-normal text-custom-green ml-3">8.5%<span className="text-custom-black ml-2">Up from yesterday</span></p>
+                  <p className="text-base font-normal text-custom-green ml-3">8.5%<span className="text-gray-800 ml-2">Up from yesterday</span></p>
                 </div>
               </div>
 
               <div className="w-full bg-white boxShadow p-5 rounded-[20px]">
                 <div className="flex justify-between items-start">
                   <div className="flex flex-col justify-start items-start">
-                    <p className="text-custom-black text-base font-normal">Total Profit</p>
-                    <p className="text-custom-black md:text-[28px] text-xl font-bold pt-2">10293</p>
+                    <p className="text-gray-800 text-base font-normal">Total Profit</p>
+                    <p className="text-gray-800 md:text-[28px] text-xl font-bold pt-2">10293</p>
                   </div>
                   <img className="md:w-[60px]  w-[50px] md:h-[60px] h-[50px]" src="/totalProfitImg.png" />
                 </div>
                 <div className="md:pt-5 pt-3 flex justify-start items-center">
                   <img className="w-[20px] h-[12px] " src="/totalUserImg-1.png" />
-                  <p className="text-base font-normal text-custom-green ml-3">1.3%<span className="text-custom-black ml-2">Up from past week</span></p>
+                  <p className="text-base font-normal text-custom-green ml-3">1.3%<span className="text-gray-800 ml-2">Up from past week</span></p>
                 </div>
               </div>
 
               <div className="w-full bg-white boxShadow p-5 rounded-[20px]">
                 <div className="flex justify-between items-start">
                   <div className="flex flex-col justify-start items-start">
-                    <p className="text-custom-black text-base font-normal">Total transactions</p>
-                    <p className="text-custom-black md:text-[28px] text-xl font-bold pt-2">$89,000</p>
+                    <p className="text-gray-800 text-base font-normal">Total transactions</p>
+                    <p className="text-gray-800 md:text-[28px] text-xl font-bold pt-2">$89,000</p>
                   </div>
                   <img className="md:w-[60px]  w-[50px] md:h-[60px] h-[50px]" src="/totalTransactionsImg.png" />
                 </div>
                 <div className="md:pt-5 pt-3 flex justify-start items-center">
                   <img className="w-[20px] h-[12px] " src="/totalTransactionsImg-1.png" />
-                  <p className="text-base font-normal text-custom-lightRed ml-3">4.3%<span className="text-custom-black ml-2">Down from yesterday</span></p>
+                  <p className="text-base font-normal text-custom-lightRed ml-3">4.3%<span className="text-gray-800 ml-2">Down from yesterday</span></p>
                 </div>
               </div>
 
               <div className="w-full bg-white boxShadow p-5 rounded-[20px]">
                 <div className="flex justify-between items-start">
                   <div className="flex flex-col justify-start items-start">
-                    <p className="text-custom-black text-base font-normal">Queries</p>
-                    <p className="text-custom-black md:text-[28px] text-xl font-bold pt-2">12599</p>
+                    <p className="text-gray-800 text-base font-normal">Queries</p>
+                    <p className="text-gray-800 md:text-[28px] text-xl font-bold pt-2">12599</p>
                   </div>
                   <img className="md:w-[60px]  w-[50px] md:h-[60px] h-[50px]" src="/queriesImg.png" />
                 </div>

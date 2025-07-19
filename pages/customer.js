@@ -35,7 +35,7 @@ function customer(props) {
     function name({ value }) {
         return (
             < div>
-                <p className='text-custom-black text-base font-normal text-center'>{value}</p>
+                <p className='text-gray-800 text-base font-normal text-center'>{value}</p>
             </div>
         )
     }
@@ -43,7 +43,7 @@ function customer(props) {
     function email({ value }) {
         return (
             < div>
-                <p className='text-custom-black text-base font-normal text-center'>{value}</p>
+                <p className='text-gray-800 text-base font-normal text-center'>{value}</p>
             </div>
         )
     }
@@ -51,7 +51,7 @@ function customer(props) {
     function date({ value }) {
         return (
             < div>
-                <p className='text-custom-black text-base font-normal text-center'>{moment(value).format('DD MMM YYYY')}</p>
+                <p className='text-gray-800 text-base font-normal text-center'>{moment(value).format('DD MMM YYYY')}</p>
             </div>
         )
     }
@@ -59,7 +59,7 @@ function customer(props) {
     function mobile({ value }) {
         return (
             < div>
-                <p className='text-custom-black text-base font-normal text-center'>{value}</p>
+                <p className='text-gray-800 text-base font-normal text-center'>{value}</p>
             </div>
         )
     }
@@ -124,7 +124,7 @@ function customer(props) {
                             <img className='w-[20px] h-[23px]' src='/filterImg.png' />
                         </div>
                         <div className='flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:px-0 px-5 md:pt-0 pt-5 md:pb-0 pb-3'>
-                            <p className='text-custom-black text-sm	font-bold'>Filter By</p>
+                            <p className='text-gray-800 text-sm	font-bold'>Filter By</p>
                         </div>
                         <div className='col-span-8 flex justify-start items-center '>
                             <input className='px-5' type='date' placeholder='Date' />
@@ -146,30 +146,30 @@ function customer(props) {
                                 <div className='grid grid-cols-3 w-full gap-5'>
                                     <img src="/image-3.png" className='h-[76px] w-[76px]' />
                                     <div className='col-span-2 w-full flex flex-col justify-start items-start'>
-                                        <p className="text-base font-bold text-custom-black">
+                                        <p className="text-base font-bold text-gray-800">
                                             {popupData.username}
                                         </p>
                                         <p className="text-base font-semibold text-custom-newBlack pt-2">
                                             {popupData?.email}
                                         </p>
-                                        <p className="text-sm font-semibold text-custom-black pt-2">
+                                        <p className="text-sm font-semibold text-gray-800 pt-2">
                                             {popupData.number}
                                         </p>
 
                                         <div className='flex justify-between items-center w-full pt-5'>
-                                            <p className="text-sm font-normal text-custom-black">
+                                            <p className="text-sm font-normal text-gray-800">
                                                 Total Order
                                             </p>
-                                            <p className="text-sm font-normal text-custom-black">
+                                            <p className="text-sm font-normal text-gray-800">
                                                 80
                                             </p>
                                         </div>
 
                                         <div className='flex justify-between items-center w-full pt-2'>
-                                            <p className="text-sm font-normal text-custom-black">
+                                            <p className="text-sm font-normal text-gray-800">
                                                 Total earning
                                             </p>
-                                            <p className="text-sm font-normal text-custom-black">
+                                            <p className="text-sm font-normal text-gray-800">
                                                 150
                                             </p>
                                         </div>

@@ -33,7 +33,7 @@ const Navbar = ({ setOpenTab, openTab }) => {
             src="/logo-1.png"
             alt=""
           />
-          {/* <p className="py-2 text-5xl md:text-4xl lg:text-5xl font-semibold text-custom-black">Logo</p> */}
+          {/* <p className="py-2 text-5xl md:text-4xl lg:text-5xl font-semibold text-gray-800">Logo</p> */}
         </div>
         {user?.token && (
           <div className=" w-full md:flex items-center gap-3 hidden  justify-between  cursor-pointer">
@@ -55,7 +55,7 @@ const Navbar = ({ setOpenTab, openTab }) => {
                 className="flex gap-2 items-center cursor-pointer"
                 onClick={logOut}
               >
-                <div className="text-custom-black text-center flex justify-center items-center">
+                <div className="text-gray-800 text-center flex justify-center items-center">
                   <p>Sign Out</p>
                   {/* <p className="text-sm text-custom-newGray">Admin</p> */}
                 </div>

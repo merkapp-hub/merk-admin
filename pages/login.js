@@ -19,52 +19,46 @@ export default function Login(props) {
   const [user, setUser] = useContext(userContext);
 
   const submit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (userDetail.email && userDetail.password) {
-      props.loader(true);
-      Api("post", "auth/login", { ...userDetail }, router).then(
-        (res) => {
-          props.loader(false)
+  if (userDetail.email && userDetail.password) {
+    props.loader(true);
+    Api("post", "auth/login", { ...userDetail }, router).then(
+      (res) => {
+        props.loader(false)
+        console.log("res================>", res);
+        
+        if (res.user.role === "seller" && (!res.user.status || res.user.status !== "Verified")) {
           console.log("res================>", res);
-          // if (res?.status) {
-
-          if (res.user.role === "admin" || res.user.role === "seller") {
-            console.log("res================>", res);
-            // if (res.data.user.role === "SELLER" && (!res.data.status || res.data.status !== "Verified")) {
-            //   Swal.fire({
-            //     text: "Your account hasn't been verified. Please wait by 2-7 working days. Thanks.",
-            //     icon: "warning",
-            //     showCancelButton: false,
-            //     confirmButtonText: "OK"
-            //   })
-            //   return
-            // }
-
-            localStorage.setItem("userDetail", JSON.stringify(res.user));
-            setUser(res.user);
-            setUserDetail({
-              email: "",
-              password: "",
-            });
-            localStorage.setItem("token", res.token);
-            props.toaster({ type: "success", message: "Login Successful" });
-            router.push("/");
-          } else {
-            props.toaster({ type: "error", message: "You are not an Admin" });
-          }
-          // }
-        },
-        (err) => {
-          props.loader(false);
-          console.log(err);
-          props.toaster({ type: "error", message: err?.message });
+          Swal.fire({
+            text: "Your account hasn't been verified. Please wait by 2-7 working days. Thanks.",
+            icon: "warning",
+            showCancelButton: false,
+            confirmButtonText: "OK"
+          })
+          return; 
         }
-      );
-    } else {
-      props.toaster({ type: "error", message: "Missing credentials" });
-    }
-  };
+
+        localStorage.setItem("userDetail", JSON.stringify(res.user));
+        setUser(res.user);
+        setUserDetail({
+          email: "",
+          password: "",
+        });
+        localStorage.setItem("token", res.token);
+        props.toaster({ type: "success", message: "Login Successful" });
+        router.push("/");
+      },
+      (err) => {
+        props.loader(false);
+        console.log(err);
+        props.toaster({ type: "error", message: err?.message });
+      }
+    );
+  } else {
+    props.toaster({ type: "error", message: "Missing credentials" });
+  }
+};
 
   return (
     <div className="flex min-h-screen bg-custom-lightGray justify-center items-center ">

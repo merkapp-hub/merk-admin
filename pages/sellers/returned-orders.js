@@ -198,7 +198,7 @@ function ReturnedOrders(props) {
   function indexID({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -208,7 +208,7 @@ function ReturnedOrders(props) {
   function orderId({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -218,7 +218,7 @@ function ReturnedOrders(props) {
   function name({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -228,7 +228,7 @@ function ReturnedOrders(props) {
   function email({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -238,7 +238,7 @@ function ReturnedOrders(props) {
   function date({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -248,7 +248,7 @@ function ReturnedOrders(props) {
   function returndate({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -342,7 +342,7 @@ function ReturnedOrders(props) {
 
   return (
     <section className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
-      <p className="text-custom-black font-bold  md:text-[32px] text-2xl">
+      <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">
         Returned Orders
       </p>
       {/* pl-2 */}
@@ -351,10 +351,10 @@ function ReturnedOrders(props) {
         {/* shadow-2xl  */}
 
         <div className="flex items-center md:mb-5 mb-5 gap-2">
-          <h1 className="text-custom-black font-bold text-lg md:text-2xl">
+          <h1 className="text-gray-800 font-bold text-lg md:text-2xl">
             Refunded Amount:{" "}
           </h1>
-          <p className="text-custom-black font-bold text-lg md:text-2xl">
+          <p className="text-gray-800 font-bold text-lg md:text-2xl">
             {/* {currencySign(userRquestList?.reduce((a, b) => a + b?.total, 0))} */}
             {/* 0 */}
             {currencySign(totalRefundedAmount)}
@@ -370,15 +370,15 @@ function ReturnedOrders(props) {
               <img className="w-[20px] h-[23px]" src="/filterImg.png" />
             </div>
             <div className="flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3">
-              <p className="text-custom-black text-sm	font-bold">Filter By</p>
+              <p className="text-gray-800 text-sm	font-bold">Filter By</p>
             </div>
             <div className="col-span-8 flex md:flex-row flex-col md:justify-between justify-start md:items-center items-start">
               <div className="flex items-center">
-                <p className="text-custom-black font-semibold text-sm md:pl-3">
+                <p className="text-gray-800 font-semibold text-sm md:pl-3">
                   Date
                 </p>
                 <input
-                  className="text-custom-black ml-3"
+                  className="text-gray-800 ml-3"
                   type="date"
                   placeholder="Date"
                   value={selctDate}
@@ -406,7 +406,7 @@ function ReturnedOrders(props) {
             <div className="w-full col-span-9 flex gap-4 md:flex-row flex-col justify-start md:items-center items-start py-3 md:ml-5">
               <div className="flex items-center">
                 <div className="flex flex-col gap-1">
-                  {/* <label className="text-custom-black font-semibold text-base">
+                  {/* <label className="text-gray-800 font-semibold text-base">
                   Search
                 </label> */}
                   <input
@@ -422,7 +422,7 @@ function ReturnedOrders(props) {
               </div>
               <div className="flex items-center">
                 <div className="flex flex-col gap-1">
-                  {/* <label className="text-custom-black font-semibold text-base">
+                  {/* <label className="text-gray-800 font-semibold text-base">
                   Search
                 </label> */}
                   <input
@@ -569,7 +569,7 @@ function ReturnedOrders(props) {
               </div>
 
               <div className="max-h-[400px] px-5 w-full py-3 overflow-y-scroll scrollbar-hide">
-                <p className="text-center mt-2 font-semibold text-xl text-custom-black">
+                <p className="text-center mt-2 font-semibold text-xl text-gray-800">
                   Returned Product Details
                 </p>
 
@@ -588,10 +588,10 @@ function ReturnedOrders(props) {
                           <div className="flex items-center gap-2">
                             <img src={item?.image[0]} className="w-10 h-10" />
                             <div className="flex flex-col items-start gap-0.5">
-                              <p className="text-custom-black text-base font-semibold">
+                              <p className="text-gray-800 text-base font-semibold">
                                 {item?.product?.name}
                               </p>
-                              <p className="text-custom-black text-sm font-normal">
+                              <p className="text-gray-800 text-sm font-normal">
                                 {currencySign(item?.total ?? item?.price ?? 0)}
                               </p>
                             </div>

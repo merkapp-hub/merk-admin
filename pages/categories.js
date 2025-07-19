@@ -383,7 +383,7 @@ function Categories(props) {
 
         <div className="bg-white border border-custom-lightsGrayColor rounded-[10px] p-5 ">
           <input
-            className="bg-custom-lightGrayInputBg text-custom-black border border-custom-lightGrayColor outline-none h-[40px] md:w-[435px] w-full px-5 rounded-[10px] text-custom-darkBlack font-semibold	text-base"
+            className="bg-custom-lightGrayInputBg text-gray-800 border border-custom-lightGrayColor outline-none h-[40px] md:w-[435px] w-full px-5 rounded-[10px] text-custom-darkBlack font-semibold	text-base"
             type="text"
             placeholder="Search Category"
             value={searchTerm}

@@ -145,7 +145,7 @@ function SellerEmployee(props) {
   function indexID({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -155,7 +155,7 @@ function SellerEmployee(props) {
   function name({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -165,7 +165,7 @@ function SellerEmployee(props) {
   function email({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -175,7 +175,7 @@ function SellerEmployee(props) {
   function date({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -185,7 +185,7 @@ function SellerEmployee(props) {
   function mobile({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -198,7 +198,7 @@ function SellerEmployee(props) {
     return (
       <div>
         <p
-          className={`text-custom-black text-base font-normal text-center
+          className={`text-gray-800 text-base font-normal text-center
                     ${value == "Verified" ? "text-green-500" : ""}
                      ${value == "Suspend" ? "text-red-500" : ""}
                      ${value == "Pending" ? "text-yellow-500" : ""}
@@ -316,7 +316,7 @@ function SellerEmployee(props) {
 
   return (
     <section className=" w-full h-full bg-transparent pt-1 pb-5 pl-5 pr-5">
-      <p className="text-custom-black font-bold  md:text-[32px] text-2xl">
+      <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">
         Seller Employees
       </p>
       {/* pl-2 */}
@@ -330,12 +330,12 @@ function SellerEmployee(props) {
               <img className="w-[20px] h-[23px]" src="/filterImg.png" />
             </div> */}
             <div className="col-span-1 flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3">
-              <p className="text-custom-black text-sm	font-bold">Filter By</p>
+              <p className="text-gray-800 text-sm	font-bold">Filter By</p>
             </div>
             <div className="w-full col-span-9 flex md:flex-row flex-col md:justify-between justify-start md:items-center items-start">
               <div className="flex flex-wrap md:flex-nowrap gap-3 items-center md:pl-3">
                 <div className="flex  items-center">
-                  {/* <lable className="text-custom-black md:pl-3 font-semibold text-sm">
+                  {/* <lable className="text-gray-800 md:pl-3 font-semibold text-sm">
                   Date
                 </lable>  */}
                   <input
@@ -351,7 +351,7 @@ function SellerEmployee(props) {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  {/* <label className="text-custom-black font-semibold text-base">
+                  {/* <label className="text-gray-800 font-semibold text-base">
                 Search
               </label> */}
                   <input
@@ -392,7 +392,7 @@ function SellerEmployee(props) {
           </div>
           {/* <div className="flex flex-wrap justify-between gap-4 md:mt-5 mt-3 p-3">
             <div className="flex flex-col gap-1">
-              <label className="text-custom-black font-semibold text-base">
+              <label className="text-gray-800 font-semibold text-base">
                 Search
               </label>
               <input
@@ -415,11 +415,11 @@ function SellerEmployee(props) {
                             <img className='w-[20px] h-[23px]' src='/filterImg.png' />
                         </div>
                         <div className='flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3'>
-                            <p className='text-custom-black text-sm	font-bold'>Filter By</p>
+                            <p className='text-gray-800 text-sm	font-bold'>Filter By</p>
                         </div>
                         <div className='col-span-8 flex justify-start items-center '>
-                            <p className='text-custom-black font-semibold text-sm md:pl-3'>Date</p>
-                            <input className='ml-3 text-custom-black' type='date' placeholder='Date' />
+                            <p className='text-gray-800 font-semibold text-sm md:pl-3'>Date</p>
+                            <input className='ml-3 text-gray-800' type='date' placeholder='Date' />
                         </div>
                     </div>
                 </div> */}
@@ -445,13 +445,13 @@ function SellerEmployee(props) {
                       sx={{ width: 60, height: 60 }}
                     />
                     <div className="flex flex-col justify-start items-start md:pl-5">
-                      <p className="text-base font-bold text-custom-black md:pt-0 pt-2">
+                      <p className="text-base font-bold text-gray-800 md:pt-0 pt-2">
                         {popupData?.username}
                       </p>
                       <p className="text-base font-semibold text-custom-newBlack pt-2">
                         {popupData?.email}
                       </p>
-                      <p className="text-sm font-semibold text-custom-black pt-2">
+                      <p className="text-sm font-semibold text-gray-800 pt-2">
                         {popupData?.number}
                       </p>
                     </div>
@@ -462,18 +462,18 @@ function SellerEmployee(props) {
                   <div className="flex md:justify-center justify-start items-center min-w-[400px] md:border-l-2 md:border-l-gray-300 ">
                     <div className="flex flex-col justify-start items-start md:pl-5 w-[50%]">
                       <div className="flex justify-between items-center w-full md:pt-0 pt-2">
-                        <p className="text-sm font-normal text-custom-black">
+                        <p className="text-sm font-normal text-gray-800">
                           Total Order
                         </p>
-                        <p className="text-sm font-normal text-custom-black">
+                        <p className="text-sm font-normal text-gray-800">
                           80
                         </p>
                       </div>
                       <div className="flex justify-between items-center w-full pt-2">
-                        <p className="text-sm font-normal text-custom-black">
+                        <p className="text-sm font-normal text-gray-800">
                           Total earning
                         </p>
-                        <p className="text-sm font-normal text-custom-black">
+                        <p className="text-sm font-normal text-gray-800">
                           150
                         </p>
                       </div>
@@ -491,7 +491,7 @@ function SellerEmployee(props) {
                   </div>
                 }
               </div>
-              <p className="text-custom-black text-base font-bold pt-2">
+              <p className="text-gray-800 text-base font-bold pt-2">
                 Uploaded Document
               </p>
 

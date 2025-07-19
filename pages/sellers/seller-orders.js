@@ -154,7 +154,7 @@ function SellerOrders(props) {
   function indexID({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -164,7 +164,7 @@ function SellerOrders(props) {
   function name({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -174,7 +174,7 @@ function SellerOrders(props) {
   function orderId({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -184,7 +184,7 @@ function SellerOrders(props) {
   function email({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {value}
         </p>
       </div>
@@ -194,7 +194,7 @@ function SellerOrders(props) {
   function date({ value }) {
     return (
       <div>
-        <p className="text-custom-black text-base font-normal text-center">
+        <p className="text-gray-800 text-base font-normal text-center">
           {moment(value).format("DD MMM YYYY")}
         </p>
       </div>
@@ -282,7 +282,7 @@ function SellerOrders(props) {
 
   return (
     <section className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
-      <p className="text-custom-black font-bold  md:text-[32px] text-2xl">
+      <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">
         Seller Orders
       </p>
       {/* pl-2 */}
@@ -296,15 +296,15 @@ function SellerOrders(props) {
               <img className="w-[20px] h-[23px]" src="/filterImg.png" />
             </div>
             <div className="flex md:justify-center justify-start items-center md:border-r md:border-r-custom-lightGrayColor md:pt-0 pt-5 md:pb-0 pb-3">
-              <p className="text-custom-black text-sm	font-bold">Filter By</p>
+              <p className="text-gray-800 text-sm	font-bold">Filter By</p>
             </div>
             <div className="col-span-8 flex md:flex-row flex-col md:justify-between justify-start md:items-center items-start">
               <div className="flex items-center">
-                <p className="text-custom-black font-semibold text-sm md:pl-3">
+                <p className="text-gray-800 font-semibold text-sm md:pl-3">
                   Date
                 </p>
                 <input
-                  className="text-custom-black ml-3"
+                  className="text-gray-800 ml-3"
                   type="date"
                   placeholder="Date"
                   value={selctDate}
@@ -327,7 +327,7 @@ function SellerOrders(props) {
             <div className="w-full col-span-9 flex gap-4 md:flex-row flex-col justify-start md:items-center items-start py-3 md:ml-5">
               <div className="flex items-center">
                 <div className="flex flex-col gap-1">
-                  {/* <label className="text-custom-black font-semibold text-base">
+                  {/* <label className="text-gray-800 font-semibold text-base">
                   Search
                 </label> */}
                   <input
@@ -343,7 +343,7 @@ function SellerOrders(props) {
               </div>
               <div className="flex items-center">
                 <div className="flex flex-col gap-1">
-                  {/* <label className="text-custom-black font-semibold text-base">
+                  {/* <label className="text-gray-800 font-semibold text-base">
                   Search
                 </label> */}
                   <input
@@ -463,7 +463,7 @@ function SellerOrders(props) {
                     {currencySign(cartData?.tax)}
                   </p>
                 </div>
-                <div className="w-full flex justify-between items-center my-1">
+                {/* <div className="w-full flex justify-between items-center my-1">
                   <p className="text-black text-sm">Delivery Fee:</p>
                   <p className="text-black text-sm font-normal">
                     {currencySign(cartData?.deliveryCharge)}
@@ -474,7 +474,7 @@ function SellerOrders(props) {
                   <p className="text-black text-sm font-normal">
                     {currencySign(cartData?.deliveryTip)}
                   </p>
-                </div>
+                </div> */}
               </div>
 
               <div className="mt-5 !w-[270px] !z-50 fixed bottom-0  flex flex-col justify-start">
@@ -521,12 +521,12 @@ function SellerOrders(props) {
               </div>
 
               <div className="px-5 w-full py-3">
-                <p className="text-center mt-2 font-semibold text-xl text-custom-black">
+                <p className="text-center mt-2 font-semibold text-xl text-gray-800">
                   Assign Employee
                 </p>
                 <div className="flex flex-col gap-2 mt-5 mb-5">
                   <select
-                    className="bg-transparent border border-custom-darkpurple p-2 rounded-md text-custom-black outline-none font-normal text-base"
+                    className="bg-transparent border border-custom-darkpurple p-2 rounded-md text-gray-800 outline-none font-normal text-base"
                     onChange={(e) => {
                       setPopupData((prev) => ({
                         ...prev,

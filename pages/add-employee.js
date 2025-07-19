@@ -357,7 +357,7 @@ function AddProduct(props) {
   return (
     <section className="w-full h-full  bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
       <div className="md:pt-[0px] pt-[0px] h-full overflow-scroll no-scrollbar">
-        <p className="text-custom-black font-bold md:text-[32px] text-2xl md:pb-0 pb-5">
+        <p className="text-gray-800 font-bold md:text-[32px] text-2xl md:pb-0 pb-5">
           Add Employee
         </p>
 

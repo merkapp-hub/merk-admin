@@ -188,7 +188,7 @@ function SellersProduct(props) {
     const piece = ({ value }) => {
         return (
             <div className="p-4 flex flex-col items-center justify-center">
-                <p className="text-custom-black text-sm font-semibold">63</p>
+                <p className="text-gray-800 text-sm font-semibold">63</p>
             </div>
         );
     };

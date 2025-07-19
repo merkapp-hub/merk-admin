@@ -135,7 +135,7 @@ function OrdersDetails(props) {
             </section> */}
 
             <section className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
-                <p className="text-custom-black font-bold  md:text-[32px] text-2xl">Orders Details</p>
+                <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">Orders Details</p>
                 <section className='px-5 pt-1 md:pb-32 pb-28 bg-white h-full rounded-[12px] overflow-auto mt-3'>
                     <div className="grid md:grid-cols-2 grid-cols-1 w-full md:gap-0 gap-5">
                         <div className='w-full'>
