@@ -18,27 +18,33 @@ export default function Login(props) {
   });
   const [user, setUser] = useContext(userContext);
 
-  const submit = async (e) => {
+const submit = async (e) => {
   e.preventDefault();
 
   if (userDetail.email && userDetail.password) {
     props.loader(true);
     Api("post", "auth/login", { ...userDetail }, router).then(
       (res) => {
-        props.loader(false)
+        props.loader(false);
         console.log("res================>", res);
         
-        if (res.user.role === "seller" && (!res.user.status || res.user.status !== "Verified")) {
-          console.log("res================>", res);
+ 
+        // console.log("User role:", res.user.role);
+        // console.log("User status:", res.user.status);
+        // console.log("Status type:", typeof res.user.status);
+        
+        
+        if (res.user.role === "seller" && res.user.status && res.user.status !== "Verified") {
           Swal.fire({
             text: "Your account hasn't been verified. Please wait by 2-7 working days. Thanks.",
             icon: "warning",
             showCancelButton: false,
             confirmButtonText: "OK"
-          })
+          });
           return; 
         }
 
+        // Rest of your code remains same
         localStorage.setItem("userDetail", JSON.stringify(res.user));
         setUser(res.user);
         setUserDetail({
