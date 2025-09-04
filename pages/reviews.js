@@ -88,11 +88,7 @@ function Reviews() {
       {/* Filter Section */}
       <div className="bg-white border border-gray-300 w-full md:h-[70px] rounded-[10px] md:py-0 py-5">
         <div className="md:grid md:grid-cols-10 grid-cols-1 w-full h-full">
-          <div className="cursor-pointer flex md:justify-center justify-start items-center md:border-r md:border-gray-300 md:px-0 px-5">
-            <div className="w-[20px] h-[23px] bg-gray-400 rounded flex items-center justify-center">
-              <span className="text-white text-xs">⚙</span>
-            </div>
-          </div>
+         
           <div className="flex md:justify-center justify-start items-center md:border-r md:border-gray-300 md:px-0 px-5 md:pt-0 pt-5 md:pb-0 pb-3">
             <p className="text-black text-sm font-bold">Filter By</p>
           </div>

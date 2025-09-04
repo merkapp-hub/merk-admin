@@ -374,7 +374,7 @@ function Categories(props) {
               className="md:h-[40px] h-[40px] md:w-[274px] w-full bg-custom-darkpurple rounded-[10px] md:text-lg text-base text-white "
               type="submit"
             >
-              Add Now
+              {editid ? 'Update' : 'Add Now'}
             </button>
           </div>
         </form>
