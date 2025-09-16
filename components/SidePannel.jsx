@@ -176,7 +176,7 @@ const SidePannel = ({ setOpenTab, openTab }) => {
             <div className="flex flex-col justify-between row-span-4 pb-4 w-full">
               <ul className="w-full flex flex-col text-left mt-5 space-y-1">
                 {menuItems.map((item, i) => {
-                  if (!item.access.includes(user?.role)) return null;
+                  if (!item.access.some(role => role.toLowerCase() === user?.role?.toLowerCase()?.trim())) return null;
 
                   if (item.title === "Sellers") {
                     return (
