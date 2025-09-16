@@ -16,6 +16,7 @@ const isAuth = (Component) => {
       if (
         router?.pathname === "/" ||
         router?.pathname === "/inventory" ||
+        router?.pathname === "/my-request" ||
         router?.pathname === "/add-product" ||
         router?.pathname === "/queries" ||
         router?.pathname === "/orders" ||

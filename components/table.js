@@ -298,12 +298,12 @@ function Table({
               <span className="sr-only">Items Per Page</span>
               <select
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-black p-2"
-                value={pageSize}
+                value={itemsPerPage}
                 onChange={(e) => {
                   const newSize = Number(e.target.value);
-                  console.log("Changing page size to:", newSize);  //
-                  setPageSize(newSize);
-                  // setCurrentPage(1); // Reset page when changing size
+                  if (typeof setPageSize === 'function') {
+                    setPageSize(newSize);
+                  }
                 }}
               >
                 {[5, 10, 15].map((size) => (

@@ -142,14 +142,20 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       href: "/wallet",
       title: "Wallet",
       img: <IoSettings className='text-3xl' />,
+      access: ["seller","admin"],
+    },
+    {
+      href: "/my-request",
+      title: "Withdrawal Request",
+      img: <PiHandWithdrawFill className="text-3xl" />,
       access: ["seller"],
     },
-    // {
-    //   href: "/withdrawalrequest",
-    //   title: "Withdrawal Request",
-    //   img: <PiHandWithdrawFill className="text-3xl" />,
-    //   access: ["admin"],
-    // },
+    {
+      href: "/withdrawalrequest",
+      title: "Withdrawal Request",
+      img: <PiHandWithdrawFill className="text-3xl" />,
+      access: ["admin"],
+    },
      {
       href: "/reviews",
       title: "Reviews",

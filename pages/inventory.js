@@ -41,32 +41,53 @@ function Inventory(props) {
     let url;
     if (user?.role === "admin") {
       url = `getProduct?page=${page}&limit=${limit}`;
+      
+      Api("get", url, router).then(
+        (res) => {
+          handleProductResponse(res);
+        },
+        (err) => {
+          props.loader(false);
+          console.log(err);
+          props.toaster({ type: "error", message: err?.message });
+        }
+      );
     } else if (user?.role === "seller") {
-      url = `getProduct?seller_id=${user?._id}&page=${page}&limit=${limit}`;
+      // Use the new endpoint for sellers
+      url = `getSellerProducts?seller_id=${user?._id}&page=${page}&limit=${limit}`;
+      
+      Api("get", url, router).then(
+        (res) => {
+          handleProductResponse(res);
+        },
+        (err) => {
+          props.loader(false);
+          console.log(err);
+          props.toaster({ type: "error", message: err?.message });
+        }
+      );
     }
+  };
 
-    Api("get", url, router).then(
-      (res) => {
-        props.loader(false);
-        console.log("res================>", res.data);
+  const handleProductResponse = (res) => {
+    props.loader(false);
+  
 
-        setProductsList(res.data);
-        console.log("res================>", res.data);
-
-        const selectednewIds = res.data.map((f) => {
-          if (f.sponsered && f._id) return f._id;
-        });
-        console.log(selectednewIds);
-
-        setSelectedNewSeller(selectednewIds);
-        setPagination(res?.pagination);
-      },
-      (err) => {
-        props.loader(false);
-        console.log(err);
-        props.toaster({ type: "error", message: err?.message });
-      }
-    );
+    if (res.data && Array.isArray(res.data)) {
+      setProductsList(res.data);
+      
+      const selectednewIds = res.data
+        .filter(f => f.sponsered && f._id)
+        .map(f => f._id);
+        
+      console.log("Sponsored product IDs:", selectednewIds);
+      setSelectedNewSeller(selectednewIds);
+      setPagination(res?.pagination);
+    } else {
+      console.log("No products found or invalid response format");
+      setProductsList([]);
+      setSelectedNewSeller([]);
+    }
   };
 
   const deleteProduct = (_id) => {
