@@ -20,8 +20,19 @@ import { FaChevronUp } from "react-icons/fa";
 const SidePannel = ({ setOpenTab, openTab }) => {
   const [user, setUser] = useContext(userContext);
   const router = useRouter();
-
   const [open, setOpen] = React.useState(false);
+
+  // Helper function to normalize role names
+  const normalizeRole = (role) => {
+    if (!role) return '';
+    return role.toString().toLowerCase().trim();
+  };
+  
+  // Check if user has access to a menu item
+  const hasAccess = (roles) => {
+    const userRole = normalizeRole(user?.role);
+    return roles.some(role => normalizeRole(role) === userRole);
+  };
 
   const handleCollapse = () => {
     setOpen(!open);
@@ -164,6 +175,17 @@ const SidePannel = ({ setOpenTab, openTab }) => {
     },
   ];
 
+  // Debug logging
+  console.log('Current user role:', user?.role);
+  console.log('Normalized user role:', normalizeRole(user?.role));
+  console.log('Menu items with access:', menuItems.map(item => ({
+    title: item.title,
+    href: item.href,
+    access: item.access,
+    hasAccess: hasAccess(item.access),
+    normalizedAccess: item.access.map(role => normalizeRole(role))
+  })));
+
   return (
     <>
       <div className="bg-custom-blue xl:w-[250px] fixed top-0 left-0 z-20  md:w-[250px] sm:w-[200px] hidden sm:grid grid-rows-5 h-screen overflow-hidden">
@@ -176,12 +198,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
             <div className="flex flex-col justify-between row-span-4 pb-4 w-full">
               <ul className="w-full flex flex-col text-left mt-5 space-y-1">
                 {menuItems.map((item, i) => {
-                  if (!item.access.some(role => role.toLowerCase() === user?.role?.toLowerCase()?.trim())) return null;
+                  if (!hasAccess(item.access)) return null;
 
                   if (item.title === "Sellers") {
                     return (
                       <div key={i}>
-                        <div onClick={handleCollapse} className={`${item?.access?.includes(user?.role)
+                        <div onClick={handleCollapse} className={`${hasAccess(item.access)
                           ? "flex"
                           : "hidden"
                           }  items-center mx-5 cursor-pointer group hover:bg-custom-yellow 

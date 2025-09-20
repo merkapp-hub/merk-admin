@@ -12,6 +12,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import Swal from "sweetalert2";
 import ActivityList from "@/components/activityList";
 import currencySign from "@/utils/currencySign";
+import { MdKeyboardArrowLeft, MdOutlineKeyboardArrowRight, MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
 
 function Withdralreq(props) {
   const router = useRouter();

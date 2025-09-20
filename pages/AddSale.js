@@ -35,7 +35,7 @@ function AddSale(props) {
   const getProduct = async () => {
     props.loader(true);
     
-    Api("get", `getProduct?seller_id=${user?._id}`, router).then(
+    Api("get", `getSellerProducts?seller_id=${user?._id}`, router).then(
       (res) => {
         console.log("seller products",res)
         props.loader(false);
