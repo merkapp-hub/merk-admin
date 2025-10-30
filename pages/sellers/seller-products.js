@@ -23,7 +23,7 @@ function SellerInventory(props) {
 
   const [selectedNewSeller, setSelectedNewSeller] = useState([]);
   const [popupData, setPopupData] = useState({});
-  const [viewPopup, setviewPopup] = useState(false);
+  const [viewPopup, setViewPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10); // default limit
   const [pagination, setPagination] = useState({
@@ -168,6 +168,57 @@ const getProduct = async (page = 1, limit = 10) => {
     });
   };
 
+  const updateProductStatus = async (productId, status) => {
+    try {
+      props.loader(true);
+      
+      // Update the local state immediately for better UX
+      setProductsList(prevProducts => 
+        prevProducts.map(product => 
+          product._id === productId 
+            ? { 
+                ...product, 
+                status: status,
+                is_verified: status === 'verified' // Update is_verified based on status
+              }
+            : product
+        )
+      );
+
+      // Close the popup immediately
+      setViewPopup(false);
+
+      // Show success message immediately
+      const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+      props.toaster({
+        type: "success",
+        message: `Product ${statusText} successfully`,
+      });
+
+      // Make the API call
+      const data = {
+        id: productId,
+        status: status
+      };
+      
+      const res = await Api("post", "updateProductStatus", data, router);
+      
+      // If there was an error with the API, revert the local state
+      if (!res?.status) {
+        console.error("Error updating product status:", res?.data?.message);
+        // Re-fetch to get the correct state from the server
+        getProduct(currentPage, pageSize);
+      }
+      
+    } catch (error) {
+      console.error("Error updating product status:", error);
+      // Re-fetch to get the correct state from the server
+      getProduct(currentPage, pageSize);
+    } finally {
+      props.loader(false);
+    }
+  };
+
   const addNewItem = async () => {
     const { _id, sponsered, is_verified, is_quality } = popupData;
     const data = {
@@ -187,8 +238,8 @@ const getProduct = async (page = 1, limit = 10) => {
             message: "Item updated successfully",
           });
           setPopupData({});
-          setviewPopup(false);
-          getProduct();
+          setViewPopup(false);
+          getProduct(currentPage, pageSize);
         } else {
           props.toaster({ type: "error", message: res?.data?.message });
         }
@@ -308,7 +359,7 @@ const category = ({ row, value }) => {
         <button
           className="h-[38px] w-[93px] bg-[#00000020] text-black text-base	font-normal rounded-[8px]"
           onClick={() => {
-            setviewPopup(true);
+            setViewPopup(true);
             setPopupData(row.original);
           }}
         >
@@ -372,28 +423,40 @@ const category = ({ row, value }) => {
     try {
       props.loader(true);
 
-      Api("post", `suspend/${productId}`, null, router).then((res) => {
-        console.log("res================>", res.data);
-        props.loader(false);
+      // Update the local state immediately for better UX
+      setProductsList(prevProducts => 
+        prevProducts.map(product => 
+          product._id === productId 
+            ? { ...product, status: 'suspended', is_verified: false }
+            : product
+        )
+      );
 
-        if (res?.status) {
-          props.toaster({
-            type: "success",
-            message: "Item Suspended successfully",
-          });
-          setviewPopup(false);
-        } else {
-          console.log(res?.data?.message);
-          props.toaster({ type: "error", message: res?.data?.message });
-        }
-      });
-    } catch (error) {
-      props.loader(false);
-      console.error("Error suspending product:", error);
+      // Close the popup immediately
+      setViewPopup(false);
+
+      // Show success message immediately
       props.toaster({
-        type: "error",
-        message: "An error occurred while suspending the product.",
+        type: "success",
+        message: "Product suspended successfully",
       });
+
+      // Make the API call
+      const res = await Api("post", `suspend/${productId}`, null, router);
+      
+      // If there was an error with the API, revert the local state
+      if (!res?.status) {
+        console.error("Error suspending product:", res?.data?.message || 'Unknown error');
+        // Re-fetch to get the correct state from the server
+        getProduct(currentPage, pageSize);
+      }
+      
+    } catch (error) {
+      console.error("Error suspending product:", error);
+      // Re-fetch to get the correct state from the server
+      getProduct(currentPage, pageSize);
+    } finally {
+      props.loader(false);
     }
   };
 
@@ -401,162 +464,180 @@ const category = ({ row, value }) => {
     <div className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
       {/* pb-[120px] */}
       {viewPopup && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50">
-          <div className="relative w-[300px] md:w-[450px] h-auto  bg-white rounded-[15px] m-auto">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50 overflow-auto p-4">
+          <div className="relative w-full max-w-[800px] max-h-[90vh] bg-white rounded-[15px] m-auto overflow-y-auto">
             <div
-              className="absolute top-2 right-2 p-1 rounded-full  text-black w-8 h-8 cursor-pointer"
-              onClick={() => setviewPopup(!viewPopup)}
+              className="absolute top-4 right-4 p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-black w-8 h-8 cursor-pointer z-10"
+              onClick={() => setViewPopup(false)}
             >
-              <RxCrossCircled className="h-full w-full font-semibold " />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </div>
-
-            <div className="px-5 py-10">
-              {/* <div className=" w-full flex gap-2 pb-5">
+            
+            <div className="px-6 py-8">
+              {/* Product Header */}
+              <div className="w-full flex gap-4 pb-6 border-b">
                 <img
-                  src={popupData?.varients[0].image[0]}
-                  className="h-[60px] w-[60px] rounded-[10px]"
+                  src={popupData?.varients?.[0]?.image?.[0]}
+                  className="h-[100px] w-[100px] rounded-[10px] object-cover"
+                  alt={popupData?.name}
                 />
-                <div className="col-span-2 w-full flex flex-col justify-start items-start">
-                  <p className="text-base font-bold text-black">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-black mb-2">
                     {popupData?.name}
+                  </h2>
+                  <p className="text-lg font-semibold text-green-600 mb-1">
+                    {currencySign(popupData?.price_slot?.[0]?.price || 0)}
                   </p>
-                  <p className="text-base font-semibold text-black pt-2">
-                    {popupData?.email}
+                  <p className="text-sm text-gray-600">
+                    Status: <span className={`font-semibold ${popupData?.status === 'verified' ? 'text-green-600' : 'text-orange-600'}`}>
+                      {popupData?.status}
+                    </span>
                   </p>
-                  <p className="text-sm font-semibold text-black pt-2">
-                    {popupData?.number}
-                  </p>
-                </div>
-              </div> */}
-
-              <div className="bg-white overflow-hidden">
-                <div className="p-0">
-                  <dl className="sm:divide-y sm:divide-gray-200">
-                    <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
-                        Manufacturer Name
-                      </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {popupData?.manufacturername}
-                      </dd>
-                    </div>
-                    <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
-                        Manufacturer Address
-                      </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {popupData?.manufactureradd}
-                      </dd>
-                    </div>
-                    <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
-                        Expiry Date
-                      </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {moment(popupData?.expirydate).format("YYYY-MM-DD")}
-                      </dd>
-                    </div>
-                    <div className="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <dt className="text-sm font-medium text-gray-500">
-                        Short Description
-                      </dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {popupData?.short_description}
-                      </dd>
-                    </div>
-                  </dl>
                 </div>
               </div>
 
-              {/* <div className="mx-auto max-w-screen-lg">
-                <div className="divide-y divide-stone-100 overflow-hidden rounded-lg border border-indigo-200 bg-white shadow-sm">
-                  <details className="group" open>
-                    <summary className="flex cursor-pointer list-none items-center justify-between p-4 text-lg font-medium text-indigo-900 group-open:bg-indigo-50">
-                      Is it possible to live on Mars?
-                      <div className="text-indigo-500">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          className="block h-5 w-5 transition-all duration-300 group-open:rotate-180"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                          />
-                        </svg>
-                      </div>
-                    </summary>
-                    <div className="border-t border-t-stone-100 dark:border-t-stone-700 p-4 text-indigo-500">
-                      While it's not currently possible, scientists and space
-                      agencies are working on technologies to make human
-                      habitation on Mars a reality in the future. Significant
-                      challenges like radiation protection, sustainable food and
-                      water supplies, and creating a breathable atmosphere need
-                      to be overcome.
+              {/* Product Details */}
+              <div className="mt-6 space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-black mb-2">Product Information</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-600">Category:</p>
+                      <p className="font-semibold text-black">{popupData?.category?.name || 'N/A'}</p>
                     </div>
-                  </details>
-                  <details className="group">
-                    <summary className="flex cursor-pointer list-none items-center justify-between p-4 text-lg font-medium text-indigo-900 group-open:bg-indigo-50">
-                      How long would it take to travel to Mars?
-                      <div className="text-indigo-500">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          className="block h-5 w-5 transition-all duration-300 group-open:rotate-180"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                          />
-                        </svg>
-                      </div>
-                    </summary>
-                    <div className="border-t border-t-stone-100 dark:border-t-stone-700 p-4 text-indigo-500">
-                      Using current technology, a one-way trip to Mars would
-                      take about 6-8 months. The exact duration depends on the
-                      positions of Earth and Mars in their orbits, as well as
-                      the propulsion technology used for the spacecraft.
+                    <div>
+                      <p className="text-gray-600">SKU:</p>
+                      <p className="font-semibold text-black">{popupData?.sku || 'N/A'}</p>
                     </div>
-                  </details>
-                  <details className="group">
-                    <summary className="flex cursor-pointer list-none items-center justify-between p-4 text-lg font-medium text-indigo-900 group-open:bg-indigo-50">
-                      What are the main challenges of living on Mars?
-                      <div className="text-indigo-500">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          className="block h-5 w-5 transition-all duration-300 group-open:rotate-180"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                          />
-                        </svg>
-                      </div>
-                    </summary>
-                    <div className="border-t border-t-stone-100 dark:border-t-stone-700 p-4 text-indigo-500">
-                      The main challenges include: protecting against harmful
-                      radiation, creating a sustainable food and water supply,
-                      generating breathable air, dealing with extreme
-                      temperature fluctuations, maintaining physical and mental
-                      health in a low-gravity environment, and overcoming
-                      communication delays with Earth.
+                    <div>
+                      <p className="text-gray-600">Model:</p>
+                      <p className="font-semibold text-black">{popupData?.model || 'N/A'}</p>
                     </div>
-                  </details>
+                    <div>
+                      <p className="text-gray-600">Stock:</p>
+                      <p className="font-semibold text-black">{popupData?.stock || 0} pcs</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Origin:</p>
+                      <p className="font-semibold text-black">{popupData?.origin || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Manufacturer:</p>
+                      <p className="font-semibold text-black">{popupData?.manufacturername || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Manufacturer Address:</p>
+                      <p className="font-semibold text-black">{popupData?.manufactureradd || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Expiry Date:</p>
+                      <p className="font-semibold text-black">
+                        {popupData?.expirydate ? moment(popupData.expirydate).format('DD MMM YYYY') : 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Sold Pieces:</p>
+                      <p className="font-semibold text-black">{popupData?.sold_pieces || 0}</p>
+                    </div>
+                  </div>
                 </div>
-              </div> */}
+
+                <div>
+                  <h3 className="text-lg font-semibold text-black mb-2">Description</h3>
+                  <p className="text-sm text-gray-700 mb-2">
+                    <strong>Short:</strong> {popupData?.short_description || 'N/A'}
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    <strong>Long:</strong> {popupData?.long_description || 'N/A'}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-black mb-2">Seller Information</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-600">Name:</p>
+                      <p className="font-semibold text-black">
+                        {popupData?.userid?.firstName} {popupData?.userid?.lastName}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Email:</p>
+                      <p className="font-semibold text-black">{popupData?.userid?.email || 'N/A'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Product Status Checkboxes */}
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold text-black mb-3">Product Status</h3>
+                  <div className="space-y-3">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={popupData?.is_verified || false}
+                          onChange={(e) =>
+                            setPopupData({ ...popupData, is_verified: e.target.checked })
+                          }
+                        />
+                      }
+                      label="Verified Product"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={popupData?.is_quality || false}
+                          onChange={(e) =>
+                            setPopupData({ ...popupData, is_quality: e.target.checked })
+                          }
+                        />
+                      }
+                      label="Quality Product"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={popupData?.sponsered || false}
+                          onChange={(e) =>
+                            setPopupData({ ...popupData, sponsered: e.target.checked })
+                          }
+                        />
+                      }
+                      label="Sponsored Product"
+                    />
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 mt-6 pt-4 border-t">
+                  {/* <button
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition"
+                    onClick={() => addNewItem()}
+                  >
+                    Update Product
+                  </button> */}
+                  <button
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition"
+                    onClick={() => updateProductStatus(popupData?._id, 'verified')}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition"
+                    onClick={() => suspendProduct(popupData?._id)}
+                  >
+                    Suspend
+                  </button>
+                  <button
+                    className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-4 rounded-lg transition"
+                    onClick={() => updateProductStatus(popupData?._id, 'rejected')}
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -577,17 +658,15 @@ const category = ({ row, value }) => {
             />
             {/* Filter icon */}
             <img
-              src="/filterImg.png" // Replace with your actual filter icon path
+              src="/filterImg.png"
               alt="Filter"
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 cursor-pointer"
               onClick={() => console.log('Open filter modal')}
             />
           </div>
         </div>
-        <div className="px-2  md:pb-44 pb-28 bg-white h-full rounded-[12px] overflow-auto ">
-          <div className="">
-
-
+        <div className="px-2 md:pb-44 pb-28 bg-white h-full rounded-[12px] overflow-auto">
+          <div>
             <Table
               columns={columns}
               data={productsList}
@@ -597,12 +676,10 @@ const category = ({ row, value }) => {
               setCurrentPage={setCurrentPage}
               pageSize={pageSize}
               setPageSize={setPageSize}
-            // itemsPerPage={pagination.itemsPerPage}
             />
           </div>
         </div>
       </div>
-
     </div>
   );
 }

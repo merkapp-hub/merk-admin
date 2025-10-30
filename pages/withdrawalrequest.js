@@ -324,8 +324,8 @@ function Withdralreq(props) {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col" style={{ maxHeight: 'calc(100vh - 130px)' }}>
+          <div className="overflow-x-auto flex-1">
             <Table
               columns={columns}
               data={withdrawData}

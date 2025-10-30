@@ -58,6 +58,7 @@ function Inventory(props) {
       
       Api("get", url, router).then(
         (res) => {
+          console.log("res================> form data :: ", res);
           handleProductResponse(res);
         },
         (err) => {
@@ -194,12 +195,23 @@ function Inventory(props) {
   );
 };
 
-  const price = ({ value }) => {
+  const price = ({ row }) => {
+    const priceSlot = row.original?.price_slot?.[0];
+    const showOfferPrice = priceSlot?.Offerprice > 0;
+    const displayPrice = showOfferPrice ? priceSlot.Offerprice : (priceSlot?.price || 0);
+    
     return (
       <div className="p-4 flex flex-col items-center justify-center">
-        <p className="text-black text-base font-normal">
-          {currencySign(value)}
-        </p>
+        <div className="flex flex-col items-center">
+          <span className="text-black text-base font-medium">
+            {currencySign(displayPrice)}
+          </span>
+          {showOfferPrice && priceSlot?.price > 0 && (
+            <span className="text-gray-500 text-sm line-through">
+              {currencySign(priceSlot.price)}
+            </span>
+          )}
+        </div>
       </div>
     );
   };

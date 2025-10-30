@@ -84,11 +84,14 @@ function AddProduct(props) {
   const router = useRouter();
   const fileInputRef = useRef(null);
   const [selectedImageFiles, setSelectedImageFiles] = useState([]);
+  const [variantImageFiles, setVariantImageFiles] = useState({});
 
 
   const [productData, setProductData] = useState({
     name: "",
     category: [],
+    sku: "",
+    model: "",
     origin: "",
     expirydate: "",
     manufacturername: "",
@@ -215,6 +218,8 @@ const handleCreateProduct = async (e) => {
     // Add simple text fields
     formData.append('name', productData.name);
     formData.append('category', productData.category);
+    formData.append('sku', productData.sku || '');  // Add sku field
+    formData.append('model', productData.model || '');  // Add model field
     formData.append('origin', productData.origin);
     formData.append('expirydate', productData.expirydate);
     formData.append('manufacturername', productData.manufacturername);
@@ -265,6 +270,8 @@ const handleCreateProduct = async (e) => {
   
     formData.append('name', productData.name);
     formData.append('category', productData.category);
+    formData.append('sku', productData.sku || '');  // Add sku field
+    formData.append('model', productData.model || '');  // Add model field
     formData.append('origin', productData.origin);
     formData.append('expirydate', productData.expirydate);
     formData.append('manufacturername', productData.manufacturername);
@@ -509,22 +516,44 @@ const handleCreateProduct = async (e) => {
     );
   };
 
-const handleImageChange = (event, i) => {
+const handleImageChange = async (event, variantIndex) => {
     const files = Array.from(event.target.files);
-    setSelectedImageFiles(prev => [...prev, ...files]);
     
-    // Show preview
-    files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            setVariants(
-                produce((draft) => {
-                    draft[i].image.push(e.target.result); // For preview
-                })
-            );
-        };
-        reader.readAsDataURL(file);
-    });
+    if (files.length === 0) return;
+    
+    props.loader(true);
+    
+    try {
+        const formData = new FormData();
+        files.forEach(file => {
+            formData.append('images', file);
+        });
+        
+        const response = await ApiFormData("post", "uploadImages", formData, router);
+        
+        if (response?.status && response?.data?.images) {
+            // Add all Cloudinary URLs to variant images
+            response.data.images.forEach(cloudinaryUrl => {
+                setVariants(
+                    produce((draft) => {
+                        draft[variantIndex].image.push(cloudinaryUrl);
+                    })
+                );
+            });
+            
+            props.toaster({ type: "success", message: "Images uploaded successfully" });
+        } else {
+            props.toaster({ type: "error", message: "Failed to upload images" });
+        }
+    } catch (error) {
+        console.error("Error uploading images:", error);
+        props.toaster({ 
+            type: "error", 
+            message: error?.message || "Failed to upload images" 
+        });
+    } finally {
+        props.loader(false);
+    }
 };
 
   const removeImage = (imageUrl, imageIndex, variantIndex) => {
@@ -646,6 +675,50 @@ const handleImageChange = (event, i) => {
                         setProductData({ ...productData, name: e.target.value })
                       }
                       required
+                    />
+                    <img
+                      className="w-[18px] h-[18px] absolute md:top-[13px] top-[10px] left-5"
+                      src="/box-add.png"
+                      alt="icon"
+                    />
+                  </div>
+                </div>
+
+                <div className="md:pt-5">
+                  <p className="text-custom-darkGray text-base font-normal pb-1">
+                    SKU (Optional)
+                  </p>
+                  <div className="relative">
+                    <input
+                      className="bg-transparent w-full md:h-[46px] h-[40px] pl-12 pr-5 border border-custom-newGray rounded-[10px] outline-none text-custom-darkGrayColor text-base font-light"
+                      type="text"
+                      placeholder="SKU (Auto-generated if empty)"
+                      value={productData.sku}
+                      onChange={(e) =>
+                        setProductData({ ...productData, sku: e.target.value })
+                      }
+                    />
+                    <img
+                      className="w-[18px] h-[18px] absolute md:top-[13px] top-[10px] left-5"
+                      src="/box-add.png"
+                      alt="icon"
+                    />
+                  </div>
+                </div>
+
+                <div className="md:pt-5">
+                  <p className="text-custom-darkGray text-base font-normal pb-1">
+                    Model (Optional)
+                  </p>
+                  <div className="relative">
+                    <input
+                      className="bg-transparent w-full md:h-[46px] h-[40px] pl-12 pr-5 border border-custom-newGray rounded-[10px] outline-none text-custom-darkGrayColor text-base font-light"
+                      type="text"
+                      placeholder="Model"
+                      value={productData.model}
+                      onChange={(e) =>
+                        setProductData({ ...productData, model: e.target.value })
+                      }
                     />
                     <img
                       className="w-[18px] h-[18px] absolute md:top-[13px] top-[10px] left-5"
@@ -939,6 +1012,7 @@ const handleImageChange = (event, i) => {
                               className="hidden"
                               onChange={(event) => handleImageChange(event, i)}
                               accept="image/*"
+                              multiple
                             />
                           </div>
                         </div>
