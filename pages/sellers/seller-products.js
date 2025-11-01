@@ -82,7 +82,7 @@ const getProduct = async (page = 1, limit = 10) => {
         const selectednewIds = res.data.filter(f => f.sponsered && f._id).map(f => f._id);
         setSelectedNewSeller(selectednewIds);
         
-        // Handle pagination properly
+   
         if (res.pagination) {
           setPagination({
             ...res.pagination,
