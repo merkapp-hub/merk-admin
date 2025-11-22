@@ -253,16 +253,30 @@ const getProduct = async (page = 1, limit = 10) => {
   };
 
   const image = ({ value, row }) => {
+    // Get image from variants first, then from images array, then fallback to placeholder
+    let imageUrl = null;
+    
+    if (row.original?.varients && row.original.varients.length > 0 && row.original.varients[0]?.image?.[0]) {
+      imageUrl = row.original.varients[0].image[0];
+    } else if (row.original?.images && row.original.images.length > 0) {
+      imageUrl = row.original.images[0];
+    } else if (row.original?.image) {
+      imageUrl = row.original.image;
+    }
+    
     return (
       <div className="flex items-center justify-center">
-        {row.original &&
-          row.original.varients &&
-          row.original.varients.length > 0 && (
-            <img
-              className="h-[60px] w-[60px] rounded-[10px]"
-              src={row.original.varients[0].image[0]}
-            />
-          )}
+        {imageUrl ? (
+          <img
+            className="h-[60px] w-[60px] rounded-[10px] object-cover"
+            src={imageUrl}
+            alt="Product"
+          />
+        ) : (
+          <div className="h-[60px] w-[60px] rounded-[10px] bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-400 text-xs">No Image</span>
+          </div>
+        )}
       </div>
     );
   };
@@ -293,12 +307,47 @@ const category = ({ row, value }) => {
     );
   };
 
-  const price = ({ value }) => {
+  const price = ({ row }) => {
+    const priceSlot = row.original?.price_slot?.[0];
+    const variants = row.original?.varients || [];
+    
+    // If price_slot is empty and variants exist, use variant price
+    if (!priceSlot && variants.length > 0) {
+      const firstVariant = variants[0];
+      const variantPrice = firstVariant?.Offerprice > 0 ? firstVariant.Offerprice : firstVariant?.price;
+      
+      return (
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center">
+            <span className="text-black text-base font-medium">
+              {currencySign(variantPrice || 0)}
+            </span>
+            {firstVariant?.Offerprice > 0 && firstVariant?.price > 0 && (
+              <span className="text-gray-500 text-sm line-through">
+                {currencySign(firstVariant.price)}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
+    
+    // Otherwise use price_slot
+    const showOfferPrice = priceSlot?.Offerprice > 0;
+    const displayPrice = showOfferPrice ? priceSlot.Offerprice : (priceSlot?.price || 0);
+    
     return (
       <div className="flex flex-col items-center justify-center">
-        <p className="text-black text-base font-normal">
-          {currencySign(value)}
-        </p>
+        <div className="flex flex-col items-center">
+          <span className="text-black text-base font-medium">
+            {currencySign(displayPrice)}
+          </span>
+          {showOfferPrice && priceSlot?.price > 0 && (
+            <span className="text-gray-500 text-sm line-through">
+              {currencySign(priceSlot.price)}
+            </span>
+          )}
+        </div>
       </div>
     );
   };

@@ -171,7 +171,7 @@ function Store(props) {
                                             </div>
                                         </div>
                                         <div className='flex flex-col justify-start items-end'>
-                                            <p className='text-black text-xs font-normal pt-5'>₹{item?.total || item?.price}</p>
+                                            <p className='text-black text-xs font-normal pt-5'>${item?.total || item?.price}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -179,7 +179,7 @@ function Store(props) {
 
 
                             <div className='mt-5 !z-50 fixed bottom-0  flex flex-col justify-start'>
-                                <button className='bg-black !w-[270px] h-[50px] rounded-[60px] text-white text-lg font-bold flex justify-center items-center mb-5' >₹{cartData?.total}</button>
+                                <button className='bg-black !w-[270px] h-[50px] rounded-[60px] text-white text-lg font-bold flex justify-center items-center mb-5' >${cartData?.total}</button>
                             </div>
 
                         </div>

@@ -308,7 +308,7 @@ function Cashreceive(props) {
                   className="bg-custom-darkpurple !w-[270px] h-[50px] rounded-[60px] text-white text-lg font-bold flex justify-center items-center mb-5 ml-[40px]"
                   onClick={() => collectcash(driverid)}
                 >
-                  {/* ₹{walletamount} */}
+                  {/* ${walletamount} */}
                   Cash collected
                 </button>
               </div>

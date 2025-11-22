@@ -82,7 +82,7 @@ const DEFAULT_WEIGHT = {
 
 function AddProduct(props) {
   const router = useRouter();
-  const fileInputRef = useRef(null);
+  const fileInputRefs = useRef([]);
   const [selectedImageFiles, setSelectedImageFiles] = useState([]);
   const [variantImageFiles, setVariantImageFiles] = useState({});
 
@@ -98,13 +98,10 @@ function AddProduct(props) {
     manufactureradd: "",
     short_description: "",
     long_description: "",
-    price_slot: [
-      {
-        value: 0,
-        price: 0,
-        Offerprice: 0,
-      },
-    ],
+    price: 0,
+    Offerprice: 0,
+    hasVariants: false,
+    images: [],
   });
 
   const [categoryData, setCategoryData] = useState([]);
@@ -115,6 +112,8 @@ function AddProduct(props) {
       color: "",
       image: [],
       selected: [],
+      price: 0,
+      Offerprice: 0,
     },
   ]);
   const [openPopup, setOpenPopup] = useState(false);
@@ -156,24 +155,30 @@ function AddProduct(props) {
 
       if (response?.status) {
         const productInfo = response.data;
+        const hasVariants = productInfo.varients && productInfo.varients.length > 0;
+        
         setProductData({
           name: productInfo.name || "",
           category: productInfo.category?._id || [],
           categoryName: productInfo.category?.name || "",
+          sku: productInfo.sku || "",
+          model: productInfo.model || "",
           short_description: productInfo.short_description || "",
           long_description: productInfo.long_description || "",
-          price_slot: productInfo.price_slot || [],
           attributes: productInfo.attributes || [],
           manufactureradd: productInfo.manufactureradd || "",
           manufacturername: productInfo.manufacturername || "",
           expirydate: productInfo.expirydate || "",
-          Offerprice:productInfo.price_slot?.[0]?.Offerprice || "",
-          price: productInfo.price_slot?.[0]?.price || "",
           origin: productInfo.origin || "",
-          ...productInfo,
+          hasVariants: hasVariants,
+          price: hasVariants ? 0 : (productInfo.price_slot?.[0]?.price || 0),
+          Offerprice: hasVariants ? 0 : (productInfo.price_slot?.[0]?.Offerprice || 0),
+          images: productInfo.images || [],
         });
 
-        setVariants(productInfo.varients || variants);
+        if (hasVariants) {
+          setVariants(productInfo.varients);
+        }
       }
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -213,13 +218,24 @@ function AddProduct(props) {
 const handleCreateProduct = async (e) => {
     e.preventDefault();
 
+    // Validation
+    if (productData.hasVariants && variants.length === 0) {
+        props.toaster({ type: "error", message: "Please add at least one variant" });
+        return;
+    }
+
+    if (!productData.hasVariants && (!productData.price || productData.price <= 0)) {
+        props.toaster({ type: "error", message: "Please enter product price" });
+        return;
+    }
+
     const formData = new FormData();
     
     // Add simple text fields
     formData.append('name', productData.name);
     formData.append('category', productData.category);
-    formData.append('sku', productData.sku || '');  // Add sku field
-    formData.append('model', productData.model || '');  // Add model field
+    formData.append('sku', productData.sku || '');
+    formData.append('model', productData.model || '');
     formData.append('origin', productData.origin);
     formData.append('expirydate', productData.expirydate);
     formData.append('manufacturername', productData.manufacturername);
@@ -227,13 +243,35 @@ const handleCreateProduct = async (e) => {
     formData.append('short_description', productData.short_description);
     formData.append('long_description', productData.long_description);
     formData.append('userid', user?._id);
+    formData.append('hasVariants', productData.hasVariants);
     
-    // Add complex objects as JSON strings
-    formData.append('price_slot', JSON.stringify(productData.price_slot));
+    // Handle pricing based on variant status
+    if (productData.hasVariants) {
+        // For products with variants, send empty price_slot
+        formData.append('price_slot', JSON.stringify([]));
+        formData.append('varients', JSON.stringify(variants));
+    } else {
+        // For normal products, create single price slot
+        const priceSlot = [{
+            value: 1,
+            price: parseFloat(productData.price) || 0,
+            Offerprice: parseFloat(productData.Offerprice) || 0,
+        }];
+        formData.append('price_slot', JSON.stringify(priceSlot));
+        formData.append('varients', JSON.stringify([]));
+    }
+    
     formData.append('attributes', JSON.stringify(productData.attributes || []));
-    formData.append('varients', JSON.stringify(variants));
     
-    // Add image files if any
+    // Handle images for normal products
+    if (!productData.hasVariants) {
+        // Send image URLs as JSON
+        if (productData.images && productData.images.length > 0) {
+            formData.append('imageUrls', JSON.stringify(productData.images));
+        }
+    }
+    
+    // Add image files if any (for file uploads)
     if (selectedImageFiles && selectedImageFiles.length > 0) {
         selectedImageFiles.forEach(file => {
             formData.append('images', file);
@@ -265,13 +303,23 @@ const handleCreateProduct = async (e) => {
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     
+    // Validation
+    if (productData.hasVariants && variants.length === 0) {
+        props.toaster({ type: "error", message: "Please add at least one variant" });
+        return;
+    }
+
+    if (!productData.hasVariants && (!productData.price || productData.price <= 0)) {
+        props.toaster({ type: "error", message: "Please enter product price" });
+        return;
+    }
+
     const formData = new FormData();
     
-  
     formData.append('name', productData.name);
     formData.append('category', productData.category);
-    formData.append('sku', productData.sku || '');  // Add sku field
-    formData.append('model', productData.model || '');  // Add model field
+    formData.append('sku', productData.sku || '');
+    formData.append('model', productData.model || '');
     formData.append('origin', productData.origin);
     formData.append('expirydate', productData.expirydate);
     formData.append('manufacturername', productData.manufacturername);
@@ -280,18 +328,37 @@ const handleCreateProduct = async (e) => {
     formData.append('long_description', productData.long_description);
     formData.append('userid', user?._id);
     formData.append('id', router?.query?.id);
+    formData.append('hasVariants', productData.hasVariants);
     
-    // Add complex objects as JSON strings
-    formData.append('price_slot', JSON.stringify(productData.price_slot));
+    // Handle pricing based on variant status
+    if (productData.hasVariants) {
+        formData.append('price_slot', JSON.stringify([]));
+        formData.append('varients', JSON.stringify(variants));
+    } else {
+        const priceSlot = [{
+            value: 1,
+            price: parseFloat(productData.price) || 0,
+            Offerprice: parseFloat(productData.Offerprice) || 0,
+        }];
+        formData.append('price_slot', JSON.stringify(priceSlot));
+        formData.append('varients', JSON.stringify([]));
+    }
+    
     formData.append('attributes', JSON.stringify(productData.attributes || []));
-    formData.append('varients', JSON.stringify(variants));
     
-    // Add image files if any
+    // Handle images for normal products
+    if (!productData.hasVariants) {
+        // Send image URLs as JSON
+        if (productData.images && productData.images.length > 0) {
+            formData.append('imageUrls', JSON.stringify(productData.images));
+        }
+    }
+    
+    // Add image files if any (for file uploads)
     if (selectedImageFiles && selectedImageFiles.length > 0) {
         selectedImageFiles.forEach(file => {
             formData.append('images', file);
         });
-    
     }
     
     try {
@@ -320,23 +387,18 @@ const handleCreateProduct = async (e) => {
     setProductData({
       name: "",
       category: [],
-      unit: "",
-      our_price: "",
-      other_price: "",
+      sku: "",
+      model: "",
       origin: "",
-      selflife: "",
       expirydate: "",
       manufacturername: "",
       manufactureradd: "",
       short_description: "",
       long_description: "",
-      price_slot: [
-        {
-          value: 0,
-          price: 0,
-          Offerprice: 0,
-        },
-      ],
+      price: 0,
+      Offerprice: 0,
+      hasVariants: false,
+      images: [],
     });
 
     setVariants([
@@ -344,8 +406,14 @@ const handleCreateProduct = async (e) => {
         color: "",
         image: [],
         selected: [],
+        price: 0,
+        Offerprice: 0,
       },
     ]);
+    setParameterType("");
+    setSelectedParameterList([]);
+    setSelectedImageFiles([]);
+    setSingleImageUrl("");
   };
 
   const ParameterTypeComponent = ({ item = [], variantIndex }) => {
@@ -532,14 +600,21 @@ const handleImageChange = async (event, variantIndex) => {
         const response = await ApiFormData("post", "uploadImages", formData, router);
         
         if (response?.status && response?.data?.images) {
-            // Add all Cloudinary URLs to variant images
-            response.data.images.forEach(cloudinaryUrl => {
-                setVariants(
-                    produce((draft) => {
-                        draft[variantIndex].image.push(cloudinaryUrl);
-                    })
-                );
-            });
+            // Create a new array with the existing images plus the new ones
+            setVariants(prevVariants => 
+                prevVariants.map((variant, idx) => {
+                    if (idx === variantIndex) {
+                        return {
+                            ...variant,
+                            image: [...variant.image, ...response.data.images]
+                        };
+                    }
+                    return variant;
+                })
+            );
+            
+            // Reset the file input
+            event.target.value = null;
             
             props.toaster({ type: "success", message: "Images uploaded successfully" });
         } else {
@@ -616,6 +691,25 @@ const handleImageChange = async (event, variantIndex) => {
     );
     setIsColorPickerOpen(false);
   };
+
+  const addVariant = () => {
+    setVariants([
+      ...variants,
+      {
+        color: "",
+        image: [],
+        selected: [],
+        price: 0,
+        Offerprice: 0,
+      },
+    ]);
+    // Add a new ref for the new variant
+    fileInputRefs.current = [...fileInputRefs.current, React.createRef()];
+  };
+
+  useEffect(() => {
+    fileInputRefs.current = variants.map((_, i) => fileInputRefs.current[i] || React.createRef());
+  }, [variants.length]);
 
   return (
     <section className="w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
@@ -919,65 +1013,107 @@ const handleImageChange = async (event, variantIndex) => {
                 </div>
               </div>
 
-              <div className="border border-custom-lightGrays rounded-[8px] md:mt-10 mt-5 px-5 pt-5">
-                <p className="text-black text-2xl font-bold NunitoSans pb-5">
-                  Variants
-                </p>
+              {/* Variants Section - Only show if hasVariants is true */}
+              {productData.hasVariants && (
+                <div className="border border-custom-lightGrays rounded-[8px] md:mt-10 mt-5 px-5 pt-5">
+                  <p className="text-black text-2xl font-bold NunitoSans pb-5">
+                    Product Variants
+                  </p>
 
-                {variants.map((item, i) => (
-                  <div key={i} className="w-full" id={i}>
-                    <div className="border border-custom-lightGrays rounded-[8px] p-5 mb-5 relative">
-                      <IoCloseCircleOutline
-                        className="text-red-700 cursor-pointer h-5 w-5 absolute top-[20px] right-[20px]"
-                        onClick={() => removeVariant(i)}
-                      />
+                  {variants.map((item, i) => (
+                    <div key={i} className="w-full" id={i}>
+                      <div className="border border-custom-lightGrays rounded-[8px] p-5 mb-5 relative">
+                        {variants.length > 1 && (
+                          <IoCloseCircleOutline
+                            className="text-red-700 cursor-pointer h-5 w-5 absolute top-[20px] right-[20px]"
+                            onClick={() => removeVariant(i)}
+                          />
+                        )}
 
-                      <div
-                        className="md:grid md:grid-cols-5 grid-cols-1 w-full md:gap-5"
-                        id={"field-container-" + i}
-                      >
-                        <div className="">
-                          <p className="text-gray-800 text-sm font-semibold NunitoSans pb-[15px] pl-[50px]">
-                            Color
-                          </p>
-                          <div className="flex justify-start items-center">
-                            <p className="text-gray-800 text-sm font-semibold w-[60px]">
-                              S.no {i + 1}
-                            </p>
-                            <div className="relative w-full">
+                        <div className="w-full">
+                          <div className="grid md:grid-cols-3 grid-cols-1 gap-5 mb-5">
+                            <div className="">
+                              <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
+                                Variant #{i + 1} - Color
+                              </p>
+                              <div className="relative w-full">
+                                <input
+                                  type="text"
+                                  className="w-full md:h-[50px] h-[40px] bg-custom-light border border-custom-offWhite rounded outline-none pl-5 pr-12 text-black"
+                                  value={item.color}
+                                  onChange={(e) => {
+                                    setVariants(
+                                      produce((draft) => {
+                                        draft[i].color = e.target.value;
+                                      })
+                                    );
+                                  }}
+                                  placeholder="Enter color name"
+                                  required
+                                />
+                                <p
+                                  className="md:w-5 w-3 md:h-5 h-3 rounded-full absolute top-[13px] right-[10px] cursor-pointer border border-black"
+                                  style={{ backgroundColor: item.color }}
+                                  onClick={() => {
+                                    setIsColorPickerOpen(true);
+                                    setCurrentVariantIndex(i);
+                                  }}
+                                ></p>
+                              </div>
+                            </div>
+
+                            <div className="">
+                              <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
+                                Regular Price ($) *
+                              </p>
                               <input
-                                type="text"
-                                className="w-full md:h-[50px] h-[40px] bg-custom-light border border-custom-offWhite rounded outline-none pl-5 text-black"
-                                value={item.color}
+                                type="number"
+                                className="w-full md:h-[50px] h-[40px] bg-custom-light border border-custom-offWhite rounded outline-none px-3 text-black"
+                                value={item.price || ""}
                                 onChange={(e) => {
                                   setVariants(
                                     produce((draft) => {
-                                      draft[i].color = e.target.value;
+                                      draft[i].price = e.target.value;
                                     })
                                   );
                                 }}
+                                placeholder="Enter price"
                                 required
+                                min="0"
+                                step="0.01"
                               />
-                              <p
-                                className="md:w-5 w-3 md:h-5 h-3 rounded-full absolute top-[13px] right-[10px] cursor-pointer border border-black"
-                                style={{ backgroundColor: item.color }}
-                                onClick={() => {
-                                  setIsColorPickerOpen(true);
-                                  setCurrentVariantIndex(i);
+                            </div>
+
+                            <div className="">
+                              <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
+                                Offer Price ($)
+                              </p>
+                              <input
+                                type="number"
+                                className="w-full md:h-[50px] h-[40px] bg-custom-light border border-custom-offWhite rounded outline-none px-3 text-black"
+                                value={item.Offerprice || ""}
+                                onChange={(e) => {
+                                  setVariants(
+                                    produce((draft) => {
+                                      draft[i].Offerprice = e.target.value;
+                                    })
+                                  );
                                 }}
-                              ></p>
+                                placeholder="Enter offer price"
+                                min="0"
+                                step="0.01"
+                              />
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Parameter Type Component */}
-                      <div className="mt-2">
-                        <ParameterTypeComponent
-                          item={item?.selected || []}
-                          variantIndex={i}
-                        />
-                      </div>
+                        {/* Parameter Type Component */}
+                        <div className="mt-2">
+                          <ParameterTypeComponent
+                            item={item?.selected || []}
+                            variantIndex={i}
+                          />
+                        </div>
 
                       {/* Image Upload Section */}
                       <div className="w-full mt-5">
@@ -1003,12 +1139,14 @@ const handleImageChange = async (event, variantIndex) => {
                             <MdOutlineFileUpload
                               className="text-black h-8 w-8 cursor-pointer"
                               onClick={() => {
-                                fileInputRef.current.click();
+                                if (fileInputRefs.current[i]) {
+                                  fileInputRefs.current[i].current.click();
+                                }
                               }}
                             />
                             <input
                               type="file"
-                              ref={fileInputRef}
+                              ref={fileInputRefs.current[i]}
                               className="hidden"
                               onChange={(event) => handleImageChange(event, i)}
                               accept="image/*"
@@ -1065,137 +1203,218 @@ const handleImageChange = async (event, variantIndex) => {
                   </div>
                 ))}
 
-                {/* Add More Variants Button */}
-                <div className="w-full md:mt-5 mt-5 flex justify-end mb-5 gap-2">
-                  <button
-                    type="button"
-                    className="bg-[#E59013] flex justify-center items-center cursor-pointer md:h-[45px] h-[40px] md:w-[177px] w-full rounded-[12px] NunitoSans text-white font-normal text-base"
-                    onClick={() => {
-                      setVariants([
-                        ...variants,
-                        {
-                          color: "",
-                          image: [],
-                          selected:
-                            selectedParameterList.length > 0
-                              ? [selectedParameterList[0]]
-                              : [],
-                        },
-                      ]);
-                    }}
-                  >
-                    Add more
-                  </button>
-                </div>
-              </div>
-
-              <div className="md:col-span-2 w-full mt-5">
-                <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
-                  Price Slots
-                </p>
-                <div className="flex flex-wrap justify-start items-end gap-5 w-full border border-custom-lightGrays rounded-[8px] px-5 py-5">
-                  {productData?.price_slot?.map((slot, slotIndex) => (
-                    <div
-                      key={slotIndex}
-                      className="flex flex-col justify-start items-start border border-custom-lightGrays rounded-[8px] md:p-5 p-[12px] relative"
-                    >
-                      <IoCloseCircleOutline
-                        className="text-red-700 cursor-pointer h-5 w-5 absolute top-[20px] right-[20px]"
-                        onClick={() => removePriceSlot(slotIndex)}
-                      />
-
-                      <p className="text-gray-800 text-sm font-semibold">
-                        Slot.no {slotIndex + 1}
-                      </p>
-
-                      <div className="flex flex-col justify-start items-start w-full mt-5">
-                        <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
-                          Quantity
-                        </p>
-                        <input
-                          type="number"
-                          className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
-                          value={slot.value || ""}
-                          onChange={(e) => {
-                            const updatedSlots = [...productData.price_slot];
-                            updatedSlots[slotIndex].value = e.target.value;
-                            setProductData({
-                              ...productData,
-                              price_slot: updatedSlots,
-                            });
-                          }}
-                          required
-                          min="0"
-                        />
-                      </div>
-
-                      <div className="flex flex-col justify-start items-start w-full mt-5">
-                        <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
-                          Price
-                        </p>
-                        <input
-                          type="number"
-                          className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
-                          value={slot.price || ""}
-                          onChange={(e) => {
-                            const updatedSlots = [...productData.price_slot];
-                            updatedSlots[slotIndex].price = e.target.value;
-                            setProductData({
-                              ...productData,
-                              price_slot: updatedSlots,
-                            });
-                          }}
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
-
-                      <div className="flex flex-col justify-start items-start w-full mt-5">
-                        <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
-                          Offer Price
-                        </p>
-                        <input
-                          type="number"
-                          className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
-                          value={slot.Offerprice || ""}
-                          onChange={(e) => {
-                            const updatedSlots = [...productData.price_slot];
-                            updatedSlots[slotIndex].Offerprice = e.target.value;
-                            setProductData({
-                              ...productData,
-                              price_slot: updatedSlots,
-                            });
-                          }}
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Add More Price Slots Button */}
-                  <div className="flex justify-end items-end w-full">
+                  {/* Add More Variants Button */}
+                  <div className="w-full md:mt-5 mt-5 flex justify-end mb-5 gap-2">
                     <button
                       type="button"
                       className="bg-[#E59013] flex justify-center items-center cursor-pointer md:h-[45px] h-[40px] md:w-[177px] w-full rounded-[12px] NunitoSans text-white font-normal text-base"
                       onClick={() => {
-                        setProductData({
-                          ...productData,
-                          price_slot: [
-                            ...productData.price_slot,
-                            {
-                              value: 0,
-                              price: 0,
-                              Offerprice: 0,
-                            },
-                          ],
-                        });
+                        setVariants([
+                          ...variants,
+                          {
+                            color: "",
+                            image: [],
+                            selected:
+                              selectedParameterList.length > 0
+                                ? [selectedParameterList[0]]
+                                : [],
+                            price: 0,
+                            Offerprice: 0,
+                          },
+                        ]);
                       }}
                     >
-                      Add more
+                      Add More Variant
                     </button>
                   </div>
                 </div>
+              )}
+
+              {/* Product Type Selection */}
+              <div className="md:col-span-2 w-full mt-5">
+                <div className="flex items-center gap-5 mb-5">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="productType"
+                      checked={!productData.hasVariants}
+                      onChange={() => setProductData({ ...productData, hasVariants: false })}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-800 text-base font-semibold">Normal Product (Single Price)</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="productType"
+                      checked={productData.hasVariants}
+                      onChange={() => setProductData({ ...productData, hasVariants: true })}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-800 text-base font-semibold">Product with Variants</span>
+                  </label>
+                </div>
+
+                {/* Normal Product Pricing */}
+                {!productData.hasVariants && (
+                  <div className="border border-custom-lightGrays rounded-[8px] px-5 py-5">
+                    <p className="text-gray-800 text-lg font-bold NunitoSans pb-4">
+                      Product Pricing
+                    </p>
+                    <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5">
+                      <div className="flex flex-col">
+                        <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
+                          Regular Price ($) *
+                        </p>
+                        <input
+                          type="number"
+                          className="w-full md:h-[46px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
+                          value={productData.price || ""}
+                          onChange={(e) =>
+                            setProductData({ ...productData, price: e.target.value })
+                          }
+                          required={!productData.hasVariants}
+                          min="0"
+                          step="0.01"
+                          placeholder="Enter regular price"
+                        />
+                      </div>
+
+                      <div className="flex flex-col">
+                        <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
+                          Offer Price ($)
+                        </p>
+                        <input
+                          type="number"
+                          className="w-full md:h-[46px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
+                          value={productData.Offerprice || ""}
+                          onChange={(e) =>
+                            setProductData({ ...productData, Offerprice: e.target.value })
+                          }
+                          min="0"
+                          step="0.01"
+                          placeholder="Enter offer price (optional)"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Image Upload for Normal Products */}
+                    <div className="w-full mt-5 border-t border-custom-lightGrays pt-5">
+                      <p className="text-gray-800 text-lg font-bold NunitoSans pb-3">
+                        Product Images
+                      </p>
+                      <div className="relative w-full">
+                        <div className="w-full">
+                          <div className="border rounded-md p-2 w-full bg-custom-light flex justify-start items-center">
+                            <input
+                              className="outline-none bg-white text-black md:w-[90%] w-[85%] px-2"
+                              type="text"
+                              placeholder="Enter image URL or upload"
+                              value={singleImageUrl}
+                              onChange={(e) => {
+                                setSingleImageUrl(e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="absolute top-[8px] md:right-[10px] right-[10px]">
+                          <MdOutlineFileUpload
+                            className="text-black h-8 w-8 cursor-pointer"
+                            onClick={() => {
+                              if (fileInputRefs.current[0]) {
+                                fileInputRefs.current[0].current.click();
+                              }
+                            }}
+                          />
+                          <input
+                            type="file"
+                            ref={fileInputRefs.current[0]}
+                            className="hidden"
+                            onChange={async (event) => {
+                              const files = Array.from(event.target.files);
+                              if (files.length === 0) return;
+                              
+                              props.loader(true);
+                              try {
+                                const formData = new FormData();
+                                files.forEach(file => {
+                                  formData.append('images', file);
+                                });
+                                
+                                const response = await ApiFormData("post", "uploadImages", formData, router);
+                                
+                                if (response?.status && response?.data?.images) {
+                                  setProductData({
+                                    ...productData,
+                                    images: [...(productData.images || []), ...response.data.images]
+                                  });
+                                  props.toaster({ type: "success", message: "Images uploaded successfully" });
+                                } else {
+                                  props.toaster({ type: "error", message: "Failed to upload images" });
+                                }
+                              } catch (error) {
+                                console.error("Error uploading images:", error);
+                                props.toaster({ type: "error", message: error?.message || "Failed to upload images" });
+                              } finally {
+                                props.loader(false);
+                                event.target.value = null;
+                              }
+                            }}
+                            accept="image/*"
+                            multiple
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end items-end mt-3">
+                        <button
+                          type="button"
+                          className="text-white bg-[#E59013] rounded-[10px] text-center text-md py-2 px-4 cursor-pointer"
+                          onClick={() => {
+                            if (singleImageUrl === "") {
+                              props.toaster({
+                                type: "error",
+                                message: "Image URL is required",
+                              });
+                              return;
+                            }
+                            setProductData({
+                              ...productData,
+                              images: [...(productData.images || []), singleImageUrl]
+                            });
+                            setSingleImageUrl("");
+                          }}
+                        >
+                          Add URL
+                        </button>
+                      </div>
+
+                      <div className="flex md:flex-row flex-wrap md:gap-5 gap-4 mt-5">
+                        {productData.images?.map((imageUrl, imageIndex) => (
+                          <div className="relative" key={imageIndex}>
+                            <img
+                              className="md:w-20 w-[85px] h-20 object-contain border border-gray-300 rounded"
+                              src={imageUrl}
+                              alt={`Product image ${imageIndex + 1}`}
+                            />
+                            <IoCloseCircleOutline
+                              className="text-red-700 cursor-pointer h-5 w-5 absolute -top-2 -right-2 bg-white rounded-full"
+                              onClick={() => {
+                                const updatedImages = [...(productData.images || [])];
+                                updatedImages.splice(imageIndex, 1);
+                                setProductData({
+                                  ...productData,
+                                  images: updatedImages
+                                });
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex md:flex-row flex-col justify-between items-center w-full pt-20 md:gap-0 gap-5">
