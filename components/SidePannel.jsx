@@ -149,6 +149,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       img: <MdContentPaste className="text-3xl" />,
       access: ["admin"],
     },
+    {
+      href: "/gallery",
+      title: "Gallery",
+      img: <MdContentPaste className="text-3xl" />,
+      access: ["admin"],
+    },
     // {
     //   href: "/cashreceive",
     //   title: "Cash Receive",

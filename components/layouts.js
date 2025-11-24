@@ -31,7 +31,7 @@ const Layout = ({ children, loader, toaster }) => {
             !(router.pathname.includes('/login') || router.pathname.includes('/signup') ||
               router.pathname.includes('/privacy-policy') ||
               router.pathname.includes('/terms-condition')) ? "w-full xl:pl-[300px] md:pl-[250px] sm:pl-[200px]" : "w-full"}>
-            <main className={"w-full h-screen relative overflow-hidden"}>
+            <main className={"w-full h-screen relative overflow-y-auto"}>
               {
                 !(router.pathname.includes('/login') || router.pathname.includes('/signup') ||
                   router.pathname.includes('/privacy-policy') ||

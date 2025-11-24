@@ -108,13 +108,20 @@ function SaleProduct(props) {
     };
 
     const image = ({ row }) => {
+        const product = row.original;
+        // Get image from variants or images array
+        const imageSrc = product?.varients?.[0]?.image?.[0] || product?.images?.[0] || '/placeholder-image.png';
 
         return (
             <div className="p-4 flex items-center justify-center">
-                {
-                    row.original && row.original.varients && row.original.varients.length > 0 && <img className='h-[76px] w-[76px] rounded-[10px]'
-                        src={row.original.varients[0].image[0]}
-                    />}
+                <img 
+                    className='h-[76px] w-[76px] rounded-[10px] object-cover'
+                    src={imageSrc}
+                    alt={product?.name || 'Product'}
+                    onError={(e) => {
+                        e.target.src = '/placeholder-image.png';
+                    }}
+                />
             </div>
         );
     };
@@ -139,16 +146,27 @@ function SaleProduct(props) {
 
     const actionHandler = ({ value, row }) => {
         return (
-            <div className=" flex items-center justify-center  ">
-                <div className="py-[10px] border rounded-[10px] mr-[10px] border-custom-offWhite w-[30%] items-center flex justify-center cursor-pointer"
+            <div className="flex items-center justify-center gap-2">
+                <div 
+                    className="py-[10px] border rounded-[10px] border-custom-offWhite px-4 items-center flex justify-center cursor-pointer hover:bg-blue-50"
                     onClick={() => {
-                        // setviewPopup(row.original)
+                        router.push(`/AddSale?id=${saleData[0]?._id}`);
+                    }}
+                    title="Edit Sale"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                </div>
+                <div 
+                    className="py-[10px] border rounded-[10px] border-custom-offWhite px-4 items-center flex justify-center cursor-pointer hover:bg-red-50"
+                    onClick={() => {
                         deleteProduct(row.original._id)
                     }}
+                    title="Delete Product"
                 >
-                    <MdDelete className='text-2xl' />
+                    <MdDelete className='text-xl text-red-600' />
                 </div>
-
             </div>
         );
     };

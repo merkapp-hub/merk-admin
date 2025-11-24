@@ -311,8 +311,11 @@ const category = ({ row, value }) => {
     const priceSlot = row.original?.price_slot?.[0];
     const variants = row.original?.varients || [];
     
-    // If price_slot is empty and variants exist, use variant price
-    if (!priceSlot && variants.length > 0) {
+    // Check if price_slot is empty or has no price
+    const hasPriceSlot = priceSlot && (priceSlot.price > 0 || priceSlot.Offerprice > 0);
+    
+    // If price_slot is empty/invalid and variants exist, use variant price
+    if (!hasPriceSlot && variants.length > 0) {
       const firstVariant = variants[0];
       const variantPrice = firstVariant?.Offerprice > 0 ? firstVariant.Offerprice : firstVariant?.price;
       
@@ -528,16 +531,46 @@ const category = ({ row, value }) => {
               {/* Product Header */}
               <div className="w-full flex gap-4 pb-6 border-b">
                 <img
-                  src={popupData?.varients?.[0]?.image?.[0]}
+                  src={
+                    popupData?.varients?.[0]?.image?.[0] || 
+                    popupData?.images?.[0] || 
+                    '/placeholder-image.png'
+                  }
                   className="h-[100px] w-[100px] rounded-[10px] object-cover"
                   alt={popupData?.name}
+                  onError={(e) => {
+                    e.target.src = '/placeholder-image.png';
+                  }}
                 />
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-black mb-2">
                     {popupData?.name}
                   </h2>
                   <p className="text-lg font-semibold text-green-600 mb-1">
-                    {currencySign(popupData?.price_slot?.[0]?.price || 0)}
+                    {(() => {
+                      const priceSlot = popupData?.price_slot?.[0];
+                      const variants = popupData?.varients || [];
+                      
+                      // Check if price_slot has valid price
+                      const hasPriceSlot = priceSlot && (priceSlot.price > 0 || priceSlot.Offerprice > 0);
+                      
+                      // If price_slot is empty/invalid and variants exist, show variant price range
+                      if (!hasPriceSlot && variants.length > 0) {
+                        const prices = variants.map(v => v?.Offerprice > 0 ? v.Offerprice : v?.price).filter(p => p > 0);
+                        if (prices.length > 0) {
+                          const minPrice = Math.min(...prices);
+                          const maxPrice = Math.max(...prices);
+                          if (minPrice === maxPrice) {
+                            return currencySign(minPrice);
+                          }
+                          return `${currencySign(minPrice)} - ${currencySign(maxPrice)}`;
+                        }
+                      }
+                      
+                      // Use price_slot
+                      const displayPrice = priceSlot?.Offerprice > 0 ? priceSlot.Offerprice : (priceSlot?.price || 0);
+                      return currencySign(displayPrice);
+                    })()}
                   </p>
                   <p className="text-sm text-gray-600">
                     Status: <span className={`font-semibold ${popupData?.status === 'verified' ? 'text-green-600' : 'text-orange-600'}`}>
@@ -565,8 +598,24 @@ const category = ({ row, value }) => {
                       <p className="font-semibold text-black">{popupData?.model || 'N/A'}</p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Stock:</p>
-                      <p className="font-semibold text-black">{popupData?.stock || 0} pcs</p>
+                      <p className="text-gray-600">Total Stock:</p>
+                      <p className="font-semibold text-black">
+                        {(() => {
+                          // If product has variants, calculate total stock from all variants
+                          if (popupData?.varients && popupData.varients.length > 0) {
+                            const totalStock = popupData.varients.reduce((sum, variant) => {
+                              // Stock is in selected array's total field
+                              const variantStock = variant?.selected?.reduce((vSum, sel) => {
+                                return vSum + (parseInt(sel?.total) || 0);
+                              }, 0) || 0;
+                              return sum + variantStock;
+                            }, 0);
+                            return `${totalStock} pcs`;
+                          }
+                          // Otherwise use direct stock field
+                          return `${popupData?.stock || 0} pcs`;
+                        })()}
+                      </p>
                     </div>
                     <div>
                       <p className="text-gray-600">Origin:</p>
@@ -602,6 +651,82 @@ const category = ({ row, value }) => {
                     <strong>Long:</strong> {popupData?.long_description || 'N/A'}
                   </p>
                 </div>
+
+                {/* Variants Section */}
+                {popupData?.varients && popupData.varients.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-black mb-3">Product Variants ({popupData.varients.length})</h3>
+                    <div className="space-y-4">
+                      {popupData.varients.map((variant, index) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                          <div className="flex items-start gap-4">
+                            {/* Variant Images */}
+                            <div className="flex gap-2 flex-wrap">
+                              {variant?.image?.slice(0, 3).map((img, imgIndex) => (
+                                <img
+                                  key={imgIndex}
+                                  src={img}
+                                  alt={`Variant ${index + 1} - Image ${imgIndex + 1}`}
+                                  className="w-16 h-16 object-cover rounded border border-gray-300"
+                                  onError={(e) => {
+                                    e.target.src = '/placeholder-image.png';
+                                  }}
+                                />
+                              ))}
+                              {variant?.image?.length > 3 && (
+                                <div className="w-16 h-16 flex items-center justify-center bg-gray-200 rounded border border-gray-300 text-xs text-gray-600">
+                                  +{variant.image.length - 3}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Variant Details */}
+                            <div className="flex-1">
+                              <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                  <p className="text-gray-600">Color:</p>
+                                  <div className="flex items-center gap-2">
+                                    <div 
+                                      className="w-6 h-6 rounded border border-gray-300" 
+                                      style={{ backgroundColor: variant?.color }}
+                                    ></div>
+                                    <span className="font-semibold text-black">{variant?.color}</span>
+                                  </div>
+                                </div>
+                                <div>
+                                  <p className="text-gray-600">Price:</p>
+                                  <p className="font-semibold text-black">
+                                    {currencySign(variant?.Offerprice || variant?.price || 0)}
+                                    {variant?.Offerprice > 0 && variant?.price > variant?.Offerprice && (
+                                      <span className="ml-2 text-gray-500 line-through text-xs">
+                                        {currencySign(variant.price)}
+                                      </span>
+                                    )}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Size/Stock Details */}
+                              {variant?.selected && variant.selected.length > 0 && (
+                                <div className="mt-3">
+                                  <p className="text-gray-600 text-sm mb-2">Available Sizes & Stock:</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {variant.selected.map((sel, selIndex) => (
+                                      <div key={selIndex} className="bg-white px-3 py-1 rounded border border-gray-300 text-xs">
+                                        <span className="font-semibold">{sel?.value}</span>
+                                        <span className="text-gray-600 ml-2">({sel?.total || 0} pcs)</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <h3 className="text-lg font-semibold text-black mb-2">Seller Information</h3>

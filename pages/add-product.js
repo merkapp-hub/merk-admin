@@ -37,6 +37,7 @@ const config = {
 };
 
 const DEFAULT_SIZE = {
+  id: Date.now() + Math.random(),
   label: "Size",
   value: "",
   total: 0,
@@ -44,20 +45,21 @@ const DEFAULT_SIZE = {
 };
 
 const SIZE_LIST = [
-  { label: "XXS", value: "XXS", total: 0, sell: 0 },
-  { label: "XS", value: "XS", total: 0, sell: 0 },
-  { label: "S", value: "S", total: 0, sell: 0 },
-  { label: "M", value: "M", total: 0, sell: 0 },
-  { label: "L", value: "L", total: 0, sell: 0 },
-  { label: "XL", value: "XL", total: 0, sell: 0 },
-  { label: "XXL", value: "XXL", total: 0, sell: 0 },
-  { label: "3XL", value: "3XL", total: 0, sell: 0 },
-  { label: "4XL", value: "4XL", total: 0, sell: 0 },
-  { label: "5XL", value: "5XL", total: 0, sell: 0 },
-  { label: "For adult", value: "For adult", total: 0, sell: 0 },
+  { id: 1, label: "XXS", value: "XXS", total: 0, sell: 0 },
+  { id: 2, label: "XS", value: "XS", total: 0, sell: 0 },
+  { id: 3, label: "S", value: "S", total: 0, sell: 0 },
+  { id: 4, label: "M", value: "M", total: 0, sell: 0 },
+  { id: 5, label: "L", value: "L", total: 0, sell: 0 },
+  { id: 6, label: "XL", value: "XL", total: 0, sell: 0 },
+  { id: 7, label: "XXL", value: "XXL", total: 0, sell: 0 },
+  { id: 8, label: "3XL", value: "3XL", total: 0, sell: 0 },
+  { id: 9, label: "4XL", value: "4XL", total: 0, sell: 0 },
+  { id: 10, label: "5XL", value: "5XL", total: 0, sell: 0 },
+  { id: 11, label: "For adult", value: "For adult", total: 0, sell: 0 },
 ];
 
 const DEFAULT_CAPACITY = {
+  id: Date.now() + Math.random(),
   label: "ML",
   value: 0,
   total: 0,
@@ -65,6 +67,7 @@ const DEFAULT_CAPACITY = {
 };
 
 const DEFAULT_DIMENSIONS = {
+  id: Date.now() + Math.random(),
   label: "Height (Inches)",
   label2: "Width (Inches)",
   Height: 0,
@@ -74,6 +77,7 @@ const DEFAULT_DIMENSIONS = {
 };
 
 const DEFAULT_WEIGHT = {
+  id: Date.now() + Math.random(),
   label: "GR",
   value: 0,
   total: 0,
@@ -94,12 +98,14 @@ function AddProduct(props) {
     model: "",
     origin: "",
     expirydate: "",
+    hasExpiryDate: false,
     manufacturername: "",
     manufactureradd: "",
     short_description: "",
     long_description: "",
     price: 0,
     Offerprice: 0,
+    stock: 0,
     hasVariants: false,
     images: [],
   });
@@ -109,6 +115,7 @@ function AddProduct(props) {
   const [user, setUser] = useContext(userContext);
   const [variants, setVariants] = useState([
     {
+      id: Date.now() + Math.random(), // Unique ID for initial variant
       color: "",
       image: [],
       selected: [],
@@ -169,6 +176,7 @@ function AddProduct(props) {
           manufactureradd: productInfo.manufactureradd || "",
           manufacturername: productInfo.manufacturername || "",
           expirydate: productInfo.expirydate || "",
+          hasExpiryDate: !!productInfo.expirydate,
           origin: productInfo.origin || "",
           hasVariants: hasVariants,
           price: hasVariants ? 0 : (productInfo.price_slot?.[0]?.price || 0),
@@ -237,7 +245,7 @@ const handleCreateProduct = async (e) => {
     formData.append('sku', productData.sku || '');
     formData.append('model', productData.model || '');
     formData.append('origin', productData.origin);
-    formData.append('expirydate', productData.expirydate);
+    formData.append('expirydate', productData.hasExpiryDate ? productData.expirydate : '');
     formData.append('manufacturername', productData.manufacturername);
     formData.append('manufactureradd', productData.manufactureradd);
     formData.append('short_description', productData.short_description);
@@ -259,6 +267,7 @@ const handleCreateProduct = async (e) => {
         }];
         formData.append('price_slot', JSON.stringify(priceSlot));
         formData.append('varients', JSON.stringify([]));
+        formData.append('stock', parseInt(productData.stock) || 0);
     }
     
     formData.append('attributes', JSON.stringify(productData.attributes || []));
@@ -321,7 +330,7 @@ const handleCreateProduct = async (e) => {
     formData.append('sku', productData.sku || '');
     formData.append('model', productData.model || '');
     formData.append('origin', productData.origin);
-    formData.append('expirydate', productData.expirydate);
+    formData.append('expirydate', productData.hasExpiryDate ? productData.expirydate : '');
     formData.append('manufacturername', productData.manufacturername);
     formData.append('manufactureradd', productData.manufactureradd);
     formData.append('short_description', productData.short_description);
@@ -342,6 +351,7 @@ const handleCreateProduct = async (e) => {
         }];
         formData.append('price_slot', JSON.stringify(priceSlot));
         formData.append('varients', JSON.stringify([]));
+        formData.append('stock', parseInt(productData.stock) || 0);
     }
     
     formData.append('attributes', JSON.stringify(productData.attributes || []));
@@ -391,6 +401,7 @@ const handleCreateProduct = async (e) => {
       model: "",
       origin: "",
       expirydate: "",
+      hasExpiryDate: false,
       manufacturername: "",
       manufactureradd: "",
       short_description: "",
@@ -416,12 +427,44 @@ const handleCreateProduct = async (e) => {
     setSingleImageUrl("");
   };
 
+  // Simple input that never re-renders
+  const ParameterInput = ({ 
+    initialValue,
+    onValueChange,
+    type = "number",
+    className,
+    min
+  }) => {
+    const inputRef = React.useRef(null);
+    
+    React.useEffect(() => {
+      if (inputRef.current && initialValue !== undefined) {
+        inputRef.current.value = initialValue;
+      }
+    }, []);
+    
+    const handleChange = (e) => {
+      onValueChange(e.target.value);
+    };
+    
+    return (
+      <input
+        ref={inputRef}
+        type={type}
+        className={className}
+        defaultValue={initialValue}
+        onChange={handleChange}
+        min={min}
+      />
+    );
+  };
+
   const ParameterTypeComponent = ({ item = [], variantIndex }) => {
     return (
       <div className="col-span-4 grid md:grid-cols-6 grid-cols-1 w-full gap-3">
         {item.map((slot, slotIndex) => (
           <div
-            key={slotIndex}
+            key={slot.id || slotIndex}
             className="flex flex-col justify-start items-start border border-custom-lightGrays rounded-[8px] md:p-5 p-[12px]  relative"
           >
             <IoCloseCircleOutline
@@ -434,18 +477,17 @@ const handleCreateProduct = async (e) => {
                 <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
                   {slot?.label}
                 </p>
-                <input
-                  type="number"
-                  className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
-                  value={slot?.value || ""}
-                  onChange={(e) =>
+                <ParameterInput
+                  initialValue={slot?.value || ""}
+                  onValueChange={(value) =>
                     updateParameterSlot(
                       variantIndex,
                       slotIndex,
                       "value",
-                      e.target.value
+                      value
                     )
                   }
+                  className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                   min={1}
                 />
               </div>
@@ -465,7 +507,7 @@ const handleCreateProduct = async (e) => {
                       e.target.value
                     )
                   }
-                  value={slot?.value || ""}
+                  defaultValue={slot?.value || ""}
                   className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                 >
                   <option value="">Select</option>
@@ -484,18 +526,17 @@ const handleCreateProduct = async (e) => {
                   <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
                     {slot?.label}
                   </p>
-                  <input
-                    type="number"
-                    className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
-                    value={slot.Height || ""}
-                    onChange={(e) =>
+                  <ParameterInput
+                    initialValue={slot.Height || ""}
+                    onValueChange={(value) =>
                       updateParameterSlot(
                         variantIndex,
                         slotIndex,
                         "Height",
-                        e.target.value
+                        value
                       )
                     }
+                    className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                     min={1}
                   />
                 </div>
@@ -503,18 +544,17 @@ const handleCreateProduct = async (e) => {
                   <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
                     {slot?.label2}
                   </p>
-                  <input
-                    type="number"
-                    className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
-                    value={slot?.Width || ""}
-                    onChange={(e) =>
+                  <ParameterInput
+                    initialValue={slot?.Width || ""}
+                    onValueChange={(value) =>
                       updateParameterSlot(
                         variantIndex,
                         slotIndex,
                         "Width",
-                        e.target.value
+                        value
                       )
                     }
+                    className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                     min={1}
                   />
                 </div>
@@ -525,18 +565,17 @@ const handleCreateProduct = async (e) => {
               <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
                 Qty
               </p>
-              <input
-                type="number"
-                className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
-                value={slot?.total || ""}
-                onChange={(e) =>
+              <ParameterInput
+                initialValue={slot?.total || ""}
+                onValueChange={(value) =>
                   updateParameterSlot(
                     variantIndex,
                     slotIndex,
                     "total",
-                    e.target.value
+                    value
                   )
                 }
+                className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                 min={1}
               />
             </div>
@@ -556,33 +595,43 @@ const handleCreateProduct = async (e) => {
     );
   };
 
-  const updateParameterSlot = (variantIndex, slotIndex, field, value) => {
-    setVariants(
-      produce((draft) => {
-        if (draft[variantIndex]?.selected[slotIndex]) {
-          draft[variantIndex].selected[slotIndex][field] = value;
-        }
-      })
-    );
-  };
+  const updateParameterSlot = React.useCallback((variantIndex, slotIndex, field, value) => {
+    setVariants(prevVariants => {
+      const newVariants = [...prevVariants];
+      if (newVariants[variantIndex]?.selected[slotIndex]) {
+        newVariants[variantIndex] = {
+          ...newVariants[variantIndex],
+          selected: newVariants[variantIndex].selected.map((slot, idx) => 
+            idx === slotIndex ? { ...slot, [field]: value } : slot
+          )
+        };
+      }
+      return newVariants;
+    });
+  }, []);
 
-  const addParameterSlot = (variantIndex) => {
+  const addParameterSlot = React.useCallback((variantIndex) => {
     if (selectedParameterList.length > 0) {
-      setVariants(
-        produce((draft) => {
-          draft[variantIndex].selected.push({ ...selectedParameterList[0] });
-        })
-      );
+      setVariants(prevVariants => {
+        const updatedVariants = produce(prevVariants, (draft) => {
+          draft[variantIndex].selected.push({ 
+            ...selectedParameterList[0],
+            id: Date.now() + Math.random() // Unique ID for each slot
+          });
+        });
+        return updatedVariants;
+      });
     }
-  };
+  }, [selectedParameterList]);
 
-  const removeParameterSlot = (variantIndex, slotIndex) => {
-    setVariants(
-      produce((draft) => {
+  const removeParameterSlot = React.useCallback((variantIndex, slotIndex) => {
+    setVariants(prevVariants => {
+      const updatedVariants = produce(prevVariants, (draft) => {
         draft[variantIndex].selected.splice(slotIndex, 1);
-      })
-    );
-  };
+      });
+      return updatedVariants;
+    });
+  }, []);
 
 const handleImageChange = async (event, variantIndex) => {
     const files = Array.from(event.target.files);
@@ -632,11 +681,10 @@ const handleImageChange = async (event, variantIndex) => {
 };
 
   const removeImage = (imageUrl, imageIndex, variantIndex) => {
-    setVariants(
-      produce((draft) => {
-        draft[variantIndex].image.splice(imageIndex, 1);
-      })
-    );
+    const updatedVariants = produce(variants, (draft) => {
+      draft[variantIndex].image.splice(imageIndex, 1);
+    });
+    setVariants(updatedVariants);
   };
 
   const removePriceSlot = (slotIndex) => {
@@ -672,11 +720,10 @@ const handleImageChange = async (event, variantIndex) => {
     const defaultParameters = parameterDefaults[selectedType] || [];
     setSelectedParameterList(defaultParameters);
 
-    setVariants(
-      produce((draft) => {
-        draft[0].selected = [...defaultParameters];
-      })
-    );
+    const updatedVariants = produce(variants, (draft) => {
+      draft[0].selected = [...defaultParameters];
+    });
+    setVariants(updatedVariants);
   };
 
   const handleColorPickerClose = () => {
@@ -684,11 +731,10 @@ const handleImageChange = async (event, variantIndex) => {
   };
 
   const handleColorConfirm = () => {
-    setVariants(
-      produce((draft) => {
-        draft[currentVariantIndex].color = selectedColor.hex;
-      })
-    );
+    const updatedVariants = produce(variants, (draft) => {
+      draft[currentVariantIndex].color = selectedColor.hex;
+    });
+    setVariants(updatedVariants);
     setIsColorPickerOpen(false);
   };
 
@@ -696,6 +742,7 @@ const handleImageChange = async (event, variantIndex) => {
     setVariants([
       ...variants,
       {
+        id: Date.now() + Math.random(), // Unique ID for variant
         color: "",
         image: [],
         selected: [],
@@ -859,28 +906,44 @@ const handleImageChange = async (event, variantIndex) => {
                 </div>
 
                 <div className="">
-                  <p className="text-custom-darkGray text-base font-normal pb-1">
-                    Expiry Date
-                  </p>
-                  <div className="relative">
+                  <div className="flex items-center gap-3 pb-2">
                     <input
-                      className="bg-transparent w-full md:h-[46px] h-[40px] pl-12 pr-5 border border-custom-newGray rounded-[10px] outline-none text-custom-darkGrayColor text-base font-light"
-                      type="date"
-                      value={productData.expirydate}
+                      type="checkbox"
+                      id="hasExpiryDate"
+                      checked={productData.hasExpiryDate}
                       onChange={(e) =>
                         setProductData({
                           ...productData,
-                          expirydate: e.target.value,
+                          hasExpiryDate: e.target.checked,
+                          expirydate: e.target.checked ? productData.expirydate : "",
                         })
                       }
-                      required
+                      className="w-4 h-4 cursor-pointer"
                     />
-                    <img
-                      className="w-[18px] h-[18px] absolute md:top-[13px] top-[10px] left-5"
-                      src="/box-add.png"
-                      alt="icon"
-                    />
+                    <label htmlFor="hasExpiryDate" className="text-custom-darkGray text-base font-normal cursor-pointer">
+                      Product has Expiry Date
+                    </label>
                   </div>
+                  {productData.hasExpiryDate && (
+                    <div className="relative">
+                      <input
+                        className="bg-transparent w-full md:h-[46px] h-[40px] pl-12 pr-5 border border-custom-newGray rounded-[10px] outline-none text-custom-darkGrayColor text-base font-light"
+                        type="date"
+                        value={productData.expirydate}
+                        onChange={(e) =>
+                          setProductData({
+                            ...productData,
+                            expirydate: e.target.value,
+                          })
+                        }
+                      />
+                      <img
+                        className="w-[18px] h-[18px] absolute md:top-[13px] top-[10px] left-5"
+                        src="/box-add.png"
+                        alt="icon"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="">
@@ -1021,7 +1084,7 @@ const handleImageChange = async (event, variantIndex) => {
                   </p>
 
                   {variants.map((item, i) => (
-                    <div key={i} className="w-full" id={i}>
+                    <div key={item.id || i} className="w-full" id={i}>
                       <div className="border border-custom-lightGrays rounded-[8px] p-5 mb-5 relative">
                         {variants.length > 1 && (
                           <IoCloseCircleOutline
@@ -1042,11 +1105,10 @@ const handleImageChange = async (event, variantIndex) => {
                                   className="w-full md:h-[50px] h-[40px] bg-custom-light border border-custom-offWhite rounded outline-none pl-5 pr-12 text-black"
                                   value={item.color}
                                   onChange={(e) => {
-                                    setVariants(
-                                      produce((draft) => {
-                                        draft[i].color = e.target.value;
-                                      })
-                                    );
+                                    const updatedVariants = produce(variants, (draft) => {
+                                      draft[i].color = e.target.value;
+                                    });
+                                    setVariants(updatedVariants);
                                   }}
                                   placeholder="Enter color name"
                                   required
@@ -1071,11 +1133,10 @@ const handleImageChange = async (event, variantIndex) => {
                                 className="w-full md:h-[50px] h-[40px] bg-custom-light border border-custom-offWhite rounded outline-none px-3 text-black"
                                 value={item.price || ""}
                                 onChange={(e) => {
-                                  setVariants(
-                                    produce((draft) => {
-                                      draft[i].price = e.target.value;
-                                    })
-                                  );
+                                  const updatedVariants = produce(variants, (draft) => {
+                                    draft[i].price = e.target.value;
+                                  });
+                                  setVariants(updatedVariants);
                                 }}
                                 placeholder="Enter price"
                                 required
@@ -1093,11 +1154,10 @@ const handleImageChange = async (event, variantIndex) => {
                                 className="w-full md:h-[50px] h-[40px] bg-custom-light border border-custom-offWhite rounded outline-none px-3 text-black"
                                 value={item.Offerprice || ""}
                                 onChange={(e) => {
-                                  setVariants(
-                                    produce((draft) => {
-                                      draft[i].Offerprice = e.target.value;
-                                    })
-                                  );
+                                  const updatedVariants = produce(variants, (draft) => {
+                                    draft[i].Offerprice = e.target.value;
+                                  });
+                                  setVariants(updatedVariants);
                                 }}
                                 placeholder="Enter offer price"
                                 min="0"
@@ -1167,11 +1227,10 @@ const handleImageChange = async (event, variantIndex) => {
                                 });
                                 return;
                               }
-                              setVariants(
-                                produce((draft) => {
-                                  draft[i].image.push(singleImageUrl);
-                                })
-                              );
+                              const updatedVariants = produce(variants, (draft) => {
+                                draft[i].image.push(singleImageUrl);
+                              });
+                              setVariants(updatedVariants);
                               setSingleImageUrl("");
                             }}
                           >
@@ -1294,6 +1353,23 @@ const handleImageChange = async (event, variantIndex) => {
                           min="0"
                           step="0.01"
                           placeholder="Enter offer price (optional)"
+                        />
+                      </div>
+                      
+                      {/* Stock Field */}
+                      <div className="flex flex-col">
+                        <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
+                          Stock Quantity
+                        </p>
+                        <input
+                          type="number"
+                          className="w-full md:h-[46px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
+                          value={productData.stock || ""}
+                          onChange={(e) =>
+                            setProductData({ ...productData, stock: e.target.value })
+                          }
+                          min="0"
+                          placeholder="Enter stock quantity"
                         />
                       </div>
                     </div>

@@ -14,8 +14,12 @@ function AddSale(props) {
   useEffect(() => {
     if (user?._id) {
       getProduct();
+      // Check if editing existing sale
+      if (router.query.id) {
+        getSaleById(router.query.id);
+      }
     }
-  }, [user]);
+  }, [user, router.query.id]);
 
   const [formData, setFormData] = useState({
     startDateTime: "",
@@ -49,10 +53,25 @@ function AddSale(props) {
     );
   };
 
-  const productOptions = productsList.map((product) => ({
-    value: product._id,
-    label: `${product.name} - ${product.category.name} - $${product.price_slot[0].Offerprice}`,
-  }));
+  const productOptions = productsList.map((product) => {
+    // Get price with proper fallback logic
+    const getPrice = () => {
+      // Try price_slot first
+      if (product?.price_slot?.[0]) {
+        return product.price_slot[0].Offerprice || product.price_slot[0].price || 'N/A';
+      }
+      // Try variants
+      if (product?.varients?.[0]) {
+        return product.varients[0].Offerprice || product.varients[0].price || 'N/A';
+      }
+      return 'N/A';
+    };
+
+    return {
+      value: product._id,
+      label: `${product.name} - ${product.category?.name || 'No Category'} - $${getPrice()}`,
+    };
+  });
 
   const handleProductChange = (selectedOptions) => {
     const productIds = selectedOptions.map((option) => option.value);
@@ -64,6 +83,42 @@ function AddSale(props) {
     }));
   };
 
+  const getSaleById = async (saleId) => {
+    props.loader(true);
+    try {
+      const response = await Api("get", `getSaleById/${saleId}`, "", router);
+      props.loader(false);
+      
+      if (response.status && response.data) {
+        const sale = response.data;
+        
+        // Format dates for datetime-local input
+        const formatDateTime = (dateString) => {
+          const date = new Date(dateString);
+          return date.toISOString().slice(0, 16);
+        };
+        
+        setFormData({
+          startDateTime: formatDateTime(sale.startDateTime),
+          endDateTime: formatDateTime(sale.endDateTime),
+          price: sale.price,
+          products: sale.products.map(p => p._id || p),
+        });
+        
+        // Set selected products for the dropdown
+        const selected = sale.products.map(product => ({
+          value: product._id,
+          label: `${product.name} - ${product.category?.name || 'No Category'}`,
+        }));
+        setSelectedProducts(selected);
+      }
+    } catch (err) {
+      props.loader(false);
+      console.log(err);
+      props.toaster({ type: "error", message: err?.message || "Failed to load sale" });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     props.loader(true);
@@ -72,12 +127,15 @@ function AddSale(props) {
       ...formData,
       startDateTime: new Date(formData.startDateTime).toISOString(),
       endDateTime: new Date(formData.endDateTime).toISOString(),
-      SellerId:user._id
+      SellerId: user._id
     };
 
-    console.log(FormData);
+    const isEditMode = router.query.id;
+    const apiEndpoint = isEditMode ? "updateSale" : "createSale";
+    const apiData = isEditMode ? { ...formattedData, saleId: router.query.id } : formattedData;
+
     try {
-      const response = await Api("post", "createSale", formattedData, router);
+      const response = await Api("post", apiEndpoint, apiData, router);
       props.loader(false);
       if (response.data) {
         props.toaster({ type: "success", message: "Sale added successfully!" });
@@ -106,10 +164,10 @@ function AddSale(props) {
       <div className="mb-6 border-b border-gray-200 pb-4">
         <h2 className="text-2xl font-bold text-gray-800 flex items-center">
           <span className="w-1 h-6 bg-[#26004d] rounded mr-3"></span>
-          Create Sale
+          {router.query.id ? 'Edit Sale' : 'Create Sale'}
         </h2>
         <p className="text-gray-500 text-[13px] mt-1">
-          Add a new promotional sale for selected products
+          {router.query.id ? 'Update your promotional sale details' : 'Add a new promotional sale for selected products'}
         </p>
       </div>
 
@@ -309,7 +367,7 @@ function AddSale(props) {
             type="submit"
             className="w-full bg-[#26004d] text-white py-3 px-4 rounded-lg hover:bg-[#26004d] transition-colors font-medium flex items-center justify-center"
           >
-            <span>Create Sale</span>
+            <span>{router.query.id ? 'Update Sale' : 'Create Sale'}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5 ml-2"
