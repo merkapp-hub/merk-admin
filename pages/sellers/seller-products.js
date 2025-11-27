@@ -604,7 +604,11 @@ const category = ({ row, value }) => {
                           // If product has variants, calculate total stock from all variants
                           if (popupData?.varients && popupData.varients.length > 0) {
                             const totalStock = popupData.varients.reduce((sum, variant) => {
-                              // Stock is in selected array's total field
+                              // First check if variant has direct stock field
+                              if (variant?.stock !== undefined) {
+                                return sum + (parseInt(variant.stock) || 0);
+                              }
+                              // Otherwise check selected array's total field
                               const variantStock = variant?.selected?.reduce((vSum, sel) => {
                                 return vSum + (parseInt(sel?.total) || 0);
                               }, 0) || 0;
@@ -706,6 +710,20 @@ const category = ({ row, value }) => {
                                 </div>
                               </div>
 
+                              {/* Variant Stock - Show if available */}
+                              {variant?.stock !== undefined && (
+                                <div className="mt-3">
+                                  <p className="text-gray-600 text-sm">Stock:</p>
+                                  <span className={`inline-block mt-1 px-3 py-1 rounded text-xs font-semibold ${
+                                    variant.stock > 10 ? 'bg-green-100 text-green-800' : 
+                                    variant.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 
+                                    'bg-red-100 text-red-800'
+                                  }`}>
+                                    {variant.stock} units
+                                  </span>
+                                </div>
+                              )}
+                              
                               {/* Size/Stock Details */}
                               {variant?.selected && variant.selected.length > 0 && (
                                 <div className="mt-3">

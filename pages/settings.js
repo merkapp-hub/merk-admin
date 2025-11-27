@@ -179,32 +179,30 @@ function Settings(props) {
 
   const createTax = (e) => {
     e.preventDefault();
-    console.log(carouselImg);
+    
+    if (!tax || tax < 0 || tax > 100) {
+      props.toaster({ type: "error", message: "Please enter valid tax rate (0-100)" });
+      return;
+    }
+    
     props.loader(true);
-    let data = {
-      userId: user?._id,
-      taxRate: tax,
-    };
-    console.log(data);
-    props.loader(true);
-    Api("post", `addOrUpdateTax`, data, router).then(
+    Api("put", `updateTax`, { taxRate: parseFloat(tax) }, router).then(
       (res) => {
         props.loader(false);
-        console.log("res================>", res.status);
+        console.log("res================>", res);
 
-        if (res?.status === true) {
-          console.log(res?.data?.message);
-          props.toaster({ type: "success", message: res?.data?.message });
+        if (res?.success) {
+          props.toaster({ type: "success", message: "Tax rate updated successfully" });
+          setTaxPlaceholder(tax);
+          setTax("");
         } else {
-          console.log(res?.data?.message);
-          props.toaster({ type: "error", message: res?.data?.message });
+          props.toaster({ type: "error", message: res?.message || "Failed to update tax" });
         }
       },
       (err) => {
         props.loader(false);
         console.log(err);
-        props.toaster({ type: "error", message: err?.data?.message });
-        props.toaster({ type: "error", message: err?.message });
+        props.toaster({ type: "error", message: err?.message || "Failed to update tax" });
       }
     );
   };
@@ -213,31 +211,29 @@ function Settings(props) {
   const createServiceFee = (e) => {
     e.preventDefault();
 
+    if (!ServiceFee || ServiceFee < 0) {
+      props.toaster({ type: "error", message: "Please enter valid service fee" });
+      return;
+    }
+
     props.loader(true);
-    let data = {
-      userId: user?._id,
-      Servicefee: ServiceFee,
-    };
-    console.log(data);
-    props.loader(true);
-    Api("post", `addOrUpdateServicefee`, data, router).then(
+    Api("put", `updateServiceFee`, { serviceFee: parseFloat(ServiceFee) }, router).then(
       (res) => {
         props.loader(false);
-        console.log("res================>", res.status);
+        console.log("res================>", res);
 
-        if (res?.status === true) {
-          console.log(res?.data?.message);
-          props.toaster({ type: "success", message: res?.data?.message });
+        if (res?.success) {
+          props.toaster({ type: "success", message: "Service fee updated successfully" });
+          setServiceFeePlaceHolder(ServiceFee);
+          setServiceFee("");
         } else {
-          console.log(res?.data?.message);
-          props.toaster({ type: "error", message: res?.data?.message });
+          props.toaster({ type: "error", message: res?.message || "Failed to update service fee" });
         }
       },
       (err) => {
         props.loader(false);
         console.log(err);
-        props.toaster({ type: "error", message: err?.data?.message });
-        props.toaster({ type: "error", message: err?.message });
+        props.toaster({ type: "error", message: err?.message || "Failed to update service fee" });
       }
     );
   };
@@ -308,19 +304,17 @@ function Settings(props) {
     Api("get", `getTax`, router).then(
       (res) => {
         props.loader(false);
-        console.log("res================>", res.data);
-        console.log(res?.data[0]?.taxRate)
-        if (res?.data[0]?.taxRate === undefined || res?.data[0]?.taxRate === "") {
-          setTaxPlaceholder("0.00");
+        console.log("Tax response:", res);
+        if (res?.taxRate !== undefined) {
+          setTaxPlaceholder(res.taxRate);
         } else {
-          setTaxPlaceholder(res?.data[0]?.taxRate);
+          setTaxPlaceholder("0.00");
         }
       },
       (err) => {
         props.loader(false);
         console.log(err);
-        // props.toaster({ type: "error", message: err?.data?.message });
-        // props.toaster({ type: "error", message: err?.message });
+        setTaxPlaceholder("0.00");
       }
     );
   }, [props.loader, router]);
@@ -329,18 +323,17 @@ function Settings(props) {
     Api("get", `getServiceFee`, router).then(
       (res) => {
         props.loader(false);
-        console.log("res================>", res.data);
-        if (res?.data[0]?.Servicefee === undefined || res?.data[0]?.Servicefee === "") {
-          setServiceFeePlaceHolder("0.00");
+        console.log("Service fee response:", res);
+        if (res?.serviceFee !== undefined) {
+          setServiceFeePlaceHolder(res.serviceFee);
         } else {
-          setServiceFeePlaceHolder(res?.data[0]?.Servicefee);
+          setServiceFeePlaceHolder("0.00");
         }
       },
       (err) => {
         props.loader(false);
         console.log(err);
-        // props.toaster({ type: "error", message: err?.data?.message });
-        // props.toaster({ type: "error", message: err?.message });
+        setServiceFeePlaceHolder("0.00");
       }
     );
   }, [props.loader, router]);

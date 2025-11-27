@@ -478,87 +478,197 @@ function Inventory(props) {
     <div className="w-full h-full bg-transparent pt-1 pb-5 pl-5 pr-5">
       {/* pb-[120px] */}
       {viewPopup && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50">
-          <div className="relative w-[300px] md:w-[360px] h-auto  bg-white rounded-[15px] m-auto">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50 overflow-y-auto p-4">
+          <div className="relative w-full max-w-4xl bg-white rounded-lg shadow-xl my-8">
+            {/* Close Button */}
             <div
-              className="absolute top-2 right-2 p-1 rounded-full  text-black w-8 h-8 cursor-pointer"
-              onClick={() => setviewPopup(!viewPopup)}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 text-black cursor-pointer z-10"
+              onClick={() => setviewPopup(false)}
             >
-              <RxCrossCircled className="h-full w-full font-semibold " />
+              <RxCrossCircled className="h-6 w-6" />
             </div>
 
-            <div className="px-5 py-10">
-              <div className=" w-full flex gap-2 pb-5">
-                <img
-                  src={popupData?.varients[0].image[0]}
-                  className="h-[76px] w-[76px] rounded-[10px]"
-                />
-                <div className="col-span-2 w-full flex flex-col justify-start items-start">
-                  <p className="text-base font-bold text-black">
-                    {popupData?.name}
-                  </p>
-                  <p className="text-base font-semibold text-black pt-2">
-                    {popupData?.email}
-                  </p>
-                  <p className="text-sm font-semibold text-black pt-2">
-                    {popupData?.number}
-                  </p>
+            {/* Product Details */}
+            <div className="p-6 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold text-gray-700 mb-6 border-b pb-3">
+                Product Details
+              </h2>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Left Column - Images */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-3">Product Images</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Show images from images array */}
+                    {popupData?.images && popupData.images.length > 0 ? (
+                      popupData.images.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img}
+                          alt={`Product ${idx + 1}`}
+                          className="w-full h-40 object-cover rounded-lg border"
+                        />
+                      ))
+                    ) : null}
+                    
+                    {/* Show images from variants */}
+                    {popupData?.varients && popupData.varients.length > 0 ? (
+                      popupData.varients.map((variant, vIdx) =>
+                        variant?.image && Array.isArray(variant.image) ? (
+                          variant.image.map((img, iIdx) => (
+                            <img
+                              key={`v-${vIdx}-${iIdx}`}
+                              src={img}
+                              alt={`Variant ${vIdx + 1}`}
+                              className="w-full h-40 object-cover rounded-lg border"
+                            />
+                          ))
+                        ) : null
+                      )
+                    ) : null}
+                    
+                    {/* If no images at all */}
+                    {(!popupData?.images || popupData.images.length === 0) && 
+                     (!popupData?.varients || popupData.varients.length === 0 || 
+                      !popupData.varients.some(v => v.image && v.image.length > 0)) && (
+                      <div className="col-span-2 text-center text-gray-500 py-8">
+                        No images available
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column - Details */}
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Basic Information</h3>
+                    <div className="space-y-2 text-sm text-gray-700 bg-gray-50 p-3 rounded">
+                      <p><span className="font-semibold">Name:</span> {popupData?.name || 'N/A'}</p>
+                      <p><span className="font-semibold">Slug:</span> {popupData?.slug || 'N/A'}</p>
+                      <p><span className="font-semibold">Category:</span> {popupData?.category?.name || 'N/A'}</p>
+                      <p><span className="font-semibold">Status:</span> 
+                        <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                          popupData?.status === 'verified' ? 'bg-green-100 text-green-800' : 
+                          popupData?.status === 'suspended' ? 'bg-red-100 text-red-800' : 
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {popupData?.status || 'N/A'}
+                        </span>
+                      </p>
+                      <p><span className="font-semibold">Verified:</span> {popupData?.is_verified ? '✅ Yes' : '❌ No'}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Stock & Sales</h3>
+                    <div className="space-y-2 text-sm text-gray-700 bg-blue-50 p-3 rounded">
+                      <p><span className="font-semibold">Available Stock:</span> 
+                        {popupData?.varients && popupData.varients.length > 0 
+                          ? (() => {
+                              const totalVariantStock = popupData.varients.reduce((sum, v) => sum + (v.stock || 0), 0);
+                              return totalVariantStock > 0 ? totalVariantStock : (popupData?.stock || 0);
+                            })()
+                          : (popupData?.stock || 0)
+                        }
+                      </p>
+                      <p><span className="font-semibold">Sold Pieces:</span> {popupData?.sold_pieces || 0}</p>
+                    </div>
+                  </div>
+
+                  {/* Pricing - Only if price_slot exists and has data */}
+                  {popupData?.price_slot && popupData.price_slot.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">Pricing</h3>
+                      <div className="space-y-2 text-sm text-gray-700">
+                        {popupData.price_slot.map((slot, idx) => (
+                          <div key={idx} className="bg-green-50 p-3 rounded">
+                            <p><span className="font-semibold">Price:</span> ${slot?.price || 0}</p>
+                            {slot?.Offerprice > 0 && (
+                              <p><span className="font-semibold">Offer Price:</span> ${slot.Offerprice}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={popupData?.sponsered}
-                      onChange={(e, sponsered) => {
-                        setPopupData({ ...popupData, sponsered });
-                      }}
-                    />
-                  }
-                  label="is sponsered?"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={popupData?.is_verified}
-                      onChange={(e, is_verified) => {
-                        setPopupData({ ...popupData, is_verified });
-                      }}
-                    />
-                  }
-                  label="is verified?"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={popupData?.is_quality}
-                      onChange={(e, is_quality) => {
-                        setPopupData({ ...popupData, is_quality });
-                      }}
-                    />
-                  }
-                  label="is quality?"
-                />
-              </FormGroup>
+              {/* Description */}
+              {popupData?.short_description && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Description</h3>
+                  <div className="bg-gray-50 p-4 rounded">
+                    <p className="text-sm text-gray-700">
+                      {popupData.short_description}
+                    </p>
+                  </div>
+                </div>
+              )}
 
-              <div className="flex flex-row justify-start items-start pt-5 gap-5">
-                <button
-                  className="text-white text-lg font-bold w-full h-[50px] rounded-[12px] bg-custom-darkpurple"
-                  onClick={() => {
-                    addNewItem();
-                  }}
-                >
-                  Submit
-                </button>
+              {/* Variants */}
+              {popupData?.varients && popupData.varients.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold text-gray-700 mb-3">Variants ({popupData.varients.length})</h3>
+                  <div className="space-y-3">
+                    {popupData.varients.map((variant, idx) => (
+                      <div key={idx} className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg border border-purple-200">
+                        <p className="font-semibold mb-3 text-gray-700">Variant #{idx + 1}</p>
+                        <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                          {variant?.color && (
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">Color:</span>
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="w-6 h-6 rounded border border-gray-300" 
+                                  style={{ backgroundColor: variant.color }}
+                                ></div>
+                                <span>{variant.color}</span>
+                              </div>
+                            </div>
+                          )}
+                          <p><span className="font-semibold">Price:</span> ${variant?.price || 0}</p>
+                          {variant?.Offerprice > 0 && (
+                            <p><span className="font-semibold">Offer Price:</span> ${variant.Offerprice}</p>
+                          )}
+                          
+                          {/* Stock - Show if available */}
+                          {variant?.stock !== undefined && (
+                            <p className="col-span-2">
+                              <span className="font-semibold">Stock:</span> 
+                              <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                                variant.stock > 10 ? 'bg-green-100 text-green-800' : 
+                                variant.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                {variant.stock} units
+                              </span>
+                            </p>
+                          )}
+                          
+                          {variant?.selected && variant.selected.length > 0 && (
+                            <div className="col-span-2">
+                              <p className="font-semibold mb-1">Parameters:</p>
+                              {variant.selected.map((param, pIdx) => (
+                                <p key={pIdx} className="ml-4 text-xs text-gray-700">
+                                  • {param?.label}: {param?.value} {param?.total && `(Qty: ${param.total})`}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-                <button
-                  className="text-white text-lg font-bold w-full h-[50px] rounded-[12px] bg-custom-darkRed"
-                  onClick={() => suspendProduct(popupData?._id)}
-                >
-                  Suspend
-                </button>
-              </div>
+              {/* Created Date */}
+              {popupData?.createdAt && (
+                <div className="mt-6 text-sm text-gray-700 border-t pt-4">
+                  <p><span className="font-semibold">Created:</span> {new Date(popupData.createdAt).toLocaleString()}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

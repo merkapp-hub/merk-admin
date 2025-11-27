@@ -168,6 +168,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       access: ["seller","admin"],
     },
     {
+      href: "/commission-info",
+      title: "Commission Info",
+      img: <BsCash className="text-3xl" />,
+      access: ["seller"],
+    },
+    {
       href: "/my-request",
       title: "Withdrawal Request",
       img: <PiHandWithdrawFill className="text-3xl" />,

@@ -121,6 +121,7 @@ function AddProduct(props) {
       selected: [],
       price: 0,
       Offerprice: 0,
+      stock: 0,
     },
   ]);
   const [openPopup, setOpenPopup] = useState(false);
@@ -419,6 +420,7 @@ const handleCreateProduct = async (e) => {
         selected: [],
         price: 0,
         Offerprice: 0,
+        stock: 0,
       },
     ]);
     setParameterType("");
@@ -748,6 +750,7 @@ const handleImageChange = async (event, variantIndex) => {
         selected: [],
         price: 0,
         Offerprice: 0,
+        stock: 0,
       },
     ]);
     // Add a new ref for the new variant
@@ -1167,12 +1170,36 @@ const handleImageChange = async (event, variantIndex) => {
                           </div>
                         </div>
 
-                        {/* Parameter Type Component */}
+                        {/* Parameter Type Component or Simple Quantity */}
                         <div className="mt-2">
-                          <ParameterTypeComponent
-                            item={item?.selected || []}
-                            variantIndex={i}
-                          />
+                          {parameterType && item?.selected && item.selected.length > 0 ? (
+                            <ParameterTypeComponent
+                              item={item?.selected || []}
+                              variantIndex={i}
+                            />
+                          ) : (
+                            <div className="col-span-4 grid md:grid-cols-3 grid-cols-1 w-full gap-3">
+                              <div className="flex flex-col justify-start items-start w-full">
+                                <p className="text-gray-800 text-sm font-semibold NunitoSans pb-2">
+                                  Stock Quantity *
+                                </p>
+                                <input
+                                  type="number"
+                                  className="w-full md:h-[46px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
+                                  value={item?.stock || ""}
+                                  onChange={(e) => {
+                                    const updatedVariants = produce(variants, (draft) => {
+                                      draft[i].stock = e.target.value;
+                                    });
+                                    setVariants(updatedVariants);
+                                  }}
+                                  placeholder="Enter stock quantity"
+                                  required
+                                  min="0"
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                       {/* Image Upload Section */}
@@ -1279,6 +1306,7 @@ const handleImageChange = async (event, variantIndex) => {
                                 : [],
                             price: 0,
                             Offerprice: 0,
+                            stock: 0,
                           },
                         ]);
                       }}

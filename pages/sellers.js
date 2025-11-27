@@ -274,6 +274,16 @@ function Sellers(props) {
     );
   };
 
+  function commission({ value }) {
+    return (
+      <div>
+        <p className="text-gray-800 text-base font-semibold text-center">
+          {value || 15}%
+        </p>
+      </div>
+    );
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -297,6 +307,11 @@ function Sellers(props) {
         Header: "Mobile",
         accessor: "number",
         Cell: mobile,
+      },
+      {
+        Header: "Commission",
+        accessor: "commissionRate",
+        Cell: commission,
       },
       {
         Header: "DATE",
@@ -497,6 +512,63 @@ function Sellers(props) {
 
                 <div className="col-span-6 flex md:justify-center justify-start items-center min-w-[400px] md:border-l-2 md:border-l-gray-300 ">
                   <div className="grid grid-cols-4 w-full justify-between items-center md:pl-5">
+                    {/* Commission Rate Section */}
+                    <div className="col-span-4 mb-4 p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-gray-700">
+                            Commission Rate:
+                          </p>
+                          <p className="text-lg font-bold text-blue-600">
+                            {popupData?.commissionRate || 15}%
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            defaultValue={popupData?.commissionRate || 15}
+                            className="w-20 h-8 px-2 border border-gray-300 rounded text-center"
+                            id={`commission-${popupData?._id}`}
+                          />
+                          <button
+                            className="h-8 px-3 bg-blue-600 text-white text-sm font-normal rounded hover:bg-blue-700"
+                            onClick={async () => {
+                              const newRate = document.getElementById(`commission-${popupData?._id}`).value;
+                              if (!newRate || newRate < 0 || newRate > 100) {
+                                props.toaster({ type: "error", message: "Please enter a valid commission rate (0-100)" });
+                                return;
+                              }
+                              
+                              props.loader(true);
+                              try {
+                                const response = await Api("put", "auth/updateSellerCommission", {
+                                  sellerId: popupData?._id,
+                                  commissionRate: parseFloat(newRate)
+                                }, router);
+                                
+                                if (response?.success) {
+                                  props.toaster({ type: "success", message: "Commission rate updated successfully" });
+                                  setPopupData({ ...popupData, commissionRate: parseFloat(newRate) });
+                                  getuserlist(currentPage, pageSize);
+                                } else {
+                                  props.toaster({ type: "error", message: response?.message || "Failed to update commission" });
+                                }
+                              } catch (error) {
+                                props.toaster({ type: "error", message: error?.message || "Failed to update commission" });
+                              } finally {
+                                props.loader(false);
+                              }
+                            }}
+                          >
+                            Update
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
                     <div
                       onClick={() => {
                         setNewPopup(true);
