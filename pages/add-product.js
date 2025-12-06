@@ -84,6 +84,79 @@ const DEFAULT_WEIGHT = {
   sell: 0,
 };
 
+// Move ParameterInput OUTSIDE component to prevent re-creation
+const ParameterInput = React.memo(({ 
+  initialValue,
+  onValueChange,
+  type = "number",
+  className,
+  min,
+  variantIndex,
+  slotIndex,
+  field
+}) => {
+  const [value, setValue] = React.useState(initialValue || "");
+  const timeoutRef = React.useRef(null);
+  const isMountedRef = React.useRef(true);
+  
+  // Sync with initialValue only on mount
+  React.useEffect(() => {
+    if (initialValue !== undefined && initialValue !== value) {
+      setValue(initialValue);
+    }
+  }, []);
+  
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+  
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    
+    // Update local state immediately for smooth typing
+    setValue(newValue);
+    
+    // Clear previous timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    // Debounce the parent state update
+    timeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        onValueChange(newValue);
+      }
+    }, 300); // 300ms debounce
+  };
+  
+  return (
+    <input
+      type={type}
+      className={className}
+      value={value}
+      onChange={handleChange}
+      min={min}
+      autoComplete="off"
+    />
+  );
+}, (prevProps, nextProps) => {
+  // Custom comparison to prevent re-render
+  return (
+    prevProps.variantIndex === nextProps.variantIndex &&
+    prevProps.slotIndex === nextProps.slotIndex &&
+    prevProps.field === nextProps.field &&
+    prevProps.className === nextProps.className
+  );
+});
+
+ParameterInput.displayName = 'ParameterInput';
+
 function AddProduct(props) {
   const router = useRouter();
   const fileInputRefs = useRef([]);
@@ -429,38 +502,6 @@ const handleCreateProduct = async (e) => {
     setSingleImageUrl("");
   };
 
-  // Simple input that never re-renders
-  const ParameterInput = ({ 
-    initialValue,
-    onValueChange,
-    type = "number",
-    className,
-    min
-  }) => {
-    const inputRef = React.useRef(null);
-    
-    React.useEffect(() => {
-      if (inputRef.current && initialValue !== undefined) {
-        inputRef.current.value = initialValue;
-      }
-    }, []);
-    
-    const handleChange = (e) => {
-      onValueChange(e.target.value);
-    };
-    
-    return (
-      <input
-        ref={inputRef}
-        type={type}
-        className={className}
-        defaultValue={initialValue}
-        onChange={handleChange}
-        min={min}
-      />
-    );
-  };
-
   const ParameterTypeComponent = ({ item = [], variantIndex }) => {
     return (
       <div className="col-span-4 grid md:grid-cols-6 grid-cols-1 w-full gap-3">
@@ -480,6 +521,7 @@ const handleCreateProduct = async (e) => {
                   {slot?.label}
                 </p>
                 <ParameterInput
+                  key={`${variantIndex}-${slotIndex}-value`}
                   initialValue={slot?.value || ""}
                   onValueChange={(value) =>
                     updateParameterSlot(
@@ -489,6 +531,9 @@ const handleCreateProduct = async (e) => {
                       value
                     )
                   }
+                  variantIndex={variantIndex}
+                  slotIndex={slotIndex}
+                  field="value"
                   className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                   min={1}
                 />
@@ -529,6 +574,7 @@ const handleCreateProduct = async (e) => {
                     {slot?.label}
                   </p>
                   <ParameterInput
+                    key={`${variantIndex}-${slotIndex}-height`}
                     initialValue={slot.Height || ""}
                     onValueChange={(value) =>
                       updateParameterSlot(
@@ -538,6 +584,9 @@ const handleCreateProduct = async (e) => {
                         value
                       )
                     }
+                    variantIndex={variantIndex}
+                    slotIndex={slotIndex}
+                    field="Height"
                     className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                     min={1}
                   />
@@ -547,6 +596,7 @@ const handleCreateProduct = async (e) => {
                     {slot?.label2}
                   </p>
                   <ParameterInput
+                    key={`${variantIndex}-${slotIndex}-width`}
                     initialValue={slot?.Width || ""}
                     onValueChange={(value) =>
                       updateParameterSlot(
@@ -556,6 +606,9 @@ const handleCreateProduct = async (e) => {
                         value
                       )
                     }
+                    variantIndex={variantIndex}
+                    slotIndex={slotIndex}
+                    field="Width"
                     className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                     min={1}
                   />
@@ -568,6 +621,7 @@ const handleCreateProduct = async (e) => {
                 Qty
               </p>
               <ParameterInput
+                key={`${variantIndex}-${slotIndex}-total`}
                 initialValue={slot?.total || ""}
                 onValueChange={(value) =>
                   updateParameterSlot(
@@ -577,6 +631,9 @@ const handleCreateProduct = async (e) => {
                     value
                   )
                 }
+                variantIndex={variantIndex}
+                slotIndex={slotIndex}
+                field="total"
                 className="md:w-[126px] w-[87px] md:h-[42px] h-[40px] bg-custom-light border border-custom-offWhite px-3 rounded outline-none font-normal text-sm text-black NunitoSans"
                 min={1}
               />

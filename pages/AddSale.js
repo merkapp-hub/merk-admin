@@ -41,13 +41,18 @@ function AddSale(props) {
     
     Api("get", `getSellerProducts?seller_id=${user?._id}`, router).then(
       (res) => {
-        console.log("seller products",res)
+        console.log("Seller products response:", res);
+        console.log("Products with categories:", res.data?.map(p => ({
+          name: p.name,
+          category: p.category,
+          hasCategory: !!p.category
+        })));
         props.loader(false);
-        setProductsList(res.data);
+        setProductsList(res.data || []);
       },
       (err) => {
         props.loader(false);
-        console.log(err);
+        console.log("Get products error:", err);
         props.toaster({ type: "error", message: err?.message });
       }
     );
@@ -121,6 +126,23 @@ function AddSale(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validation
+    if (!formData.startDateTime || !formData.endDateTime) {
+      props.toaster({ type: "error", message: "Please select start and end date" });
+      return;
+    }
+    
+    if (!formData.price || formData.price <= 0) {
+      props.toaster({ type: "error", message: "Please enter a valid price" });
+      return;
+    }
+    
+    if (!formData.products || formData.products.length === 0) {
+      props.toaster({ type: "error", message: "Please select at least one product" });
+      return;
+    }
+    
     props.loader(true);
 
     const formattedData = {
@@ -130,15 +152,23 @@ function AddSale(props) {
       SellerId: user._id
     };
 
-    const isEditMode = router.query.id;
+    const isEditMode = router.query.id && router.query.id !== 'undefined';
     const apiEndpoint = isEditMode ? "updateSale" : "createSale";
-    const apiData = isEditMode ? { ...formattedData, saleId: router.query.id } : formattedData;
+    
+    // Only add saleId if it's a valid ID
+    const apiData = isEditMode 
+      ? { ...formattedData, saleId: router.query.id } 
+      : formattedData;
+    
+    console.log('Submit Data:', { isEditMode, apiEndpoint, apiData });
 
     try {
       const response = await Api("post", apiEndpoint, apiData, router);
       props.loader(false);
-      if (response.data) {
-        props.toaster({ type: "success", message: "Sale added successfully!" });
+      
+      if (response.status || response.data) {
+        const message = isEditMode ? "Sale updated successfully!" : "Sale added successfully!";
+        props.toaster({ type: "success", message });
         setFormData({
           startDateTime: "",
           endDateTime: "",
@@ -147,13 +177,15 @@ function AddSale(props) {
         });
         setSelectedProducts([]);
         router.push("/SaleProduct");
+      } else {
+        props.toaster({ type: "error", message: response?.message || "Failed to save sale" });
       }
     } catch (error) {
       props.loader(false);
-      console.error(error);
+      console.error('Submit Error:', error);
       props.toaster({
         type: "error",
-        message: error?.message || "An error occurred",
+        message: error?.response?.data?.message || error?.message || "An error occurred",
       });
     }
   };

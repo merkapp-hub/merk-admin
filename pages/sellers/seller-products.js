@@ -513,7 +513,7 @@ const category = ({ row, value }) => {
   };
 
   return (
-    <div className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
+    <div className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5 relative z-10">
       {/* pb-[120px] */}
       {viewPopup && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50 overflow-auto p-4">

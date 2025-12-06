@@ -80,7 +80,7 @@ function Reviews() {
   };
 
   return (
-    <div className="m-10">
+    <div className="m-10 relative z-10">
       <h1 className="text-lg sm:text-xl md:text-2xl my-5 text-black font-semibold">
         Reviews {pagination.totalReviews && `(${pagination.totalReviews})`}
       </h1>

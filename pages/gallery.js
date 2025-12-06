@@ -338,7 +338,7 @@ export default function Gallery(props) {
   const bannerItems = Array.isArray(galleryItems) ? galleryItems.filter(item => item.type === 'banner') : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 overflow-y-auto">
+    <div className="min-h-screen bg-gray-50 p-6 overflow-y-auto relative z-10">
       <div className="max-w-7xl mx-auto pb-20">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">

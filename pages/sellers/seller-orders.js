@@ -281,7 +281,7 @@ function SellerOrders(props) {
   };
 
   return (
-    <section className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
+    <section className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5 relative z-10">
       <p className="text-gray-800 font-bold  md:text-[32px] text-2xl">
         Seller Orders
       </p>

@@ -293,7 +293,7 @@ function Withdralreq(props) {
   );
 
   return (
-    <section className="min-h-screen bg-white">
+    <section className="min-h-screen bg-white relative z-10">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Seller Withdrawal Request</h1>

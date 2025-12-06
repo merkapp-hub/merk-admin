@@ -278,7 +278,7 @@ function AboutManagement(props) {
     };
 
     return (
-        <div className="w-full mx-auto p-5">
+        <div className="w-full mx-auto p-5 relative z-10">
             <div className='md:p-6 p-3 border-2 border-custom-darkpurple rounded-2xl flex flex-col md:flex-row items-center justify-between gap-2 md:gap-0'>
                 <div className='w-full text-center md:text-left'>
                     <p className='text-md md:text-lg font-medium text-custom-blue'>

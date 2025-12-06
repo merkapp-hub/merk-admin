@@ -15,48 +15,53 @@ const CustomerQueries = () => {
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    limit: 10
+    itemsPerPage: 20
   });
   const [viewModal, setViewModal] = useState({
     isOpen: false,
     data: null
   });
 
-   const fetchQueries = async (selectedDate, page = 1, limit = 10) => {
-    const data = {};
+   const fetchQueries = async (selectedDate, page = 1, limit = 20) => {
+    // Build query parameters
+    const params = new URLSearchParams();
+    params.append('page', page);
+    params.append('limit', limit);
 
     if (selectedDate) {
-      // Format date as needed
-      data.curDate = new Date(selectedDate).toISOString();
+      params.append('curDate', new Date(selectedDate).toISOString());
     }
 
-    if (searchParams.name) {
-      data.name = searchParams.name;
+    if (searchParams.name && searchParams.name.trim()) {
+      params.append('name', searchParams.name.trim());
     }
 
-    if (searchParams.email) {
-      data.Email = searchParams.email;
+    if (searchParams.email && searchParams.email.trim()) {
+      params.append('Email', searchParams.email.trim());
     }
 
+    console.log('Fetching queries with params:', params.toString());
     setIsLoading(true);
 
     try {
-      const res = await Api("get", `contacts`, data, null);
+      const res = await Api("get", `contacts?${params.toString()}`, null, null);
 
       setIsLoading(false);
 
-      console.log(res)
+      console.log('Queries response:', res);
 
       if (res?.status) {
-        setQueries(res?.data);
+        setQueries(res?.data || []);
         setPagination(res?.pagination);
-        setCurrentPage(res?.pagination?.currentPage);
+        setCurrentPage(res?.pagination?.currentPage || page);
       } else {
-        console.error("Failed to fetch queries");
+        console.error("Failed to fetch queries:", res);
+        setQueries([]);
       }
     } catch (err) {
       setIsLoading(false);
       console.error("An error occurred:", err);
+      setQueries([]);
     }
   };
 
@@ -105,7 +110,7 @@ const CustomerQueries = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gray-50 min-h-screen relative z-10">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Customer Queries</h1>
         

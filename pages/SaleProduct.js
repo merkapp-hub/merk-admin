@@ -15,6 +15,9 @@ function SaleProduct(props) {
     const [viewPopup, setviewPopup] = useState(false)
     const [saleData, setSaleData] = useState([])
     const [countdown, setCountdown] = useState([]);
+    const saleIdRef = React.useRef(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
     useEffect(() => {
         if (user?._id) {
@@ -89,20 +92,32 @@ function SaleProduct(props) {
 
         Api("get", `getFlashSale?SellerId=${user._id}`, router).then(
             (res) => {
-                console.log('seller sale',res)
+                console.log('Seller Sale Response:', res);
                 props.loader(false);
-                if (res.success) {
-                    setSaleData(res.data)
-                    console.log(res.data)
-                    console.log(res.data[0]?.products)
-                    setProductsList(res.data[0]?.products
-);
+                if (res.success && res.data && res.data.length > 0) {
+                    console.log('Sale Data:', res.data);
+                    console.log('Sale ID:', res.data[0]?._id);
+                    console.log('Sale Products:', res.data[0]?.products);
+                    
+                    // Store sale ID in ref for stable access
+                    saleIdRef.current = res.data[0]?._id;
+                    
+                    setSaleData(res.data);
+                    setProductsList(res.data[0]?.products || []);
+                } else {
+                    console.log('No sale data found');
+                    saleIdRef.current = null;
+                    setSaleData([]);
+                    setProductsList([]);
                 }
             },
             (err) => {
                 props.loader(false);
-                console.log(err);
+                console.log('Get Sale Error:', err);
                 props.toaster({ type: "error", message: err?.message });
+                saleIdRef.current = null;
+                setSaleData([]);
+                setProductsList([]);
             }
         );
     };
@@ -150,7 +165,16 @@ function SaleProduct(props) {
                 <div 
                     className="py-[10px] border rounded-[10px] border-custom-offWhite px-4 items-center flex justify-center cursor-pointer hover:bg-blue-50"
                     onClick={() => {
-                        router.push(`/AddSale?id=${saleData[0]?._id}`);
+                        // Use ref instead of state to avoid stale closure
+                        const saleId = saleIdRef.current;
+                        console.log('Edit clicked - Sale ID from ref:', saleId);
+                        console.log('Sale Data state:', saleData);
+                        
+                        if (saleId && saleId !== 'undefined') {
+                            router.push(`/AddSale?id=${saleId}`);
+                        } else {
+                            props.toaster({ type: "error", message: "Sale ID not found. Please refresh the page." });
+                        }
                     }}
                     title="Edit Sale"
                 >
@@ -290,7 +314,20 @@ function SaleProduct(props) {
 
                         </div>
                         {productsList?.length > 0 ? (
-                            <Table columns={columns} data={productsList} />
+                            <Table 
+                                columns={columns} 
+                                data={productsList}
+                                pagination={{
+                                    currentPage: currentPage,
+                                    totalPages: Math.ceil(productsList.length / pageSize),
+                                    totalItems: productsList.length
+                                }}
+                                currentPage={currentPage}
+                                setCurrentPage={setCurrentPage}
+                                pageSize={pageSize}
+                                setPageSize={setPageSize}
+                                itemsPerPage={pageSize}
+                            />
                         ) : (
                             <div className='text-black text-[20px] text-center mt-52'>No Sale is Live</div>
                         )}

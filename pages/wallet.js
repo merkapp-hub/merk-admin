@@ -252,7 +252,7 @@ function Wallet(props) {
   };
 
   return (
-    <section className="w-full h-full bg-transparent md:pt-5 pt-2 pb-5 pl-5 pr-5">
+    <section className="w-full h-full bg-transparent md:pt-5 pt-2 pb-5 pl-5 pr-5 relative z-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">
           {user?.role === 'admin' ? 'Admin Wallet' : 'My Wallet'}

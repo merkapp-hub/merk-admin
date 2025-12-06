@@ -20,6 +20,8 @@ function Categories(props) {
   const [deleteid, setdeleteid] = useState(null);
   const [editid, seteditid] = useState("");
   const f = useRef(null);
+  const topRef = useRef(null);
+  const scrollContainerRef = useRef(null);
 
   // Add attribute
   const [addAttribute, setAddAttribute] = useState([]);
@@ -232,12 +234,13 @@ function Categories(props) {
   };
 
   return (
-    <section className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5">
+    <section className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5 relative z-10">
       <p className=" font-bold  text-black md:text-[32px] text-2xl">
         Add Categories
       </p>
 
-      <section className="h-full w-full overflow-scroll no-scrollbar md:mt-0 mt-5 md:pb-32 pb-28">
+      <section ref={scrollContainerRef} className="h-full w-full overflow-scroll no-scrollbar md:mt-0 mt-5 md:pb-32 pb-28">
+        <div ref={topRef} style={{ height: '1px', marginTop: '-1px' }}></div>
         {/* md:mt-9 */}
         <form
           className="bg-white border md:my-10 border-custom-lightsGrayColor rounded-[10px] p-5 "
@@ -394,13 +397,33 @@ function Categories(props) {
         {filteredCategories.map((item, i) => (
           <div
             key={i}
-            className="bg-white border border-custom-lightsGrayColor rounded-[10px] p-5 mt-5"
+            className="bg-white border border-custom-lightsGrayColor rounded-[10px] p-5 mt-5 cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => {
+              console.log('Category card clicked:', item);
+              seteditid(item._id);
+              setData({
+                ...item,
+                is_refundable: item.is_refundable ?? false,
+              });
+              setAddAttribute(item.attributes);
+              
+              // Scroll to top smoothly
+              setTimeout(() => {
+                if (scrollContainerRef.current) {
+                  scrollContainerRef.current.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                  });
+                }
+              }, 50);
+            }}
           >
             <div className="grid grid-cols-6 justify-between items-center w-full">
               <div className="col-span-2 flex justify-start items-center">
                 <input
                   className="md:h-[30px] h-[15px] md:w-[30px] w-[15px]"
                   type="checkbox"
+                  onClick={(e) => e.stopPropagation()}
                 />
                 <p className={`text-base text-black font-semibold pl-5`}>
                   {item?.name}
@@ -412,19 +435,31 @@ function Categories(props) {
               <div className="col-span-2 flex justify-end items-center">
                 <FiEdit
                   className={`md:h-[30px] h-[20px] md:w-[30px] w-[20px] text-custom-darkGray mr-[20px] cursor-pointer`}
-                  onClick={() => {
-                    console.log(item)
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log('Edit icon clicked:', item);
                     seteditid(item._id);
                     setData({
                       ...item,
                       is_refundable: item.is_refundable ?? false,
                     });
                     setAddAttribute(item.attributes);
+                    
+                    // Scroll to top smoothly
+                    setTimeout(() => {
+                      if (scrollContainerRef.current) {
+                        scrollContainerRef.current.scrollTo({
+                          top: 0,
+                          behavior: 'smooth'
+                        });
+                      }
+                    }, 50);
                   }}
                 />
                 <IoCloseCircleOutline
                   className={`md:h-[30px] h-[20px] md:w-[30px] w-[20px] text-custom-darkGray cursor-pointer`}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     deleteCategory(item?._id);
                   }}
                 />
