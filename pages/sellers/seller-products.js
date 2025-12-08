@@ -516,7 +516,7 @@ const category = ({ row, value }) => {
     <div className=" w-full h-full bg-transparent md:pt-5 pt-5 pb-5 pl-5 pr-5 relative z-10">
       {/* pb-[120px] */}
       {viewPopup && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50 overflow-auto p-4">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-[9999] overflow-auto p-4">
           <div className="relative w-full max-w-[800px] max-h-[90vh] bg-white rounded-[15px] m-auto overflow-y-auto">
             <div
               className="absolute top-4 right-4 p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-black w-8 h-8 cursor-pointer z-10"
