@@ -72,9 +72,12 @@ function AddSale(props) {
       return 'N/A';
     };
 
+    const verificationStatus = product?.is_verified ? '✓ Verified' : '⚠️ Not Verified';
+
     return {
       value: product._id,
-      label: `${product.name} - ${product.category?.name || 'No Category'} - $${getPrice()}`,
+      label: `${product.name} - ${product.category?.name || 'No Category'} - $${getPrice()} - ${verificationStatus}`,
+      isDisabled: !product?.is_verified, // Disable unverified products
     };
   });
 
@@ -142,6 +145,20 @@ function AddSale(props) {
       props.toaster({ type: "error", message: "Please select at least one product" });
       return;
     }
+
+    // Check if all selected products are verified
+    const unverifiedProducts = formData.products
+      .map(productId => productsList.find(p => p._id === productId))
+      .filter(product => !product?.is_verified);
+
+    if (unverifiedProducts.length > 0) {
+      const productNames = unverifiedProducts.map(p => p?.name).join(', ');
+      props.toaster({ 
+        type: "error", 
+        message: `Cannot create flash sale. Following products are not verified by admin: ${productNames}. Please wait for admin verification.` 
+      });
+      return;
+    }
     
     props.loader(true);
 
@@ -161,12 +178,15 @@ function AddSale(props) {
       : formattedData;
     
     console.log('Submit Data:', { isEditMode, apiEndpoint, apiData });
+    console.log('Products being sent:', apiData.products);
+    console.log('FormData products:', formData.products);
 
     try {
       const response = await Api("post", apiEndpoint, apiData, router);
       props.loader(false);
       
-      if (response.status || response.data) {
+      // Check for successful response
+      if (response.success === true || response.status === true) {
         const message = isEditMode ? "Sale updated successfully!" : "Sale added successfully!";
         props.toaster({ type: "success", message });
         setFormData({
@@ -178,7 +198,11 @@ function AddSale(props) {
         setSelectedProducts([]);
         router.push("/SaleProduct");
       } else {
-        props.toaster({ type: "error", message: response?.message || "Failed to save sale" });
+        // Handle error response from backend
+        props.toaster({ 
+          type: "error", 
+          message: response?.message || "Failed to save sale" 
+        });
       }
     } catch (error) {
       props.loader(false);
@@ -269,6 +293,8 @@ function AddSale(props) {
                     : state.isFocused
                     ? "rgba(243, 133, 41, 0.1)"
                     : null,
+                  color: state.isDisabled ? "#9ca3af" : base.color,
+                  cursor: state.isDisabled ? "not-allowed" : "pointer",
                   ":active": {
                     backgroundColor: "#26004d",
                   },
@@ -277,7 +303,7 @@ function AddSale(props) {
             />
           </div>
           <p className="text-[13px] text-gray-500 mt-1">
-            Choose one or more products for this sale
+            ✓ Only verified products can be added to flash sale. ⚠️ Unverified products are disabled.
           </p>
         </div>
 
