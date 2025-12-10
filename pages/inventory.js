@@ -478,7 +478,7 @@ function Inventory(props) {
     <div className="w-full h-full bg-transparent pt-1 pb-5 pl-5 pr-5">
       {/* pb-[120px] */}
       {viewPopup && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50 overflow-y-auto p-4">
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-[9999] overflow-y-auto p-4">
           <div className="relative w-full max-w-4xl bg-white rounded-lg shadow-xl my-8">
             {/* Close Button */}
             <div

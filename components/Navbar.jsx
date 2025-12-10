@@ -23,7 +23,7 @@ const Navbar = ({ setOpenTab, openTab }) => {
   };
 
   return (
-    <nav className="w-full z-50 text-white rounded-b-[30px] sticky top-0 max-w-screen bg-white">
+    <nav className="w-full z-[100] text-white rounded-b-[30px] sticky top-0 max-w-screen bg-white">
       <div className="w-full md:py-3 py-1 px-5 flex items-center justify-between">
         {/* shadow-2xl */}
         <div className="md:hidden bg-white rounded">

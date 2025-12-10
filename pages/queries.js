@@ -318,7 +318,7 @@ function Queries(props) {
         {/* shadow-2xl */}
 
         {viewPopup && (
-          <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-50">
+          <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-[9999]">
             <div className="relative w-[300px] md:w-[360px] h-auto  bg-white rounded-[15px] m-auto">
               <div
                 className="absolute top-2 right-2 p-1 rounded-full  text-black w-8 h-8 cursor-pointer"
