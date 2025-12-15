@@ -467,7 +467,7 @@ function Orders(props) {
                   </p>
                 </div>
 
-                {!cartData?.assignedEmployee && (
+                {/* {!cartData?.assignedEmployee && (
                   <button
                     onClick={() => {
                       setviewPopup(true);
@@ -480,7 +480,7 @@ function Orders(props) {
                   >
                     Assign Employee
                   </button>
-                )}
+                )} */}
               </div>
             </div>
           </div>
@@ -502,7 +502,7 @@ function Orders(props) {
                 <RxCrossCircled className="h-full w-full font-semibold " />
               </div>
 
-              <div className="px-5 w-full py-3">
+              {/* <div className="px-5 w-full py-3">
                 <p className="text-center mt-2 font-semibold text-xl text-gray-800">
                   Assign Employee
                 </p>
@@ -541,7 +541,7 @@ function Orders(props) {
                     Assign
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         )}
