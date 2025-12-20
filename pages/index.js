@@ -365,7 +365,7 @@ function Home(props) {
                             </p>
                           </div>
                         </div>
-                        <div className="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+                        {/* <div className="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
                           <div className="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-green-600 to-green-400 text-white shadow-green-500/40 shadow-lg absolute -mt-4 grid h-12 w-12 place-items-center">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -401,7 +401,7 @@ function Home(props) {
                               &nbsp;than last month
                             </p>
                           </div>
-                        </div>
+                        </div> */}
                         <div className="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
                           <div className="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-orange-600 to-orange-400 text-white shadow-orange-500/40 shadow-lg absolute -mt-4 grid h-12 w-12 place-items-center">
                             <svg

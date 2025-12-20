@@ -37,7 +37,7 @@ const CustomerQueries = () => {
     }
 
     if (searchParams.email && searchParams.email.trim()) {
-      params.append('Email', searchParams.email.trim());
+      params.append('email', searchParams.email.trim());
     }
 
     console.log('Fetching queries with params:', params.toString());

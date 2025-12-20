@@ -40,6 +40,8 @@ function SellerOrders(props) {
     currentPage: 1,
     itemsPerPage: pageSize,
   });
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const closeDrawer = async () => {
     setOpenCart(false);
@@ -149,6 +151,42 @@ function SellerOrders(props) {
     );
   };
 
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      props.loader(true);
+      
+      const data = {
+        id: orderId,
+        status: newStatus
+      };
+      
+      const res = await Api("post", "changeorderstatus", data, router);
+      
+      if (res?.status !== false) {
+        props.toaster({
+          type: "success",
+          message: `Order status updated to ${newStatus} successfully`,
+        });
+        setStatusModalOpen(false);
+        setSelectedOrder(null);
+        getOrderBySeller(null, currentPage, pageSize);
+      } else {
+        props.toaster({ 
+          type: "error", 
+          message: res?.message || "Failed to update order status" 
+        });
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      props.toaster({ 
+        type: "error", 
+        message: error?.message || "An error occurred while updating order status" 
+      });
+    } finally {
+      props.loader(false);
+    }
+  };
+
   // console.log("order seller ::", userRquestList);
 
   function indexID({ value }) {
@@ -217,7 +255,7 @@ function SellerOrders(props) {
   const info = ({ value, row }) => {
     //console.log(row.original._id)
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center gap-2">
         <button
           className="h-[38px] w-[93px] bg-[#00000020] text-black text-base	font-normal rounded-[8px]"
           onClick={() => {
@@ -226,6 +264,15 @@ function SellerOrders(props) {
           }}
         >
           See
+        </button>
+        <button
+          className="h-[38px] w-[110px] bg-blue-600 hover:bg-blue-700 text-white text-sm font-normal rounded-[8px]"
+          onClick={() => {
+            setSelectedOrder(row.original);
+            setStatusModalOpen(true);
+          }}
+        >
+          Update Status
         </button>
       </div>
     );
@@ -245,12 +292,12 @@ function SellerOrders(props) {
       },
       {
         Header: "Seller Name",
-        accessor: "seller_id.name",
+        accessor: row => `${row.seller_id?.firstName || ''} ${row.seller_id?.lastName || ''}`.trim() || 'N/A',
         Cell: name,
       },
      {
       Header: "Customer Name",
-      accessor: row => `${row.user?.firstName || ''} ${row.user?.lastName || ''}`.trim(),
+      accessor: row => `${row.user?.firstName || ''} ${row.user?.lastName || ''}`.trim() || 'N/A',
       Cell: name, 
     },
       {
@@ -558,6 +605,75 @@ function SellerOrders(props) {
                   >
                     Assign
                   </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Status Update Modal */}
+        {statusModalOpen && selectedOrder && (
+          <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-[9999]">
+            <div className="relative w-[90%] max-w-[500px] bg-white rounded-[15px] m-auto p-6">
+              <div
+                className="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-100 text-black w-8 h-8 cursor-pointer"
+                onClick={() => {
+                  setStatusModalOpen(false);
+                  setSelectedOrder(null);
+                }}
+              >
+                <RxCrossCircled className="h-full w-full font-semibold" />
+              </div>
+
+              <div className="w-full">
+                <h2 className="text-center mt-2 font-bold text-2xl text-gray-800 mb-4">
+                  Update Order Status
+                </h2>
+                
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-2">
+                    <span className="font-semibold">Order ID:</span> {selectedOrder?.orderId || selectedOrder?._id}
+                  </p>
+                  <p className="text-sm text-gray-600 mb-2">
+                    <span className="font-semibold">Customer:</span> {selectedOrder?.user?.firstName} {selectedOrder?.user?.lastName}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold">Current Status:</span>{" "}
+                    <span className={`font-bold ${
+                      selectedOrder?.status === "Pending" ? "text-orange-500" : 
+                      selectedOrder?.status === "Delivered" ? "text-green-500" : 
+                      selectedOrder?.status === "Cancelled" ? "text-red-500" : 
+                      "text-blue-500"
+                    }`}>
+                      {selectedOrder?.status === "Driverassigned" ? "Driver Assigned" : selectedOrder?.status}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="mb-6">
+                  <p className="text-gray-800 font-semibold text-base mb-3">
+                    Select New Status:
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={() => updateOrderStatus(selectedOrder?._id, "Shipped")}
+                      className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+                    >
+                      Shipped
+                    </button>
+                    <button
+                      onClick={() => updateOrderStatus(selectedOrder?._id, "Delivered")}
+                      className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+                    >
+                      Delivered
+                    </button>
+                    <button
+                      onClick={() => updateOrderStatus(selectedOrder?._id, "Cancelled")}
+                      className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+                    >
+                      Cancelled
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
