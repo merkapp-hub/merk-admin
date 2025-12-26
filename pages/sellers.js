@@ -90,7 +90,7 @@ function Sellers(props) {
     Api("get", url, "", router).then(
       (res) => {
         props.loader(false);
-        console.log("res================>", res);
+        console.log("res================vvvvvvv>", res);
         setSellersData(res.data);
  setPagination({
           ...res?.pagination,
@@ -110,7 +110,7 @@ function Sellers(props) {
     Api("get", `getSellerStats/${id}`, "", router).then(
       (res) => {
         props.loader(false);
-        console.log("res================>", res);
+        console.log("res================>vvv", res);
         // setSellersData(res.data);
         // setPagination(res?.pagination);
       },
