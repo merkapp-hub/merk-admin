@@ -75,10 +75,39 @@ const CustomerQueries = () => {
   };
 
   const handleReset = () => {
+    // Reset all state
     setSearchParams({ name: '', email: '' });
     setSelectedDate('');
     setCurrentPage(1);
-    fetchQueries('', 1);
+    
+    // Fetch with empty parameters immediately (don't wait for state updates)
+    // Build query parameters with reset values
+    const params = new URLSearchParams();
+    params.append('page', 1);
+    params.append('limit', 20);
+
+    console.log('Resetting with params:', params.toString());
+    setIsLoading(true);
+
+    Api("get", `contacts?${params.toString()}`, null, null)
+      .then((res) => {
+        setIsLoading(false);
+        console.log('Reset queries response:', res);
+
+        if (res?.status) {
+          setQueries(res?.data || []);
+          setPagination(res?.pagination);
+          setCurrentPage(res?.pagination?.currentPage || 1);
+        } else {
+          console.error("Failed to fetch queries:", res);
+          setQueries([]);
+        }
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.error("An error occurred:", err);
+        setQueries([]);
+      });
   };
 
   const handlePageChange = (page) => {
