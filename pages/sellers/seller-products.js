@@ -300,9 +300,14 @@ const category = ({ row, value }) => {
 };
 
   const seller = ({ row, value }) => {
+    // Get seller name from userid object
+    const firstName = row.original?.userid?.firstName || '';
+    const lastName = row.original?.userid?.lastName || '';
+    const sellerName = firstName && lastName ? `${firstName} ${lastName}` : (row.original?.userid?.username || 'N/A');
+    
     return (
       <div className="flex flex-col items-center justify-center">
-        <p className="text-black text-base font-normal">{value}</p>
+        <p className="text-black text-base font-normal">{sellerName}</p>
       </div>
     );
   };
@@ -445,7 +450,7 @@ const category = ({ row, value }) => {
       },
       {
         Header: "Seller",
-        accessor: "userid.username",
+        accessor: "userid",
         Cell: seller,
       },
       // {
@@ -767,38 +772,38 @@ const category = ({ row, value }) => {
                   <h3 className="text-lg font-semibold text-black mb-3">Product Status</h3>
                   <div className="space-y-3">
                     <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={popupData?.is_verified || false}
-                          onChange={(e) =>
-                            setPopupData({ ...popupData, is_verified: e.target.checked })
-                          }
-                        />
-                      }
-                      label="Verified Product"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={popupData?.is_quality || false}
-                          onChange={(e) =>
-                            setPopupData({ ...popupData, is_quality: e.target.checked })
-                          }
-                        />
-                      }
-                      label="Quality Product"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={popupData?.sponsered || false}
-                          onChange={(e) =>
-                            setPopupData({ ...popupData, sponsered: e.target.checked })
-                          }
-                        />
-                      }
-                      label="Sponsored Product"
-                    />
+  control={
+    <Checkbox
+      checked={popupData?.is_verified || false}
+      onChange={(e) =>
+        setPopupData({ ...popupData, is_verified: e.target.checked })
+      }
+    />
+  }
+  label={<span className="text-gray-700">Verified Product</span>}
+/>
+<FormControlLabel
+  control={
+    <Checkbox
+      checked={popupData?.is_quality || false}
+      onChange={(e) =>
+        setPopupData({ ...popupData, is_quality: e.target.checked })
+      }
+    />
+  }
+  label={<span className="text-gray-700">Quality Product</span>}
+/>
+<FormControlLabel
+  control={
+    <Checkbox
+      checked={popupData?.sponsered || false}
+      onChange={(e) =>
+        setPopupData({ ...popupData, sponsered: e.target.checked })
+      }
+    />
+  }
+  label={<span className="text-gray-700">Sponsored Product</span>}
+/>
                   </div>
                 </div>
 
