@@ -240,13 +240,30 @@ function SellerOrders(props) {
   }
 
   function status({ value }) {
+    const statusColors = {
+      "Pending": "text-orange-500",
+      "Preparing": "text-blue-500",
+      "Shipped": "text-purple-500",
+      "OutForDelivery": "text-yellow-600",
+      "Delivered": "text-green-500",
+      "Cancelled": "text-red-500"
+    };
+    
+    const statusLabels = {
+      "OutForDelivery": "Out for Delivery",
+      "Preparing": "Preparing",
+      "Shipped": "Shipped",
+      "Delivered": "Delivered",
+      "Cancelled": "Cancelled",
+      "Pending": "Pending"
+    };
+    
     return (
       <div>
         <p
-          className={`${value === "Pending" ? "text-orange-500" : "text-green-500"
-            } text-base font-normal text-center`}
+          className={`${statusColors[value] || "text-gray-500"} text-base font-normal text-center`}
         >
-          {value === "Driverassigned" ? "Driver Assigned" : value}
+          {statusLabels[value] || value}
         </p>
       </div>
     );
@@ -626,7 +643,7 @@ function SellerOrders(props) {
               </div>
 
               <div className="w-full">
-                <h2 className="text-center mt-2 font-bold text-2xl text-gray-800 mb-4">
+                <h2 className="text-center mt-0 font-bold text-2xl text-gray-800 ">
                   Update Order Status
                 </h2>
                 
@@ -641,11 +658,14 @@ function SellerOrders(props) {
                     <span className="font-semibold">Current Status:</span>{" "}
                     <span className={`font-bold ${
                       selectedOrder?.status === "Pending" ? "text-orange-500" : 
+                      selectedOrder?.status === "Preparing" ? "text-blue-500" :
+                      selectedOrder?.status === "Shipped" ? "text-purple-500" :
+                      selectedOrder?.status === "OutForDelivery" ? "text-yellow-600" :
                       selectedOrder?.status === "Delivered" ? "text-green-500" : 
                       selectedOrder?.status === "Cancelled" ? "text-red-500" : 
                       "text-blue-500"
                     }`}>
-                      {selectedOrder?.status === "Driverassigned" ? "Driver Assigned" : selectedOrder?.status}
+                      {selectedOrder?.status === "OutForDelivery" ? "Out for Delivery" : selectedOrder?.status}
                     </span>
                   </p>
                 </div>
@@ -656,22 +676,39 @@ function SellerOrders(props) {
                   </p>
                   <div className="flex flex-col gap-3">
                     <button
+                      onClick={() => updateOrderStatus(selectedOrder?._id, "Preparing")}
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+                      disabled={selectedOrder?.status === "Preparing"}
+                    >
+                      📦 Preparing Order
+                    </button>
+                    <button
                       onClick={() => updateOrderStatus(selectedOrder?._id, "Shipped")}
                       className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+                      disabled={selectedOrder?.status === "Shipped"}
                     >
-                      Shipped
+                      🚚 Shipped
+                    </button>
+                    <button
+                      onClick={() => updateOrderStatus(selectedOrder?._id, "OutForDelivery")}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+                      disabled={selectedOrder?.status === "OutForDelivery"}
+                    >
+                      🚴 Out for Delivery
                     </button>
                     <button
                       onClick={() => updateOrderStatus(selectedOrder?._id, "Delivered")}
                       className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+                      disabled={selectedOrder?.status === "Delivered"}
                     >
-                      Delivered
+                      ✓ Delivered
                     </button>
                     <button
                       onClick={() => updateOrderStatus(selectedOrder?._id, "Cancelled")}
                       className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+                      disabled={selectedOrder?.status === "Cancelled"}
                     >
-                      Cancelled
+                      ✕ Cancelled
                     </button>
                   </div>
                 </div>
