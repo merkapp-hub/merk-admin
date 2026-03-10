@@ -4,7 +4,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import SidePannel from "./SidePannel";
-import Navbar from "./Navbar";
+import Navbar from "./Navbar.jsx";
 
 const Layout = ({ children, loader, toaster }) => {
   const router = useRouter();

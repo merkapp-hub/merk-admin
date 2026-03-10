@@ -56,6 +56,24 @@ const SIZE_LIST = [
   { id: 9, label: "4XL", value: "4XL", total: 0, sell: 0 },
   { id: 10, label: "5XL", value: "5XL", total: 0, sell: 0 },
   { id: 11, label: "For adult", value: "For adult", total: 0, sell: 0 },
+  // Shoe sizes from 5 to 13 with half sizes
+  { id: 12, label: "5", value: "5", total: 0, sell: 0 },
+  { id: 13, label: "5.5", value: "5.5", total: 0, sell: 0 },
+  { id: 14, label: "6", value: "6", total: 0, sell: 0 },
+  { id: 15, label: "6.5", value: "6.5", total: 0, sell: 0 },
+  { id: 16, label: "7", value: "7", total: 0, sell: 0 },
+  { id: 17, label: "7.5", value: "7.5", total: 0, sell: 0 },
+  { id: 18, label: "8", value: "8", total: 0, sell: 0 },
+  { id: 19, label: "8.5", value: "8.5", total: 0, sell: 0 },
+  { id: 20, label: "9", value: "9", total: 0, sell: 0 },
+  { id: 21, label: "9.5", value: "9.5", total: 0, sell: 0 },
+  { id: 22, label: "10", value: "10", total: 0, sell: 0 },
+  { id: 23, label: "10.5", value: "10.5", total: 0, sell: 0 },
+  { id: 24, label: "11", value: "11", total: 0, sell: 0 },
+  { id: 25, label: "11.5", value: "11.5", total: 0, sell: 0 },
+  { id: 26, label: "12", value: "12", total: 0, sell: 0 },
+  { id: 27, label: "12.5", value: "12.5", total: 0, sell: 0 },
+  { id: 28, label: "13", value: "13", total: 0, sell: 0 },
 ];
 
 const DEFAULT_CAPACITY = {
@@ -99,12 +117,12 @@ const ParameterInput = React.memo(({
   const timeoutRef = React.useRef(null);
   const isMountedRef = React.useRef(true);
   
-  // Sync with initialValue only on mount
+  // Sync with initialValue when it changes
   React.useEffect(() => {
     if (initialValue !== undefined && initialValue !== value) {
       setValue(initialValue);
     }
-  }, []);
+  }, [initialValue]);
   
   // Cleanup on unmount
   React.useEffect(() => {
@@ -119,6 +137,8 @@ const ParameterInput = React.memo(({
   const handleChange = (e) => {
     const newValue = e.target.value;
     
+    console.log(`ParameterInput change: field=${field}, oldValue=${value}, newValue=${newValue}`);
+    
     // Update local state immediately for smooth typing
     setValue(newValue);
     
@@ -127,20 +147,33 @@ const ParameterInput = React.memo(({
       clearTimeout(timeoutRef.current);
     }
     
-    // Debounce the parent state update
+    // Use debounce to prevent continuous re-renders
     timeoutRef.current = setTimeout(() => {
       if (isMountedRef.current) {
+        console.log(`ParameterInput calling onValueChange: field=${field}, value=${newValue}`);
         onValueChange(newValue);
+      } else {
+        console.log(`ParameterInput NOT calling onValueChange - component unmounted: field=${field}`);
       }
-    }, 300); // 300ms debounce
+    }, 500); // Increased debounce to 500ms for better typing experience
   };
   
+  const handleBlur = () => {
+    // When user leaves the field, immediately save the current value
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    console.log(`ParameterInput onBlur: field=${field}, value=${value}`);
+    onValueChange(value);
+  };
+
   return (
     <input
       type={type}
       className={className}
       value={value}
       onChange={handleChange}
+      onBlur={handleBlur}
       min={min}
       autoComplete="off"
     />
@@ -151,7 +184,8 @@ const ParameterInput = React.memo(({
     prevProps.variantIndex === nextProps.variantIndex &&
     prevProps.slotIndex === nextProps.slotIndex &&
     prevProps.field === nextProps.field &&
-    prevProps.className === nextProps.className
+    prevProps.className === nextProps.className &&
+    prevProps.initialValue === nextProps.initialValue
   );
 });
 
@@ -260,6 +294,24 @@ function AddProduct(props) {
 
         if (hasVariants) {
           setVariants(productInfo.varients);
+          
+          // Determine parameter type from existing variants
+          if (productInfo.varients.length > 0 && productInfo.varients[0].selected && productInfo.varients[0].selected.length > 0) {
+            const firstSlot = productInfo.varients[0].selected[0];
+            if (firstSlot.label === "Size") {
+              setParameterType("size");
+              setSelectedParameterList([DEFAULT_SIZE]);
+            } else if (firstSlot.label === "ML") {
+              setParameterType("capacity");
+              setSelectedParameterList([DEFAULT_CAPACITY]);
+            } else if (firstSlot.label2) {
+              setParameterType("dimensions");
+              setSelectedParameterList([DEFAULT_DIMENSIONS]);
+            } else if (firstSlot.label === "GR") {
+              setParameterType("weight");
+              setSelectedParameterList([DEFAULT_WEIGHT]);
+            }
+          }
         }
       }
     } catch (error) {
@@ -311,6 +363,9 @@ const handleCreateProduct = async (e) => {
         return;
     }
 
+    // Debug: Log variants data before sending
+    console.log("Variants data before sending:", JSON.stringify(variants, null, 2));
+
     const formData = new FormData();
     
     // Add simple text fields
@@ -329,9 +384,23 @@ const handleCreateProduct = async (e) => {
     
     // Handle pricing based on variant status
     if (productData.hasVariants) {
+        // Ensure all total values are numbers
+        const processedVariants = variants.map(variant => ({
+            ...variant,
+            selected: variant.selected ? variant.selected.map(slot => ({
+                ...slot,
+                total: parseInt(slot.total) || 0,
+                value: slot.value,
+                Height: slot.Height ? parseInt(slot.Height) || 0 : undefined,
+                Width: slot.Width ? parseInt(slot.Width) || 0 : undefined
+            })) : []
+        }));
+        
+        console.log("Processed variants with number conversion:", JSON.stringify(processedVariants, null, 2));
+        
         // For products with variants, send empty price_slot
         formData.append('price_slot', JSON.stringify([]));
-        formData.append('varients', JSON.stringify(variants));
+        formData.append('varients', JSON.stringify(processedVariants));
     } else {
         // For normal products, create single price slot
         const priceSlot = [{
@@ -397,6 +466,9 @@ const handleCreateProduct = async (e) => {
         return;
     }
 
+    // Debug: Log variants data before sending
+    console.log("Variants data before updating:", JSON.stringify(variants, null, 2));
+
     const formData = new FormData();
     
     formData.append('name', productData.name);
@@ -415,8 +487,22 @@ const handleCreateProduct = async (e) => {
     
     // Handle pricing based on variant status
     if (productData.hasVariants) {
+        // Ensure all total values are numbers
+        const processedVariants = variants.map(variant => ({
+            ...variant,
+            selected: variant.selected ? variant.selected.map(slot => ({
+                ...slot,
+                total: parseInt(slot.total) || 0,
+                value: slot.value,
+                Height: slot.Height ? parseInt(slot.Height) || 0 : undefined,
+                Width: slot.Width ? parseInt(slot.Width) || 0 : undefined
+            })) : []
+        }));
+        
+        console.log("Processed variants with number conversion (update):", JSON.stringify(processedVariants, null, 2));
+        
         formData.append('price_slot', JSON.stringify([]));
-        formData.append('varients', JSON.stringify(variants));
+        formData.append('varients', JSON.stringify(processedVariants));
     } else {
         const priceSlot = [{
             value: 1,
@@ -655,15 +741,17 @@ const handleCreateProduct = async (e) => {
   };
 
   const updateParameterSlot = React.useCallback((variantIndex, slotIndex, field, value) => {
+    console.log(`Updating slot: variant ${variantIndex}, slot ${slotIndex}, field ${field}, value ${value}`);
     setVariants(prevVariants => {
       const newVariants = [...prevVariants];
-      if (newVariants[variantIndex]?.selected[slotIndex]) {
+      if (newVariants[variantIndex]?.selected && newVariants[variantIndex].selected[slotIndex]) {
         newVariants[variantIndex] = {
           ...newVariants[variantIndex],
           selected: newVariants[variantIndex].selected.map((slot, idx) => 
             idx === slotIndex ? { ...slot, [field]: value } : slot
           )
         };
+        console.log(`Updated variants:`, newVariants[variantIndex].selected[slotIndex]);
       }
       return newVariants;
     });

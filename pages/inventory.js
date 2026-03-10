@@ -565,8 +565,19 @@ function Inventory(props) {
                       <p><span className="font-semibold">Available Stock:</span> 
                         {popupData?.varients && popupData.varients.length > 0 
                           ? (() => {
-                              const totalVariantStock = popupData.varients.reduce((sum, v) => sum + (v.stock || 0), 0);
-                              return totalVariantStock > 0 ? totalVariantStock : (popupData?.stock || 0);
+                              let totalStock = 0;
+                              popupData.varients.forEach(v => {
+                                if (v.selected && Array.isArray(v.selected) && v.selected.length > 0) {
+                                  v.selected.forEach(s => {
+                                    if (typeof s === 'object' && s.total !== undefined) {
+                                      totalStock += parseInt(s.total) || 0;
+                                    }
+                                  });
+                                } else {
+                                  totalStock += v.stock || 0;
+                                }
+                              });
+                              return totalStock > 0 ? totalStock : (popupData?.stock || 0);
                             })()
                           : (popupData?.stock || 0)
                         }
@@ -632,8 +643,27 @@ function Inventory(props) {
                             <p><span className="font-semibold">Offer Price:</span> ${variant.Offerprice}</p>
                           )}
                           
-                          {/* Stock - Show if available */}
-                          {variant?.stock !== undefined && (
+                          {variant?.selected && variant.selected.length > 0 && (
+                            <div className="col-span-2">
+                              <p className="font-semibold mb-1">Size & Stock:</p>
+                              {variant.selected.map((param, pIdx) => (
+                                <div key={pIdx} className="ml-4 text-xs text-gray-700 flex items-center gap-2 mb-1">
+                                  <span>• {param?.label}: {param?.value}</span>
+                                  {param?.total !== undefined && (
+                                    <span className={`px-2 py-0.5 rounded text-xs ${
+                                      parseInt(param.total) > 10 ? 'bg-green-100 text-green-800' : 
+                                      parseInt(param.total) > 0 ? 'bg-yellow-100 text-yellow-800' : 
+                                      'bg-red-100 text-red-800'
+                                    }`}>
+                                      Stock: {param.total}
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {(!variant?.selected || variant.selected.length === 0) && variant?.stock !== undefined && (
                             <p className="col-span-2">
                               <span className="font-semibold">Stock:</span> 
                               <span className={`ml-2 px-2 py-1 rounded text-xs ${
@@ -644,17 +674,6 @@ function Inventory(props) {
                                 {variant.stock} units
                               </span>
                             </p>
-                          )}
-                          
-                          {variant?.selected && variant.selected.length > 0 && (
-                            <div className="col-span-2">
-                              <p className="font-semibold mb-1">Parameters:</p>
-                              {variant.selected.map((param, pIdx) => (
-                                <p key={pIdx} className="ml-4 text-xs text-gray-700">
-                                  • {param?.label}: {param?.value} {param?.total && `(Qty: ${param.total})`}
-                                </p>
-                              ))}
-                            </div>
                           )}
                         </div>
                       </div>

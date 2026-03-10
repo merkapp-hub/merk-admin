@@ -18,6 +18,7 @@ import isAuth from "@/components/isAuth";
 import LineChart from "@/components/LineChart";
 import PieChart from "@/components/PieChart";
 import currencySign from "@/utils/currencySign";
+import Swal from "sweetalert2";
 
 ChartJS.register(
   CategoryScale,
@@ -135,6 +136,119 @@ function Home(props) {
     // getDailyTopSellingProduct();
   }, []);
 
+  const handleResetDashboard = async () => {
+    try {
+      const { value: confirmationText } = await Swal.fire({
+        title: '⚠️ Reset Dashboard Data',
+        html: `
+          <div style="text-align: left; margin: 20px 0;">
+            <p style="color: #dc3545; font-weight: bold; margin-bottom: 15px;">
+              🚨 WARNING: This action cannot be undone!
+            </p>
+            <p style="margin-bottom: 10px;">This will permanently delete:</p>
+            <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+              <li>All orders and transactions</li>
+              <li>All sales data and statistics</li>
+              <li>Product sold counts (reset to 0)</li>
+              <li>Wallet balances (reset to 0)</li>
+            </ul>
+            <p style="color: #dc3545; font-weight: bold; margin-top: 15px;">
+              Type "RESET DASHBOARD" below to confirm:
+            </p>
+          </div>
+        `,
+        input: 'text',
+        inputPlaceholder: 'Type: RESET DASHBOARD',
+        showCancelButton: true,
+        confirmButtonText: 'Reset Dashboard',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        inputValidator: (value) => {
+          if (value !== 'RESET DASHBOARD') {
+            return 'Please type "RESET DASHBOARD" exactly as shown!'
+          }
+        },
+        customClass: {
+          popup: 'swal-wide'
+        }
+      });
+
+      if (confirmationText === 'RESET DASHBOARD') {
+        // Second confirmation
+        const secondConfirm = await Swal.fire({
+          title: 'Final Confirmation',
+          text: 'Are you absolutely sure? This will delete ALL dashboard data permanently!',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Reset Everything!',
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#6c757d'
+        });
+
+        if (secondConfirm.isConfirmed) {
+          // Start loader only when actually proceeding with reset
+          props.loader(true);
+          
+          try {
+            const response = await Api("post", "resetDashboardData", { 
+              confirmationText: "RESET DASHBOARD" 
+            }, router);
+            
+            if (response.status) {
+              // Stop loader first
+              props.loader(false);
+              
+              await Swal.fire({
+                title: 'Dashboard Reset Complete!',
+                html: `
+                  <div style="text-align: left;">
+                    <p><strong>Reset Summary:</strong></p>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                      <li>Orders deleted: ${response.data?.summary?.ordersDeleted || 0}</li>
+                      <li>Products reset: ${response.data?.summary?.productsReset || 0}</li>
+                      <li>Wallets reset: ${response.data?.summary?.walletsReset || 0}</li>
+                      ${response.data?.summary?.adminWalletsReset > 0 ? 
+                        `<li>Admin wallets reset: ${response.data.summary.adminWalletsReset}</li>` : ''
+                      }
+                    </ul>
+                    <p style="color: #28a745; font-weight: bold;">Dashboard data has been successfully reset!</p>
+                  </div>
+                `,
+                icon: 'success',
+                confirmButtonColor: '#28a745'
+              });
+              
+              // Refresh dashboard data after success dialog
+              getStats();
+              getSales();
+              getPieChartData();
+              
+            } else {
+              throw new Error(response.message || 'Failed to reset dashboard');
+            }
+          } catch (resetError) {
+            console.error('Reset API error:', resetError);
+            props.loader(false); // Stop loader on error
+            Swal.fire({
+              title: 'Reset Failed',
+              text: resetError.message || 'Failed to reset dashboard data',
+              icon: 'error',
+              confirmButtonColor: '#dc3545'
+            });
+          }
+        }
+        // If user cancels second confirmation, no loader was started, so no need to stop it
+      }
+      // If user cancels first confirmation, no loader was started, so no need to stop it
+    } catch (error) {
+      console.error('Reset dialog error:', error);
+      // This catch is for SweetAlert errors, not API errors
+      // No loader was started for dialog errors, so no need to stop it
+    }
+  };
+
   const image = ({ value, row }) => {
     return (
       <div className="p-4 flex items-center justify-center">
@@ -216,9 +330,43 @@ function Home(props) {
   return (
     <section className=" w-full h-full  bg-transparent md:pt-5 pt-5 pb-24 pl-5 pr-5">
       <div className="md:pt-[0px] pt-[0px] pb-10 sm:pb-0 h-full overflow-scroll no-scrollbar">
-        <p className=" text-gray-800 font-bold md:text-[32px] text-2xl">
-          Dashboard
-        </p>
+        <div className="flex justify-between items-center mb-5">
+          <p className=" text-gray-800 font-bold md:text-[32px] text-2xl">
+            Dashboard
+          </p>
+          
+          {/* Reset Dashboard Button */}
+          <div className="relative group">
+            <button
+              onClick={handleResetDashboard}
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200 flex items-center gap-2 hover:shadow-lg transform hover:scale-105"
+              title="Reset all dashboard data - This will delete all orders, sales data, and reset wallets"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-5 w-5" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+                />
+              </svg>
+              <span className="hidden sm:inline">Reset Dashboard</span>
+              <span className="sm:hidden">Reset</span>
+            </button>
+            
+            {/* Tooltip for mobile */}
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+              Reset all dashboard data
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+            </div>
+          </div>
+        </div>
         {/* mt-5  */}
         {/* <div className="md:pb-10">
           <section className="bg-transparent md:px-5 md:py-5 py-5 h-full w-full">
@@ -279,6 +427,16 @@ function Home(props) {
             </div>
           </section>
         </div> */}
+
+        <style jsx>{`
+          :global(.swal-wide) {
+            width: 600px !important;
+            max-width: 90vw !important;
+          }
+          :global(.swal2-html-container) {
+            text-align: left !important;
+          }
+        `}</style>
 
         <div className="flex flex-col w-full overflow-y-auto">
           <main>

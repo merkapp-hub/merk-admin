@@ -16,6 +16,7 @@ import { BsCash } from "react-icons/bs";
 import { PiHandWithdrawFill } from "react-icons/pi";
 import Collapse from "@mui/material/Collapse";
 import { FaChevronUp } from "react-icons/fa";
+import NotificationBadge from "./NotificationBadge";
 
 const SidePannel = ({ setOpenTab, openTab }) => {
   const [user, setUser] = useContext(userContext);
@@ -81,6 +82,13 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       title: "Orders",
       img: <FaShoppingBag className="text-3xl" />,
       access: ["seller"],
+    },
+    {
+      href: "/seller-pending-orders",
+      title: "Notification",
+      img: <FaShoppingBag className="text-3xl" />,
+      access: ["seller"],
+      badge: true,
     },
     // {
     //   href: "/returned-orders",
@@ -209,8 +217,13 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       <div className="bg-custom-blue xl:w-[250px] fixed top-0 left-0 z-20  md:w-[250px] sm:w-[200px] hidden sm:grid grid-rows-5 h-screen overflow-hidden">
         <div className="bg-custom-blueoverflow-y-scroll h-screen  scrollbar-hide">
           <div className="bg-custom-blue min-h-screen h-full py-5 2xl:h-full">
-            <div className="bg-white pt-5 pb-5 row-span-1 flex items-center justify-center cursor-pointer mx-5 rounded" onClick={() => router.push("/")}>
-              <img className="object-contain w-[210px] h-[50px] lg:scale-150" src="/logo-1.png" alt="" />
+            <div className="bg-white  row-span-1 flex items-center justify-center cursor-pointer mx-5 py-3 rounded-lg" onClick={() => router.push("/")}>
+              <img 
+                className="object-contain" 
+                style={{width: '210px', height: '50px'}} 
+                src="/newimae.png" 
+                alt="" 
+              />
             </div>
 
             <div className="flex flex-col justify-between row-span-4 pb-4 w-full">
@@ -280,9 +293,11 @@ const SidePannel = ({ setOpenTab, openTab }) => {
                         }
                         `}
                     >
-                      <div className="py-3 text-white font-semibold flex items-center gap-4">
-                        <div className="w-6"></div>
-                        {item?.title}
+                      <div className="py-3 text-white font-semibold flex items-center gap-4 justify-between w-full pr-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-6"></div>
+                          {item?.title}
+                        </div>
                       </div>
                     </Link>
                   );
@@ -303,8 +318,13 @@ const SidePannel = ({ setOpenTab, openTab }) => {
             onClick={() => setOpenTab(!openTab)}
           />
           <div className="flex items-center gap-3 w-full  p-3">
-            <div className="bg-white p-1 rounded overflow-hidden">
-              <img className="w-[182px] h-[44px] object-cover" src="/logo-1.png"alt="" />
+            <div className="bg-white bg-opacity-90 p-2 rounded overflow-hidden">
+              <img 
+                className="object-cover" 
+                style={{width: '182px', height: '44px'}} 
+                src="/newimae.png"
+                alt="" 
+              />
             </div>
             <div className="flex flex-col text-left justify-center">
               <p className="-mt-2 text-sm">{user?.name}</p>

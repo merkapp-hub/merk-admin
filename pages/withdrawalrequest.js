@@ -76,12 +76,15 @@ function Withdralreq(props) {
   
   const approvereq = (id, sellerid) => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You want to approve this payment?",
+      title: "Approve Withdrawal?",
+      html: `
+        <p>This will initiate a PayPal payout to the seller's account.</p>
+        <p class="text-sm text-gray-600 mt-2">The amount will be transferred to their PayPal email.</p>
+      `,
       icon: "warning",
       showCancelButton: true,
       cancelButtonColor: "#d33",
-      confirmButtonText: "Approve",
+      confirmButtonText: "Approve & Send Payout",
       confirmButtonColor: "#28a745",
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -89,26 +92,70 @@ function Withdralreq(props) {
           props.loader(true);
           const response = await Api("post", "updateWithdrawreq", {
             id,
-            seller_id: sellerid,
+            action: 'approve'
           }, router);
 
           if (response?.status === true) {
-            // Show success message
-            props.toaster({ 
-              type: "success", 
-              message: "Withdrawal request approved successfully!" 
+            Swal.fire({
+              title: "Success!",
+              html: `
+                <p>Withdrawal approved and payout initiated!</p>
+                ${response.data?.batchId ? `<p class="text-sm text-gray-600 mt-2">Batch ID: ${response.data.batchId}</p>` : ''}
+              `,
+              icon: "success",
+              confirmButtonColor: "#28a745",
             });
-            
-            // Refresh the withdrawal requests list
             await GetPendingWithdrawreq(currentPage);
           } else {
             throw new Error(response?.message || 'Failed to approve withdrawal request');
           }
         } catch (error) {
           console.error("Error approving withdrawal:", error);
+          Swal.fire({
+            title: "Error!",
+            text: error?.response?.data?.message || error.message || "Failed to process payout",
+            icon: "error",
+            confirmButtonColor: "#d33",
+          });
+        } finally {
+          props.loader(false);
+        }
+      }
+    });
+  };
+
+  const rejectreq = (id) => {
+    Swal.fire({
+      title: "Reject Withdrawal?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Reject",
+      confirmButtonColor: "#d33",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          props.loader(true);
+          const response = await Api("post", "updateWithdrawreq", {
+            id,
+            action: 'reject'
+          }, router);
+
+          if (response?.status === true) {
+            props.toaster({ 
+              type: "success", 
+              message: "Withdrawal request rejected" 
+            });
+            await GetPendingWithdrawreq(currentPage);
+          } else {
+            throw new Error(response?.message || 'Failed to reject withdrawal request');
+          }
+        } catch (error) {
+          console.error("Error rejecting withdrawal:", error);
           props.toaster({ 
             type: "error", 
-            message: error?.response?.data?.message || error.message || "Failed to approve withdrawal request" 
+            message: error?.response?.data?.message || error.message || "Failed to reject withdrawal request" 
           });
         } finally {
           props.loader(false);
@@ -221,20 +268,30 @@ function Withdralreq(props) {
     return (
       <div className="flex items-center justify-center gap-2">
         <button
-          className="h-[38px] px-4 bg-blue-500 text-white text-sm font-normal rounded-[8px] flex items-center"
+          className="h-[38px] px-4 bg-blue-500 text-white text-sm font-normal rounded-[8px] flex items-center hover:bg-blue-600"
           onClick={() => viewWithdrawalDetails(row.original)}
         >
           View
         </button>
         {!isApprovedOrRejected && (
-          <button
-            className="h-[38px] px-4 bg-green-500 text-white text-sm font-normal rounded-[8px]"
-            onClick={() => {
-              approvereq(row.original._id, row.original.request_by?._id);
-            }}
-          >
-            Approve
-          </button>
+          <>
+            <button
+              className="h-[38px] px-4 bg-green-500 text-white text-sm font-normal rounded-[8px] hover:bg-green-600"
+              onClick={() => {
+                approvereq(row.original._id, row.original.request_by?._id);
+              }}
+            >
+              Approve
+            </button>
+            <button
+              className="h-[38px] px-4 bg-red-500 text-white text-sm font-normal rounded-[8px] hover:bg-red-600"
+              onClick={() => {
+                rejectreq(row.original._id);
+              }}
+            >
+              Reject
+            </button>
+          </>
         )}
       </div>
     );

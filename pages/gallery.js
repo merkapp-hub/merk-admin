@@ -35,6 +35,7 @@ export default function Gallery(props) {
     props.loader(true);
     try {
       const res = await Api('get', 'gallery', '', router);
+      console.log("res", res);
       props.loader(false);
       if (res.status && res.data) {
         setGalleryItems(Array.isArray(res.data) ? res.data : []);

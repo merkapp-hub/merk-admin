@@ -1,4 +1,4 @@
-import Layout from "@/components/layouts";
+import Layout from "@/components/layouts.js";
 import Loader from "@/components/loader";
 import Toaster from "@/components/toaster";
 import "@/styles/globals.css";
