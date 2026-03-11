@@ -47,9 +47,11 @@ function Orders(props) {
     setviewPopup(false);
   };
 
-  useEffect(() => {
-    getOrderBySeller(null, currentPage);
-  }, [currentPage]);
+ useEffect(() => {
+    if (user?._id) {
+      getOrderBySeller(null, currentPage);
+    }
+  }, [currentPage, user]);
 
   const getOrderBySeller = async (selctedDate, page = 1, limit = 10) => {
     const data = {};
@@ -57,6 +59,12 @@ function Orders(props) {
     if (selctedDate) {
       data.curentDate = moment(new Date(selctedDate)).format();
     }
+     if (user?.type === "SELLER" && user?._id) {
+      data.seller_id = user._id;
+    }
+     console.log('=== DEBUG Admin Panel ===');
+    console.log('User:', user);
+    console.log('Request data:', data);
 
     props.loader(true);
 
