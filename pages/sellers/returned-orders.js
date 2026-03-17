@@ -4,13 +4,8 @@ import isAuth from "@/components/isAuth";
 import { Api } from "@/services/service";
 import { useRouter } from "next/router";
 import moment from "moment";
-import { Drawer, Typography, IconButton, Button, Modal } from "@mui/material";
-import {
-  IoAddSharp,
-  IoCloseCircleOutline,
-  IoList,
-  IoRemoveSharp,
-} from "react-icons/io5";
+import { Drawer } from "@mui/material";
+import { IoCloseCircleOutline } from "react-icons/io5";
 import currencySign from "@/utils/currencySign";
 import { RxCrossCircled } from "react-icons/rx";
 import { userContext } from "../_app";
@@ -23,12 +18,9 @@ function ReturnedOrders(props) {
   const router = useRouter();
   const [userRquestList, setUserRquestList] = useState([]);
   const [viewPopup, setviewPopup] = useState(false);
-  const [returnOrders, setReturnOrders] = useState(true);
+  const [returnOrders] = useState(true);
   const [popupData, setPopupData] = useState({});
   const [openCart, setOpenCart] = useState(false);
-  const [CartItem, setCartItem] = useState(0);
-  const [user, setUser] = useContext(userContext);
-  const [employeeIds, setEmployeeIds] = useState([]);
   const [cartData, setCartData] = useState({});
   const [totalRefundedAmount, setTotalRefundedAmount] = useState(0);
   const [selctDate, setSelctDate] = useState(new Date());
@@ -169,6 +161,30 @@ function ReturnedOrders(props) {
   //     );
   //   };
 
+  const updateReturnStatus = async (orderId, productId, status) => {
+    props.loader(true);
+    let data = {
+      orderId: orderId,
+      productId: productId,
+      status: status
+    };
+    Api("post", "update-return-status", data, router).then(
+      (res) => {
+        props.loader(false);
+        props.toaster({ type: "success", message: `Status updated to ${status} successfully` });
+        setviewPopup(false);
+        setPopupData({});
+        setOpenIndex(null);
+        getOrderBySeller(null, currentPage, pageSize);
+      },
+      (err) => {
+        props.loader(false);
+        console.log(err);
+        props.toaster({ type: "error", message: err?.message });
+      }
+    );
+  };
+
   const reminderSellerForReturn = async (orderId, sellerId) => {
     props.loader(true);
     let data = {
@@ -255,23 +271,10 @@ function ReturnedOrders(props) {
     );
   }
 
-  function status({ value }) {
-    return (
-      <div>
-        <p
-          className={`${value === "Return-requested" ? "text-orange-500" : "text-green-500"
-            } text-base font-normal text-center`}
-        >
-          {value}
-        </p>
-      </div>
-    );
-  }
-
   const info = ({ value, row }) => {
     //console.log(row.original._id)
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center gap-2">
         <button
           className="h-[38px] w-[93px] bg-[#00000020] text-black text-base	font-normal rounded-[8px]"
           onClick={() => {
@@ -289,6 +292,19 @@ function ReturnedOrders(props) {
           }}
         >
           See
+        </button>
+        
+        <button
+          className="h-[38px] w-[80px] bg-custom-blue hover:bg-custom-blue/90 text-white text-sm font-normal rounded-[8px]"
+          onClick={() => {
+            updateReturnStatus(
+              row.original.orderId || row.original._id,
+              row.original.productDetail?.[0]?._id,
+              'Approved'
+            );
+          }}
+        >
+          Approve
         </button>
       </div>
     );
@@ -332,7 +348,7 @@ function ReturnedOrders(props) {
       //   Cell: status,
       // },
       {
-        Header: "See Details",
+        Header: "Actions",
         // accessor: "view",
         Cell: info,
       },
@@ -555,147 +571,169 @@ function ReturnedOrders(props) {
         </Drawer>
 
         {viewPopup && (
-          <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-[9]">
-            <div className="relative w-[300px] md:w-[460px] h-auto bg-white rounded-[15px] m-auto">
-              <div
-                className="absolute top-2 right-2 p-1 rounded-full text-black w-8 h-8 cursor-pointer"
-                onClick={() => {
-                  setviewPopup(!viewPopup);
-                  setPopupData({});
-                  setOpenIndex(null);
-                }}
-              >
-                <RxCrossCircled className="h-full w-full font-semibold " />
+          <div className="fixed inset-0 bg-black/50 flex justify-center items-center" style={{ zIndex: 999999 }}>
+            <div className="relative w-[90%] max-w-2xl bg-white rounded-[12px] m-4 max-h-[80vh] overflow-hidden shadow-2xl">
+              {/* Header */}
+              <div className="bg-custom-blue px-6 py-4 text-white rounded-t-[12px]">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold">Return Order Details</h2>
+                  <button
+                    className="p-1 hover:bg-white/20 rounded-full transition-colors"
+                    onClick={() => {
+                      setviewPopup(false);
+                      setPopupData({});
+                      setOpenIndex(null);
+                    }}
+                  >
+                    <RxCrossCircled className="h-6 w-6" />
+                  </button>
+                </div>
               </div>
 
-              <div className="max-h-[400px] px-5 w-full py-3 overflow-y-scroll scrollbar-hide">
-                <p className="text-center mt-2 font-semibold text-xl text-gray-800">
-                  Returned Product Details
-                </p>
-
-                <ul className="rounded-md space-y-2 my-4">
-                  {popupData?.productDetail?.length > 0 &&
-                    popupData?.productDetail?.map((item, index) => (
-                      <li
-                        key={index}
-                        className="rounded-md bg-custom-darkpurple/10 p-2"
-                      >
-                        <button
-                          className="flex items-center justify-between w-full focus:outline-none"
-                          type="button"
-                          onClick={() => toggleAccordion(index)}
-                        >
-                          <div className="flex items-center gap-2">
-                            <img src={item?.image[0]} className="w-10 h-10" />
-                            <div className="flex flex-col items-start gap-0.5">
-                              <p className="text-gray-800 text-base font-semibold">
-                                {item?.product?.name}
-                              </p>
-                              <p className="text-gray-800 text-sm font-normal">
-                                {currencySign(item?.total ?? item?.price ?? 0)}
-                              </p>
-                            </div>
-                          </div>
-                          <svg
-                            className={`w-4 h-4 transform transition-transform ${openIndex === index ? "rotate-180" : ""
-                              }`}
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M10 13.535l4.95-4.95 1.414 1.414-6.364 6.364-6.364-6.364 1.414-1.414z" />
-                          </svg>
-                        </button>
-                        {openIndex === index && (
-                          <div className="accordion-content p-4">
-                            <dl className="sm:divide-y sm:divide-gray-200">
-                              <div className="py-1 flex flex-col gap-1">
-                                <dt className="text-custom-darkpurple text-sm font-semibold">
-                                  Return Reason
-                                </dt>
-                                <dd className="col-span-2 mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2">
-                                  {item?.returnDetails?.reason}
-                                </dd>
-                              </div>
-                              <div className="py-1 flex flex-col gap-1">
-                                <dt className="text-custom-darkpurple text-sm font-semibold">
-                                  Return Date & Time
-                                </dt>
-                                <dd className="col-span-2 mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2">
-                                  {moment(
-                                    item?.returnDetails?.returnRequestDate
-                                  ).format("YYYY-MM-DD hh:mm:ss A")}
-                                </dd>
-                              </div>
-                              <div className="py-1 flex flex-col gap-1">
-                                <dt className="text-custom-darkpurple text-sm font-semibold">
-                                  Barcode
-                                </dt>
-                                <dd className="col-span-2 mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2">
-                                  <Barcode
-                                    value={item._id}
-                                    height={20}
-                                    width={0.5}
-                                    fontSize={10}
-                                    background="transparent"
-                                  // displayValue={false}
-                                  />
-                                </dd>
-                              </div>
-                              <div className="py-1 flex flex-col gap-1">
-                                <dt className="text-custom-darkpurple text-sm font-semibold">
-                                  Proof
-                                </dt>
-                                <dd className="mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2 px-3">
-                                  <Slider {...settings}>
-                                    {item?.returnDetails?.proofImages?.map(
-                                      (media, i) => {
-                                        const isVideo =
-                                          media?.match(/\.(mp4|webm|ogg)$/i);
-
-                                        return (
-                                          <div className="w-auto" key={i}>
-                                            {isVideo ? (
-                                              <video
-                                                controls
-                                                autoPlay
-                                                className="w-auto h-[200px] object-fill rounded-md mr-2"
-                                                src={media}
-                                              />
-                                            ) : (
-                                              <img
-                                                src={media}
-                                                className="w-full h-[200px] object-cover rounded-md mr-2"
-                                                alt={`proof-${i}`}
-                                              />
-                                            )}
-                                          </div>
-                                        );
-                                      }
-                                    )}
-                                  </Slider>
-                                </dd>
-                              </div>
-                            </dl>
-                          </div>
+              {/* Content */}
+              <div className="p-6 max-h-[60vh] overflow-y-auto">
+                {/* Order Info */}
+                <div className="bg-gray-50 rounded-[8px] p-4 mb-5">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium">Order ID</p>
+                      <p className="text-gray-800 font-semibold">{popupData?.orderId || popupData?._id}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium">Seller</p>
+                      <p className="text-gray-800 font-semibold">{popupData?.seller_id?.username || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 font-medium">Total Refunded</p>
+                      <p className="text-custom-blue font-semibold">
+                        {currencySign(
+                          popupData?.productDetail?.reduce((total, item) => {
+                            return total + (item?.returnDetails?.refundAmount || 0);
+                          }, 0) || 0
                         )}
-                      </li>
-                    ))}
-                </ul>
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-                <div className="flex items-center gap-3">
+                {/* Products - Simple Layout without Accordion */}
+                <div className="space-y-4">
+                  {popupData?.productDetail?.length > 0 ? (
+                    popupData.productDetail.map((item, index) => (
+                      <div key={index} className="border border-gray-200 rounded-[8px] p-4 bg-white">
+                        {/* Product Info */}
+                        <div className="flex items-start space-x-4 mb-4">
+                          <img 
+                            src={item?.image?.[0] || '/placeholder-image.png'} 
+                            alt={item?.product?.name || 'Product'}
+                            className="w-16 h-16 object-cover rounded-[8px] border"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-800 mb-1">
+                              {item?.product?.name || 'Product Name Not Available'}
+                            </h4>
+                            <p className="text-custom-blue font-medium mb-1">
+                              {currencySign(item?.total ?? item?.price ?? 0)}
+                            </p>
+                            <p className="text-sm text-gray-600 mb-2">
+                              Qty: {item?.qty || 1}
+                            </p>
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                              item?.returnDetails?.returnStatus === 'Refunded' 
+                                ? 'bg-green-100 text-green-700'
+                                : item?.returnDetails?.returnStatus === 'Approved'
+                                ? 'bg-blue-100 text-blue-700'
+                                : item?.returnDetails?.returnStatus === 'Rejected'
+                                ? 'bg-red-100 text-red-700'
+                                : 'bg-orange-100 text-orange-700'
+                            }`}>
+                              {item?.returnDetails?.returnStatus || 'Return Requested'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Product Details - Always Visible */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                          <div>
+                            <p className="font-medium text-gray-700 mb-2">Return Reason</p>
+                            <p className="text-gray-600 bg-gray-50 p-3 rounded-[8px] text-sm">
+                              {item?.returnDetails?.reason || 'No reason provided'}
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <p className="font-medium text-gray-700 mb-2">Return Date</p>
+                            <p className="text-gray-600 bg-gray-50 p-3 rounded-[8px] text-sm">
+                              {item?.returnDetails?.returnRequestDate ? 
+                                moment(item?.returnDetails?.returnRequestDate).format("DD MMM YYYY, hh:mm A") :
+                                'Date not available'
+                              }
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Barcode */}
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                          <p className="font-medium text-gray-700 mb-2">Barcode</p>
+                          <div className="bg-gray-50 p-3 rounded-[8px] flex justify-center">
+                            <Barcode
+                              value={item._id}
+                              height={40}
+                              width={1}
+                              fontSize={12}
+                              background="transparent"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No product details available</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-[12px]">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button
-                    // disabled={!popupData?.assignedEmployee}
                     onClick={() => {
                       reminderSellerForReturn(
                         popupData?.orderId || popupData?._id,
                         popupData?.seller_id?._id
                       );
-                      setviewPopup(false);
-                      setPopupData({});
-                      setOpenIndex(null);
                     }}
-                    className="text-white bg-custom-darkpurple hover:bg-custom-darkpurple/90 px-5 py-2 rounded justify-center mx-auto grid w-60 cursor-pointer disabled:bg-custom-darkpurple/30"
+                    className="bg-custom-blue hover:bg-custom-blue/90 text-white px-6 py-3 rounded-[8px] font-medium transition-colors"
                   >
-                    Send Seller Notification
+                    Send Seller Reminder
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      updateReturnStatus(
+                        popupData?.orderId || popupData?._id,
+                        popupData?.productDetail?.[0]?._id,
+                        'Approved'
+                      );
+                    }}
+                    className="bg-custom-blue hover:bg-custom-blue/90 text-white px-6 py-3 rounded-[8px] font-medium transition-colors"
+                  >
+                    Approve Return
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      updateReturnStatus(
+                        popupData?.orderId || popupData?._id,
+                        popupData?.productDetail?.[0]?._id,
+                        'Rejected'
+                      );
+                    }}
+                    className="bg-custom-blue hover:bg-custom-blue/90 text-white px-6 py-3 rounded-[8px] font-medium transition-colors"
+                  >
+                    Reject Return
                   </button>
                 </div>
               </div>

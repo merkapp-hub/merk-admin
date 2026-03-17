@@ -4,30 +4,20 @@ import isAuth from "@/components/isAuth";
 import { Api } from "@/services/service";
 import { useRouter } from "next/router";
 import moment from "moment";
-import { Drawer, Typography, IconButton, Button, Modal } from "@mui/material";
-import {
-  IoAddSharp,
-  IoCloseCircleOutline,
-  IoList,
-  IoRemoveSharp,
-} from "react-icons/io5";
+import { Drawer } from "@mui/material";
+import { IoCloseCircleOutline } from "react-icons/io5";
 import currencySign from "@/utils/currencySign";
 import { RxCrossCircled } from "react-icons/rx";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
 import { userContext } from "./_app";
+import Swal from 'sweetalert2';
 
 function ReturnedOrders(props) {
   const router = useRouter();
   const [userRquestList, setUserRquestList] = useState([]);
   const [viewPopup, setviewPopup] = useState(false);
-  const [returnOrders, setReturnOrders] = useState(true);
+  const [returnOrders] = useState(true);
   const [popupData, setPopupData] = useState({});
   const [openCart, setOpenCart] = useState(false);
-  const [CartItem, setCartItem] = useState(0);
-  const [user, setUser] = useContext(userContext);
-  const [employeeIds, setEmployeeIds] = useState([]);
   const [cartData, setCartData] = useState({});
   const [selctDate, setSelctDate] = useState(new Date());
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,14 +30,6 @@ function ReturnedOrders(props) {
 
   const toggleAccordion = (index) => {
     setOpenIndex(openIndex === index ? null : index);
-  };
-
-  var settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
   };
 
   const closeDrawer = async () => {
@@ -103,50 +85,15 @@ function ReturnedOrders(props) {
     );
   };
 
-  //   useEffect(() => {
-  //     if (user?._id) {
-  //       getEmployee(currentPage);
-  //     }
-  //   }, [user]);
-
-  //   const getEmployee = async () => {
-  //     props.loader(true);
-  //     let url;
-  //     if (user?.type === "SELLER") {
-  //       url = `getEmployee?all=true`;
-  //     }
-
-  //     Api("get", url, router).then(
-  //       (res) => {
-  //         props.loader(false);
-
-  //         setEmployeeIds(res.data);
-  //       },
-  //       (err) => {
-  //         props.loader(false);
-  //         console.log(err);
-  //         props.toaster({ type: "error", message: err?.message });
-  //       }
-  //     );
-  //   };
-
-  const assignEmployee = async (orderId) => {
+  const sendReturnNotificationToSeller = async (orderId) => {
     props.loader(true);
     let data = {
       orderId: orderId,
-      assignedEmployee: popupData?.assignedEmployee,
     };
-    Api("post", "assignOrder", data, router).then(
+    Api("post", "send-return-notification-to-seller", data, router).then(
       (res) => {
         props.loader(false);
-        setviewPopup(false);
         props.toaster({ type: "success", message: res?.message });
-        setPopupData({
-          assignedEmployee: "",
-          orderId: "",
-        });
-        closeDrawer();
-        getOrderBySeller(null, currentPage);
       },
       (err) => {
         props.loader(false);
@@ -154,6 +101,41 @@ function ReturnedOrders(props) {
         props.toaster({ type: "error", message: err?.message });
       }
     );
+  };
+
+  const confirmReturnOrder = async (orderId) => {
+    const result = await Swal.fire({
+      title: 'Confirm Return Order',
+      text: 'Are you sure you want to mark this order as returned?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#E58F14',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Return Order',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
+      props.loader(true);
+      let data = {
+        orderId: orderId,
+        status: 'Returned'
+      };
+      
+      Api("post", "update-return-order-status", data, router).then(
+        (res) => {
+          props.loader(false);
+          props.toaster({ type: "success", message: "Order marked as returned successfully" });
+          setviewPopup(false);
+          getOrderBySeller(null, currentPage); // Refresh the list
+        },
+        (err) => {
+          props.loader(false);
+          console.log(err);
+          props.toaster({ type: "error", message: err?.message || "Failed to update order status" });
+        }
+      );
+    }
   };
 
   // console.log("order seller ::", userRquestList);
@@ -218,24 +200,10 @@ function ReturnedOrders(props) {
     );
   }
 
-  function status({ value }) {
-    return (
-      <div>
-        <p
-          className={`${
-            value === "Return-requested" ? "text-orange-500" : "text-green-500"
-          } text-base font-normal text-center`}
-        >
-          {value}
-        </p>
-      </div>
-    );
-  }
-
   const info = ({ value, row }) => {
     //console.log(row.original._id)
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center gap-2">
         <button
           className="h-[38px] w-[93px] bg-[#00000020] text-black text-base	font-normal rounded-[8px]"
           onClick={() => {
@@ -248,10 +216,23 @@ function ReturnedOrders(props) {
               productId: row.original.productId,
               shipping_address: row.original.shipping_address,
               seller_id: row.original.seller_id,
+              returnReason: row.original.returnReason,
+              returnRequestDate: row.original.returnRequestDate || row.original.returndate,
+              // Add order-level data for fallback
+              orderData: row.original
             }));
           }}
         >
           See
+        </button>
+        
+        <button
+          className="h-[38px] w-[100px] bg-green-600 hover:bg-green-700 text-white text-sm font-normal rounded-[8px]"
+          onClick={() => {
+            confirmReturnOrder(row.original._id);
+          }}
+        >
+          Return Order
         </button>
       </div>
     );
@@ -295,7 +276,7 @@ function ReturnedOrders(props) {
       //   Cell: status,
       // },
       {
-        Header: "See Details",
+        Header: "Actions",
         // accessor: "view",
         Cell: info,
       },
@@ -457,118 +438,182 @@ function ReturnedOrders(props) {
         </Drawer>
 
         {viewPopup && (
-          <div className="fixed top-0 left-0 w-screen h-screen bg-black/30 flex justify-center items-center z-[9999]">
-            <div className="relative w-[300px] md:w-[460px] h-auto bg-white rounded-[15px] m-auto">
-              <div
-                className="absolute top-2 right-2 p-1 rounded-full  text-black w-8 h-8 cursor-pointer"
-                onClick={() => {
-                  setviewPopup(!viewPopup);
-                  setPopupData({});
-                  setOpenIndex(null);
-                }}
-              >
-                <RxCrossCircled className="h-full w-full font-semibold " />
+          <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 flex justify-center items-center z-[9999] p-4">
+            <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4 text-white">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold">Return Order Details</h2>
+                  <button
+                    className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                    onClick={() => {
+                      setviewPopup(false);
+                      setPopupData({});
+                      setOpenIndex(null);
+                    }}
+                  >
+                    <RxCrossCircled className="h-6 w-6" />
+                  </button>
+                </div>
               </div>
 
-              <div className="max-h-[400px] px-5 w-full py-3 overflow-y-scroll scrollbar-hide">
-                <p className="text-center mt-2 font-semibold text-xl text-gray-800">
-                  Returned Product Details
-                </p>
+              {/* Content */}
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                {/* Order Info */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Order Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Order ID</p>
+                      <p className="font-medium text-gray-800">{popupData?.orderId}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Return Date</p>
+                      <p className="font-medium text-gray-800">
+                        {popupData?.returnRequestDate ? 
+                          moment(popupData?.returnRequestDate).format("DD MMM YYYY, hh:mm A") :
+                          'Date not available'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-                <ul className="rounded-md space-y-2 my-4">
-                  {popupData?.productDetail?.length > 0 &&
-                    popupData?.productDetail?.map((item, index) => (
-                      <li
-                        key={index}
-                        className="rounded-md bg-custom-darkpurple/10 p-2"
-                      >
-                        <button
-                          className="flex items-center justify-between w-full focus:outline-none"
-                          type="button"
-                          onClick={() => toggleAccordion(index)}
-                        >
-                          <div className="flex items-center gap-2">
-                            <img src={item?.image[0]} className="w-10 h-10" />
-                            <div className="flex flex-col items-start gap-0.5">
-                              <p className="text-gray-800 text-base font-semibold">
-                                {item?.product?.name}
-                              </p>
-                              <p className="text-gray-800 text-sm font-normal">
-                                {currencySign(item?.total ?? item?.price ?? 0)}
-                              </p>
+                {/* Products */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Returned Products</h3>
+                  
+                  {popupData?.productDetail?.length > 0 ? (
+                    <div className="space-y-4">
+                      {popupData.productDetail.map((item, index) => (
+                        <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+                          {/* Product Header */}
+                          <div 
+                            className="bg-white p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                            onClick={() => toggleAccordion(index)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4">
+                                <img 
+                                  src={item?.image?.[0] || '/placeholder-image.png'} 
+                                  alt={item?.product?.name || 'Product'}
+                                  className="w-16 h-16 object-cover rounded-lg border"
+                                />
+                                <div>
+                                  <h4 className="font-semibold text-gray-800 text-lg">
+                                    {item?.product?.name || 'Product Name Not Available'}
+                                  </h4>
+                                  <p className="text-purple-600 font-medium">
+                                    {currencySign(item?.total ?? item?.price ?? 0)}
+                                  </p>
+                                  <p className="text-sm text-gray-600">
+                                    Quantity: {item?.qty || 1}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                  item?.returnDetails?.returnStatus === 'Refunded' 
+                                    ? 'bg-green-100 text-green-800'
+                                    : item?.returnDetails?.returnStatus === 'Approved'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : item?.returnDetails?.returnStatus === 'Rejected'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-orange-100 text-orange-800'
+                                }`}>
+                                  {item?.returnDetails?.returnStatus || 'Return Requested'}
+                                </span>
+                                <svg
+                                  className={`w-5 h-5 text-gray-400 transform transition-transform ${
+                                    openIndex === index ? "rotate-180" : ""
+                                  }`}
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </div>
                             </div>
                           </div>
-                          <svg
-                            className={`w-4 h-4 transform transition-transform ${
-                              openIndex === index ? "rotate-180" : ""
-                            }`}
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M10 13.535l4.95-4.95 1.414 1.414-6.364 6.364-6.364-6.364 1.414-1.414z" />
-                          </svg>
-                        </button>
-                        {openIndex === index && (
-                          <div className="accordion-content p-4">
-                            <dl className="sm:divide-y sm:divide-gray-200">
-                              <div className="py-1 flex flex-col gap-1">
-                                <dt className="text-custom-darkpurple text-sm font-semibold">
-                                  Return Reason
-                                </dt>
-                                <dd className="col-span-2 mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2">
-                                  {item?.returnDetails?.reason}
-                                </dd>
-                              </div>
-                              <div className="py-1 flex flex-col gap-1">
-                                <dt className="text-custom-darkpurple text-sm font-semibold">
-                                  Return Date & Time
-                                </dt>
-                                <dd className="col-span-2 mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2">
-                                  {moment(
-                                    item?.returnDetails?.returnRequestDate
-                                  ).format("YYYY-MM-DD hh:mm:ss A")}
-                                </dd>
-                              </div>
-                              <div className="py-1 flex flex-col gap-1">
-                                <dt className="text-custom-darkpurple text-sm font-semibold">
-                                  Proof
-                                </dt>
-                                <dd className="mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2 px-3">
-                                <Slider {...settings}>
-                                {item?.returnDetails?.proofImages?.map(
-                                    (img, i) => (
-                                      <img
-                                        key={i}
-                                        src={img}
-                                        className="w-auto h-[200px] object-fill rounded-md mr-2"
-                                      />
-                                    )
-                                  )}
-                                </Slider>
-                                </dd>
-                              </div>
-                            </dl>
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                </ul>
 
-                {/* <div className="flex items-center gap-3">
+                          {/* Product Details (Expandable) */}
+                          {openIndex === index && (
+                            <div className="bg-gray-50 border-t border-gray-200 p-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <h5 className="font-semibold text-gray-700 mb-2">Return Reason</h5>
+                                  <p className="text-gray-600 bg-white p-3 rounded border">
+                                    {item?.returnDetails?.reason || 
+                                     popupData?.returnReason || 
+                                     'No reason provided'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <h5 className="font-semibold text-gray-700 mb-2">Return Date & Time</h5>
+                                  <p className="text-gray-600 bg-white p-3 rounded border">
+                                    {item?.returnDetails?.returnRequestDate ? 
+                                      moment(item?.returnDetails?.returnRequestDate).format("DD MMM YYYY, hh:mm:ss A") :
+                                      popupData?.returnRequestDate ? 
+                                        moment(popupData?.returnRequestDate).format("DD MMM YYYY, hh:mm:ss A") :
+                                        'Date not available'
+                                    }
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {item?.color && (
+                                <div className="mt-4">
+                                  <h5 className="font-semibold text-gray-700 mb-2">Product Color</h5>
+                                  <div className="flex items-center space-x-2">
+                                    <div 
+                                      className="w-6 h-6 rounded-full border-2 border-gray-300"
+                                      style={{ backgroundColor: item.color }}
+                                    ></div>
+                                    <span className="text-gray-600 capitalize">{item.color}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No product details available</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
-                    disabled={!popupData?.assignedEmployee}
                     onClick={() => {
-                      assignEmployee(popupData?.orderId);
-                      setviewPopup(false);
-                      setPopupData((prev) => ({
-                        ...prev,
-                        assignedEmployee: "",
-                      }));
+                      sendReturnNotificationToSeller(popupData?.orderId);
                     }}
-                    className="text-white bg-custom-darkpurple hover:bg-custom-darkpurple/90 px-5 py-2 rounded justify-center mx-auto grid w-60 cursor-pointer disabled:bg-custom-darkpurple/30"
+                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
                   >
-                    Send Seller Notification
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span>Send Seller Notification</span>
                   </button>
-                </div> */}
+                  
+                  <button
+                    onClick={() => {
+                      confirmReturnOrder(popupData?.orderId);
+                    }}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Confirm Return</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

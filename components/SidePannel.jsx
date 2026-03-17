@@ -201,16 +201,7 @@ const SidePannel = ({ setOpenTab, openTab }) => {
     },
   ];
 
-  // Debug logging
-  console.log('Current user role:', user?.role);
-  console.log('Normalized user role:', normalizeRole(user?.role));
-  console.log('Menu items with access:', menuItems.map(item => ({
-    title: item.title,
-    href: item.href,
-    access: item.access,
-    hasAccess: hasAccess(item.access),
-    normalizedAccess: item.access.map(role => normalizeRole(role))
-  })));
+ 
 
   return (
     <>

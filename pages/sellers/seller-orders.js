@@ -246,7 +246,9 @@ function SellerOrders(props) {
       "Shipped": "text-purple-500",
       "OutForDelivery": "text-yellow-600",
       "Delivered": "text-green-500",
-      "Cancelled": "text-red-500"
+      "Cancelled": "text-red-500",
+      "Returned": "text-red-600",
+      "Return Requested": "text-orange-600"
     };
     
     const statusLabels = {
@@ -255,7 +257,9 @@ function SellerOrders(props) {
       "Shipped": "Shipped",
       "Delivered": "Delivered",
       "Cancelled": "Cancelled",
-      "Pending": "Pending"
+      "Pending": "Pending",
+      "Returned": "Returned",
+      "Return Requested": "Return Requested"
     };
     
     return (
