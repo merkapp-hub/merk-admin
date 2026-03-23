@@ -97,6 +97,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
     //   access: ["seller"],
     // },
     {
+      href: "/users",
+      title: "Users",
+      img: <FaUserTie className="text-3xl" />,
+      access: ["admin"],
+    },
+    {
       href: "/sellers",
       title: "Sellers",
       img: <FaUserTie className="text-3xl" />,
@@ -109,12 +115,6 @@ const SidePannel = ({ setOpenTab, openTab }) => {
         // { href: "/sellers/seller-employee", title: "Seller Employee" },
       ],
     },
-    // {
-    //   href: "/driver",
-    //   title: "Drivers",
-    //   img: <FaUserTie className="text-3xl" />,
-    //   access: ["admin"],
-    // },
     {
       href: "/categories",
       title: "Categories",
