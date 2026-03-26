@@ -494,6 +494,16 @@ function SellerOrders(props) {
                           ></p>
                         </div>
                       )}
+                      {item?.size && (
+                        <div className="flex justify-start items-center gap-1 pt-1">
+                          <p className="text-[#1A1A1A70] text-xs font-normal mr-2">
+                            Size:
+                          </p>
+                          <p className="text-black text-xs font-normal">
+                            {typeof item.size === "object" ? item.size?.value || item.size?.label : item.size}
+                          </p>
+                        </div>
+                      )}
                       <div className="flex justify-start items-center gap-1">
                         <p className="text-[#1A1A1A70] text-xs font-normal mr-2">
                           Quantaty:
