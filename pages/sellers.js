@@ -125,7 +125,7 @@ function Sellers(props) {
   const updateStatus = async (id, status) => {
     setviewPopup(false);
     props.loader(true);
-    Api("post", `updateStore`, { id, status }, router).then(
+    Api("post", `updateStore`, { userid: id, status }, router).then(
       (res) => {
         props.loader(false);
         console.log("res================>", res);
