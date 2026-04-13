@@ -273,7 +273,7 @@ function Settings(props) {
 
     Api(
       "patch",
-      `updateAdminDetails/${user._id}`,
+      `auth/updateAdminDetails/${user._id}`,
       { email, password },
       router
     ).then(
