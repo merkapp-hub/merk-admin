@@ -39,7 +39,7 @@ function Sellers(props) {
   const [selectedId, setSelectedId] = useState("");
   const open = Boolean(anchorEl);
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const options = ["Products", "Orders", "Employees", "Returns", "Refunds"];
+  const options = ["Products", "Orders", "Returns"];
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -254,18 +254,35 @@ function Sellers(props) {
         <button
           className="h-[38px] w-[93px] bg-[#FE3E0020] text-custom-red text-base	font-normal rounded-[8px]"
           onClick={() => {
+            console.log('🔍 Seller Data:', row.original);
+            console.log('🔍 Store Data:', row.original?.store);
+            console.log('🔍 Identity Image:', row.original?.store?.identity);
+            console.log('🔍 KBIS Image:', row.original?.store?.kbis);
+            
             setviewPopup(true);
             setPopupData(row.original);
             // getSellerStats(row.original?._id);
             setSelectedId(row.original?._id);
-            setdriverdata([
-              {
-                img: row.original?.store?.identity,
-              },
-              {
-                img: row.original?.store?.kbis,
-              },
-            ]);
+            
+            // Filter out empty/null images
+            const images = [];
+            if (row.original?.store?.identity) {
+              console.log('✅ Adding identity image');
+              images.push({ img: row.original.store.identity });
+            } else {
+              console.log('❌ Identity image missing');
+            }
+            
+            if (row.original?.store?.kbis) {
+              console.log('✅ Adding KBIS image');
+              images.push({ img: row.original.store.kbis });
+            } else {
+              console.log('❌ KBIS image missing');
+            }
+            
+            console.log('📸 Final images array:', images);
+            
+            setdriverdata(images);
           }}
         >
           See
@@ -602,14 +619,7 @@ function Sellers(props) {
                         {popupData?.stats?.totalProducts}
                       </p>
                     </div>
-                    <div onClick={() => {
-                        setNewPopup(true);
-                        setNewPopupData({
-                          id: popupData?._id,
-                          name: popupData?.username,
-                          type: "Employees",
-                        });
-                      }} className="cursor-pointer col-span-2 flex gap-2 justify-start items-center w-full">
+                    <div className="col-span-2 flex gap-2 justify-start items-center w-full">
                       <p className="text-sm font-semibold text-gray-600">
                         Total Employees:
                       </p>
@@ -691,20 +701,67 @@ function Sellers(props) {
                 onSlideChange={() => console.log("slide change")}
                 onSwiper={(swiper) => console.log(swiper)}
               >
-                {driverdata?.map((item, i) => (
-                  <SwiperSlide onKeyUpCapture={i}>
+                {driverdata && driverdata.length > 0 ? (
+                  driverdata.map((item, i) => {
+                    console.log(`🖼️ Rendering slide ${i}:`, item);
+                    const isPDF = item?.img?.toLowerCase().endsWith('.pdf');
+                    console.log(`📄 Is PDF: ${isPDF}`);
+                    
+                    return (
+                      <SwiperSlide key={i}>
+                        <div className="w-full flex justify-center">
+                          <div className="md:w-80 md:h-64 w-60 h-48 relative rounded-lg bg-gray-100 flex items-center justify-center">
+                            {item?.img ? (
+                              isPDF ? (
+                                // PDF viewer
+                                <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                                  <svg className="w-16 h-16 text-red-500 mb-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 18h12V6h-4V2H4v16zm-2 1V0h12l4 4v16H2v-1z"/>
+                                    <path d="M7 14h6v1H7v-1zm0-2h6v1H7v-1zm0-2h6v1H7v-1z"/>
+                                  </svg>
+                                  <p className="text-sm font-semibold text-gray-700 mb-2">PDF Document</p>
+                                  <a 
+                                    href={item.img} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="px-4 py-2 bg-custom-darkpurple text-white rounded hover:bg-purple-700 text-sm"
+                                  >
+                                    View PDF
+                                  </a>
+                                </div>
+                              ) : (
+                                // Image viewer
+                                <img
+                                  src={item.img}
+                                  alt={`Document ${i + 1}`}
+                                  className="rounded-sm md:w-80 md:h-64 w-60 h-48 object-contain"
+                                  onLoad={() => console.log(`✅ Image ${i} loaded successfully:`, item.img)}
+                                  onError={(e) => {
+                                    console.error(`❌ Image ${i} failed to load:`, item.img);
+                                  }}
+                                />
+                              )
+                            ) : (
+                              <div className="text-gray-400 text-center">
+                                <p>No document available</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </SwiperSlide>
+                    );
+                  })
+                ) : (
+                  <SwiperSlide>
                     <div className="w-full flex justify-center">
-                      <div className="md:w-80 md:h-64 w-60 h-48 relative rounded-lg">
-                        <img
-                          src={item?.img}
-                          alt="icon"
-                          layout="responsive"
-                          className="rounded-sm md:w-80 md:h-64 w-60 h-48 object-contain"
-                        />
+                      <div className="md:w-80 md:h-64 w-60 h-48 relative rounded-lg bg-gray-100 flex items-center justify-center">
+                        <div className="text-gray-400 text-center">
+                          <p>No documents uploaded</p>
+                        </div>
                       </div>
                     </div>
                   </SwiperSlide>
-                ))}
+                )}
               </Swiper>
 
               <div className="md:h-12">
