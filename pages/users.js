@@ -86,6 +86,13 @@ function Users(props) {
         e.preventDefault();
         getUsersList(1, searchTerm, dateFilter.startDate, dateFilter.endDate);
     };
+    
+    // Auto-trigger search when date filter changes
+    useEffect(() => {
+        if (dateFilter.startDate || dateFilter.endDate) {
+            getUsersList(1, searchTerm, dateFilter.startDate, dateFilter.endDate);
+        }
+    }, [dateFilter.startDate, dateFilter.endDate]);
 
     const handlePageChange = (newPage) => {
         getUsersList(newPage, searchTerm, dateFilter.startDate, dateFilter.endDate);

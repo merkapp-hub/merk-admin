@@ -29,17 +29,11 @@ const PieChart = ({ data }) => {
       },
       tooltip: {
         y: {
-          formatter: (val) => `$${val}`,
+          formatter: (val) => `${val}`,
         },
       },
       dataLabels: {
-        formatter: function (val, opts) {
-          const raw = opts.w.config.series[opts.seriesIndex];
-          return `${raw}$`;
-        },
-        style: {
-          colors: ["#ffffff"],
-        },
+        enabled: false,  // Disable data labels on chart slices to prevent overlap
       },
       responsive: [
         {
