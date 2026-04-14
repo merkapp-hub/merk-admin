@@ -193,3 +193,86 @@ body {
 .MuiDrawer-root {
   z-index: 999999999 !important;
 }
+.rmsc
+ {
+  --rmsc-main: #4285f4;
+  --rmsc-hover: #f1f3f5;
+  --rmsc-selected: #e2e6ea;
+  --rmsc-border: #ccc;
+  --rmsc-gray: #aaa;
+  --rmsc-bg: #fff;
+  --rmsc-p: 10px;
+  --rmsc-radius: 4px;
+  --rmsc-h: 38px;
+}
+
+.rmsc .dropdown-container {
+  background: transparent !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  min-height: 46px !important;
+}
+
+.rmsc .dropdown-heading {
+  color: #6b7280 !important;
+  font-size: 16px !important;
+  font-weight: 300 !important;
+}
+
+.rmsc .dropdown-content {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  margin-top: 5px !important;
+}
+
+.rmsc .panel-content {
+  background: white !important;
+}
+
+.rmsc .search input {
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+  color: #000 !important;
+  border-radius: 5px !important;
+  padding: 8px 12px !important;
+}
+
+.rmsc .search input::placeholder {
+  color: #9ca3af !important;
+}
+
+.rmsc .select-item {
+  color: #000 !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
+.rmsc .select-item:hover {
+  background: #f3f4f6 !important;
+}
+
+.rmsc .select-item.selected {
+  background: #e5e7eb !important;
+  color: #000 !important;
+}
+
+.rmsc .item-renderer input[type="checkbox"] {
+  margin-right: 8px !important;
+}
+
+.rmsc .gray {
+  color: #6b7280 !important;
+}
+
+.rmsc .dropdown-heading-value {
+  color: #000 !important;
+}
+
+.rmsc .clear-selected-button {
+  color: #6b7280 !important;
+}
+
+.rmsc .clear-selected-button:hover {
+  color: #000 !important;
+}

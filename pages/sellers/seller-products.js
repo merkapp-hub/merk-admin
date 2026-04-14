@@ -282,18 +282,51 @@ const getProduct = async (page = 1, limit = 10) => {
   };
 
   const productName = ({ value }) => {
+    const maxLength = 30;
+    const truncatedName = value && value.length > maxLength 
+      ? value.substring(0, maxLength) + '...' 
+      : value;
+    
     return (
       <div className="flex flex-col items-center justify-center">
-        <p className="text-black text-base font-normal">{value}</p>
+        <p className="text-black text-base font-normal" title={value}>
+          {truncatedName}
+        </p>
       </div>
     );
   };
 
 const category = ({ row, value }) => {
+  const categories = row.original?.category;
+  
+  if (!categories || categories.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <p className="text-black text-base font-normal">N/A</p>
+      </div>
+    );
+  }
+  
+  if (Array.isArray(categories)) {
+    const categoryNames = categories.map(cat => cat?.name || cat).join(', ');
+    const maxLength = 25;
+    const truncatedNames = categoryNames.length > maxLength 
+      ? categoryNames.substring(0, maxLength) + '...' 
+      : categoryNames;
+    
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <p className="text-black text-base font-normal" title={categoryNames}>
+          {truncatedNames}
+        </p>
+      </div>
+    );
+  }
+  
   return (
     <div className="flex flex-col items-center justify-center">
       <p className="text-black text-base font-normal">
-        {row.original.category?.name || 'N/A'}
+        {categories?.name || 'N/A'}
       </p>
     </div>
   );
@@ -592,7 +625,12 @@ const category = ({ row, value }) => {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-gray-600">Category:</p>
-                      <p className="font-semibold text-black">{popupData?.category?.name || 'N/A'}</p>
+                      <p className="font-semibold text-black">
+                        {Array.isArray(popupData?.category) 
+                          ? popupData.category.map(cat => cat?.name || cat).join(', ')
+                          : (popupData?.category?.name || 'N/A')
+                        }
+                      </p>
                     </div>
                     <div>
                       <p className="text-gray-600">SKU:</p>

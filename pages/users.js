@@ -4,8 +4,9 @@ import { Api } from '@/services/service';
 import { useRouter } from 'next/router'
 import moment from 'moment';
 import { RxCrossCircled } from 'react-icons/rx'
-import { FaEye, FaSearch, FaShoppingBag } from 'react-icons/fa'
+import { FaEye, FaSearch, FaShoppingBag, FaTrash } from 'react-icons/fa'
 import isAuth from '@/components/isAuth';
+import Swal from 'sweetalert2';
 
 function Users(props) {
     const router = useRouter()
@@ -139,6 +140,35 @@ function Users(props) {
         );
     };
 
+    const deleteUser = async (userId, userName) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to delete user "${userName}"? This action cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                props.loader(true);
+                Api("delete", `users/${userId}`, "", router).then(
+                    (res) => {
+                        props.loader(false);
+                        props.toaster({ type: "success", message: "User deleted successfully" });
+                        getUsersList(pagination.currentPage, searchTerm, dateFilter.startDate, dateFilter.endDate);
+                        getUserStats();
+                    },
+                    (err) => {
+                        props.loader(false);
+                        props.toaster({ type: "error", message: err?.message || "Failed to delete user" });
+                    }
+                );
+            }
+        });
+    };
+
     function name({ value, row }) {
         return (
             <div>
@@ -228,6 +258,21 @@ function Users(props) {
                 >
                     <FaShoppingBag size={16} />
                 </button>
+                {/* <button 
+                    onClick={() => {
+                        const userId = row.original._id;
+                        const userName = `${row.original.firstName} ${row.original.lastName}`;
+                        if (userId) {
+                            deleteUser(userId, userName);
+                        } else {
+                            props.toaster({ type: "error", message: "User ID not found" });
+                        }
+                    }}
+                    className='text-red-600 hover:text-red-800 p-1'
+                    title="Delete User"
+                >
+                    <FaTrash size={16} />
+                </button> */}
             </div>
         )
     }

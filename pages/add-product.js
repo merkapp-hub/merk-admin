@@ -272,9 +272,13 @@ function AddProduct(props) {
         const productInfo = response.data;
         const hasVariants = productInfo.varients && productInfo.varients.length > 0;
         
+        const categoryIds = Array.isArray(productInfo.category) 
+          ? productInfo.category.map(cat => cat._id || cat)
+          : [productInfo.category?._id || productInfo.category];
+        
         setProductData({
           name: productInfo.name || "",
-          category: productInfo.category?._id || [],
+          category: categoryIds,
           categoryName: productInfo.category?.name || "",
           sku: productInfo.sku || "",
           model: productInfo.model || "",
@@ -295,7 +299,6 @@ function AddProduct(props) {
         if (hasVariants) {
           setVariants(productInfo.varients);
           
-          // Determine parameter type from existing variants
           if (productInfo.varients.length > 0 && productInfo.varients[0].selected && productInfo.varients[0].selected.length > 0) {
             const firstSlot = productInfo.varients[0].selected[0];
             if (firstSlot.label === "Size") {
@@ -352,7 +355,6 @@ function AddProduct(props) {
 const handleCreateProduct = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (productData.hasVariants && variants.length === 0) {
         props.toaster({ type: "error", message: "Please add at least one variant" });
         return;
@@ -363,14 +365,17 @@ const handleCreateProduct = async (e) => {
         return;
     }
 
-    // Debug: Log variants data before sending
+    if (!productData.category || productData.category.length === 0) {
+        props.toaster({ type: "error", message: "Please select at least one category" });
+        return;
+    }
+
     console.log("Variants data before sending:", JSON.stringify(variants, null, 2));
 
     const formData = new FormData();
     
-    // Add simple text fields
     formData.append('name', productData.name);
-    formData.append('category', productData.category);
+    formData.append('category', JSON.stringify(productData.category));
     formData.append('sku', productData.sku || '');
     formData.append('model', productData.model || '');
     formData.append('origin', productData.origin);
@@ -382,9 +387,7 @@ const handleCreateProduct = async (e) => {
     formData.append('userid', user?._id);
     formData.append('hasVariants', productData.hasVariants);
     
-    // Handle pricing based on variant status
     if (productData.hasVariants) {
-        // Ensure all total values are numbers
         const processedVariants = variants.map(variant => ({
             ...variant,
             selected: variant.selected ? variant.selected.map(slot => ({
@@ -398,11 +401,9 @@ const handleCreateProduct = async (e) => {
         
         console.log("Processed variants with number conversion:", JSON.stringify(processedVariants, null, 2));
         
-        // For products with variants, send empty price_slot
         formData.append('price_slot', JSON.stringify([]));
         formData.append('varients', JSON.stringify(processedVariants));
     } else {
-        // For normal products, create single price slot
         const priceSlot = [{
             value: 1,
             price: parseFloat(productData.price) || 0,
@@ -415,15 +416,12 @@ const handleCreateProduct = async (e) => {
     
     formData.append('attributes', JSON.stringify(productData.attributes || []));
     
-    // Handle images for normal products
     if (!productData.hasVariants) {
-        // Send image URLs as JSON
         if (productData.images && productData.images.length > 0) {
             formData.append('imageUrls', JSON.stringify(productData.images));
         }
     }
     
-    // Add image files if any (for file uploads)
     if (selectedImageFiles && selectedImageFiles.length > 0) {
         selectedImageFiles.forEach(file => {
             formData.append('images', file);
@@ -455,7 +453,6 @@ const handleCreateProduct = async (e) => {
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     
-    // Validation
     if (productData.hasVariants && variants.length === 0) {
         props.toaster({ type: "error", message: "Please add at least one variant" });
         return;
@@ -466,13 +463,17 @@ const handleCreateProduct = async (e) => {
         return;
     }
 
-    // Debug: Log variants data before sending
+    if (!productData.category || productData.category.length === 0) {
+        props.toaster({ type: "error", message: "Please select at least one category" });
+        return;
+    }
+
     console.log("Variants data before updating:", JSON.stringify(variants, null, 2));
 
     const formData = new FormData();
     
     formData.append('name', productData.name);
-    formData.append('category', productData.category);
+    formData.append('category', JSON.stringify(productData.category));
     formData.append('sku', productData.sku || '');
     formData.append('model', productData.model || '');
     formData.append('origin', productData.origin);
@@ -485,9 +486,7 @@ const handleCreateProduct = async (e) => {
     formData.append('id', router?.query?.id);
     formData.append('hasVariants', productData.hasVariants);
     
-    // Handle pricing based on variant status
     if (productData.hasVariants) {
-        // Ensure all total values are numbers
         const processedVariants = variants.map(variant => ({
             ...variant,
             selected: variant.selected ? variant.selected.map(slot => ({
@@ -516,15 +515,12 @@ const handleCreateProduct = async (e) => {
     
     formData.append('attributes', JSON.stringify(productData.attributes || []));
     
-    // Handle images for normal products
     if (!productData.hasVariants) {
-        // Send image URLs as JSON
         if (productData.images && productData.images.length > 0) {
             formData.append('imageUrls', JSON.stringify(productData.images));
         }
     }
     
-    // Add image files if any (for file uploads)
     if (selectedImageFiles && selectedImageFiles.length > 0) {
         selectedImageFiles.forEach(file => {
             formData.append('images', file);
@@ -1021,34 +1017,32 @@ const handleImageChange = async (event, variantIndex) => {
                   <p className="text-custom-darkGray text-base font-normal pb-1">
                     Category
                   </p>
-                  <div className="relative px-3 w-full bg-transparent border border-custom-newGray rounded-[10px]">
-                    <select
-                      value={productData.category?._id || productData.category}
-                      onChange={(e) => {
-                        const selectedCategory = categoryData.find(
-                          (cat) => cat._id === e.target.value
-                        );
+                  <div className="relative w-full bg-transparent border border-custom-newGray rounded-[10px]">
+                    <MultiSelect
+                      options={categoryData}
+                      value={categoryData.filter(cat => 
+                        Array.isArray(productData.category) 
+                          ? productData.category.includes(cat._id)
+                          : productData.category === cat._id
+                      )}
+                      onChange={(selected) => {
+                        const selectedIds = selected.map(item => item._id);
+                        const firstCategory = categoryData.find(cat => cat._id === selectedIds[0]);
                         setProductData({
                           ...productData,
-                          category: e.target.value,
-                          categoryName: selectedCategory?.name || "",
-                          attributes: selectedCategory?.attributes || [],
+                          category: selectedIds,
+                          categoryName: firstCategory?.name || "",
+                          attributes: firstCategory?.attributes || [],
                         });
                       }}
-                      required
-                      className="bg-transparent w-full md:h-[46px] h-[40px] pl-8 pr-5 outline-none text-custom-darkGrayColor text-base font-light"
-                    >
-                      <option value="">Select Category</option>
-                      {categoryData?.map((category) => (
-                        <option key={category._id} value={category._id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
-                    <img
-                      className="w-[18px] h-[18px] absolute md:top-[13px] top-[10px] left-5"
-                      src="/box-add.png"
-                      alt="icon"
+                      labelledBy="Select Categories"
+                      overrideStrings={{
+                        selectSomeItems: "Select Categories",
+                        allItemsAreSelected: "All Categories Selected",
+                        selectAll: "Select All",
+                        search: "Search",
+                      }}
+                      className="multi-select-custom"
                     />
                   </div>
                 </div>

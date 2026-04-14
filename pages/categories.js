@@ -5,8 +5,66 @@ import { FiEdit } from "react-icons/fi";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import Swal from "sweetalert2";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { MdDragIndicator } from "react-icons/md";
 import isAuth from "@/components/isAuth";
 import Compressor from "compressorjs";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+function SortableItem({ item, onEdit, onDelete }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item._id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="bg-white border border-custom-lightsGrayColor rounded-[10px] p-5 mt-5 cursor-pointer hover:shadow-md transition-shadow"
+      onClick={() => onEdit(item)}
+    >
+      <div className="grid grid-cols-6 justify-between items-center w-full">
+        <div className="col-span-2 flex justify-start items-center">
+          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing mr-3" onClick={(e) => e.stopPropagation()}>
+            <MdDragIndicator className="text-gray-400 md:h-[30px] h-[20px] md:w-[30px] w-[20px]" />
+          </div>
+          <input
+            className="md:h-[30px] h-[15px] md:w-[30px] w-[15px]"
+            type="checkbox"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <p className="text-base text-black font-semibold pl-5">
+            {item?.name}
+          </p>
+        </div>
+        <p className={`col-span-2 mx-auto text-base text-black font-semibold ${item?.is_refundable ? "text-green-500" : "text-red-500"}`}>
+          {item?.is_refundable ? "Refundable" : "Not Refundable"}
+        </p>
+        <div className="col-span-2 flex justify-end items-center">
+          <FiEdit
+            className="md:h-[30px] h-[20px] md:w-[30px] w-[20px] text-custom-darkGray mr-[20px] cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(item);
+            }}
+          />
+          <IoCloseCircleOutline
+            className="md:h-[30px] h-[20px] md:w-[30px] w-[20px] text-custom-darkGray cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(item?._id);
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function Categories(props) {
   const router = useRouter();
@@ -32,6 +90,56 @@ function Categories(props) {
   const filteredCategories = loadTypeData.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    
+    if (active.id !== over.id) {
+      const oldIndex = filteredCategories.findIndex((item) => item._id === active.id);
+      const newIndex = filteredCategories.findIndex((item) => item._id === over.id);
+      
+      const newOrder = arrayMove(filteredCategories, oldIndex, newIndex);
+      setloadTypeData(newOrder);
+      
+      Api("post", "updateCategoryPositions", { categories: newOrder }, router).then(
+        (res) => {
+          console.log("Position updated");
+        },
+        (err) => {
+          console.log(err);
+          props.toaster({ type: "error", message: err?.message });
+          getallproducttype();
+        }
+      );
+    }
+  };
+
+  const handleEditCategory = (item) => {
+    console.log('Category card clicked:', item);
+    seteditid(item._id);
+    setData({
+      ...item,
+      is_refundable: item.is_refundable ?? false,
+    });
+    setAddAttribute(item.attributes);
+    
+    setTimeout(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    }, 50);
+  };
 
   const handleInput = (e) => {
     setAttribute(e.target.value);
@@ -394,79 +502,18 @@ function Categories(props) {
           />
         </div>
 
-        {filteredCategories.map((item, i) => (
-          <div
-            key={i}
-            className="bg-white border border-custom-lightsGrayColor rounded-[10px] p-5 mt-5 cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => {
-              console.log('Category card clicked:', item);
-              seteditid(item._id);
-              setData({
-                ...item,
-                is_refundable: item.is_refundable ?? false,
-              });
-              setAddAttribute(item.attributes);
-              
-              // Scroll to top smoothly
-              setTimeout(() => {
-                if (scrollContainerRef.current) {
-                  scrollContainerRef.current.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                  });
-                }
-              }, 50);
-            }}
-          >
-            <div className="grid grid-cols-6 justify-between items-center w-full">
-              <div className="col-span-2 flex justify-start items-center">
-                <input
-                  className="md:h-[30px] h-[15px] md:w-[30px] w-[15px]"
-                  type="checkbox"
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <p className={`text-base text-black font-semibold pl-5`}>
-                  {item?.name}
-                </p>
-              </div>
-              <p className={`col-span-2 mx-auto text-base text-black font-semibold ${item?.is_refundable ? "text-green-500" : "text-red-500"}`}>
-                {item?.is_refundable ? "Refundable" : "Not Refundable"}
-              </p>
-              <div className="col-span-2 flex justify-end items-center">
-                <FiEdit
-                  className={`md:h-[30px] h-[20px] md:w-[30px] w-[20px] text-custom-darkGray mr-[20px] cursor-pointer`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log('Edit icon clicked:', item);
-                    seteditid(item._id);
-                    setData({
-                      ...item,
-                      is_refundable: item.is_refundable ?? false,
-                    });
-                    setAddAttribute(item.attributes);
-                    
-                    // Scroll to top smoothly
-                    setTimeout(() => {
-                      if (scrollContainerRef.current) {
-                        scrollContainerRef.current.scrollTo({
-                          top: 0,
-                          behavior: 'smooth'
-                        });
-                      }
-                    }, 50);
-                  }}
-                />
-                <IoCloseCircleOutline
-                  className={`md:h-[30px] h-[20px] md:w-[30px] w-[20px] text-custom-darkGray cursor-pointer`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteCategory(item?._id);
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={filteredCategories.map(item => item._id)} strategy={verticalListSortingStrategy}>
+            {filteredCategories.map((item) => (
+              <SortableItem
+                key={item._id}
+                item={item}
+                onEdit={handleEditCategory}
+                onDelete={deleteCategory}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
       </section>
     </section>
   );

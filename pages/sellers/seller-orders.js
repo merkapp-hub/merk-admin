@@ -11,10 +11,12 @@ import {
   IoList,
   IoRemoveSharp,
 } from "react-icons/io5";
+import { FaTrash } from "react-icons/fa";
 import currencySign from "@/utils/currencySign";
 import { RxCrossCircled } from "react-icons/rx";
 import { userContext } from "../_app";
 import Barcode from "react-barcode";
+import Swal from "sweetalert2";
 
 function SellerOrders(props) {
   const router = useRouter();
@@ -187,6 +189,34 @@ function SellerOrders(props) {
     }
   };
 
+  const deleteOrder = async (orderId, orderIdDisplay) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to permanently delete order "${orderIdDisplay}"? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        props.loader(true);
+        Api("delete", `deleteOrder/${orderId}`, "", router).then(
+          (res) => {
+            props.loader(false);
+            props.toaster({ type: "success", message: "Order deleted successfully" });
+            getOrderBySeller(null, currentPage, pageSize);
+          },
+          (err) => {
+            props.loader(false);
+            props.toaster({ type: "error", message: err?.message || "Failed to delete order" });
+          }
+        );
+      }
+    });
+  };
+
   // console.log("order seller ::", userRquestList);
 
   function indexID({ value }) {
@@ -295,6 +325,21 @@ function SellerOrders(props) {
         >
           Update Status
         </button>
+        {/* <button
+          className="h-[38px] w-[38px] bg-red-600 hover:bg-red-700 text-white text-sm font-normal rounded-[8px] flex items-center justify-center"
+          onClick={() => {
+            const orderId = row.original._id;
+            const orderIdDisplay = row.original.orderId || row.original._id;
+            if (orderId) {
+              deleteOrder(orderId, orderIdDisplay);
+            } else {
+              props.toaster({ type: "error", message: "Order ID not found" });
+            }
+          }}
+          title="Delete Order"
+        >
+          <FaTrash size={14} />
+        </button> */}
       </div>
     );
   };

@@ -53,8 +53,7 @@ function Inventory(props) {
         }
       );
     } else if (user?.role === "seller") {
-      // Use the new endpoint for sellers
-      url = `getSellerProducts?seller_id=${user?._id}&page=${page}&limit=${limit}`;
+      url = `getProductforseller?page=${page}&limit=${limit}`;
       
       Api("get", url, router).then(
         (res) => {
@@ -73,21 +72,39 @@ function Inventory(props) {
   const handleProductResponse = (res) => {
     props.loader(false);
   
+    const products = res?.data?.data || res?.data || [];
+    const paginationData = res?.data?.pagination || res?.pagination;
 
-    if (res.data && Array.isArray(res.data)) {
-      setProductsList(res.data);
+    if (products && Array.isArray(products)) {
+      setProductsList(products);
       
-      const selectednewIds = res.data
+      const selectednewIds = products
         .filter(f => f.sponsered && f._id)
         .map(f => f._id);
         
       console.log("Sponsored product IDs:", selectednewIds);
       setSelectedNewSeller(selectednewIds);
-      setPagination(res?.pagination);
+      
+      if (paginationData) {
+        setPagination(paginationData);
+      } else {
+        setPagination({
+          totalPages: 1,
+          currentPage: 1,
+          itemsPerPage: 10,
+          totalItems: products.length,
+        });
+      }
     } else {
       console.log("No products found or invalid response format");
       setProductsList([]);
       setSelectedNewSeller([]);
+      setPagination({
+        totalPages: 1,
+        currentPage: 1,
+        itemsPerPage: 10,
+        totalItems: 0,
+      });
     }
   };
 
@@ -202,9 +219,29 @@ function Inventory(props) {
   };
 
  const category = ({ row, value }) => {
+  const categories = row.original?.category;
+  
+  if (!categories || categories.length === 0) {
+    return (
+      <div className="p-4 flex flex-col items-center justify-center">
+        <p className="text-black text-base font-normal">N/A</p>
+      </div>
+    );
+  }
+  
+  if (Array.isArray(categories)) {
+    return (
+      <div className="p-4 flex flex-col items-center justify-center">
+        <p className="text-black text-base font-normal">
+          {categories.map(cat => cat?.name || cat).join(', ')}
+        </p>
+      </div>
+    );
+  }
+  
   return (
     <div className="p-4 flex flex-col items-center justify-center">
-      <p className="text-black text-base font-normal">{row.original?.category?.name || 'N/A'}</p>
+      <p className="text-black text-base font-normal">{categories?.name || 'N/A'}</p>
     </div>
   );
 };
@@ -545,7 +582,11 @@ function Inventory(props) {
                     <div className="space-y-2 text-sm text-gray-700 bg-gray-50 p-3 rounded">
                       <p><span className="font-semibold">Name:</span> {popupData?.name || 'N/A'}</p>
                       <p><span className="font-semibold">Slug:</span> {popupData?.slug || 'N/A'}</p>
-                      <p><span className="font-semibold">Category:</span> {popupData?.category?.name || 'N/A'}</p>
+                      <p><span className="font-semibold">Category:</span> {
+                        Array.isArray(popupData?.category) 
+                          ? popupData.category.map(cat => cat?.name || cat).join(', ')
+                          : (popupData?.category?.name || 'N/A')
+                      }</p>
                       <p><span className="font-semibold">Status:</span> 
                         <span className={`ml-2 px-2 py-1 rounded text-xs ${
                           popupData?.status === 'verified' ? 'bg-green-100 text-green-800' : 
