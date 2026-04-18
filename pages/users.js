@@ -85,23 +85,35 @@ function Users(props) {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        getUsersList(1, searchTerm, dateFilter.startDate, dateFilter.endDate);
+        // If only startDate is selected, use it as endDate too (single date filter)
+        const start = dateFilter.startDate;
+        const end = dateFilter.endDate || dateFilter.startDate;
+        getUsersList(1, searchTerm, start, end);
     };
     
     // Auto-trigger search when date filter changes
     useEffect(() => {
         if (dateFilter.startDate || dateFilter.endDate) {
-            getUsersList(1, searchTerm, dateFilter.startDate, dateFilter.endDate);
+            // If only startDate is selected, use it as endDate too (single date filter)
+            const start = dateFilter.startDate;
+            const end = dateFilter.endDate || dateFilter.startDate;
+            getUsersList(1, searchTerm, start, end);
         }
     }, [dateFilter.startDate, dateFilter.endDate]);
 
     const handlePageChange = (newPage) => {
-        getUsersList(newPage, searchTerm, dateFilter.startDate, dateFilter.endDate);
+        // If only startDate is selected, use it as endDate too (single date filter)
+        const start = dateFilter.startDate;
+        const end = dateFilter.endDate || dateFilter.startDate;
+        getUsersList(newPage, searchTerm, start, end);
     };
 
     const handlePageSizeChange = (newSize) => {
         setPageSize(newSize);
-        getUsersList(1, searchTerm, dateFilter.startDate, dateFilter.endDate);
+        // If only startDate is selected, use it as endDate too (single date filter)
+        const start = dateFilter.startDate;
+        const end = dateFilter.endDate || dateFilter.startDate;
+        getUsersList(1, searchTerm, start, end);
     };
 
     const clearFilters = () => {
@@ -157,7 +169,10 @@ function Users(props) {
                     (res) => {
                         props.loader(false);
                         props.toaster({ type: "success", message: "User deleted successfully" });
-                        getUsersList(pagination.currentPage, searchTerm, dateFilter.startDate, dateFilter.endDate);
+                        // If only startDate is selected, use it as endDate too (single date filter)
+                        const start = dateFilter.startDate;
+                        const end = dateFilter.endDate || dateFilter.startDate;
+                        getUsersList(pagination.currentPage, searchTerm, start, end);
                         getUserStats();
                     },
                     (err) => {

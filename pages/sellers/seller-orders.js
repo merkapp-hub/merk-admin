@@ -32,7 +32,7 @@ function SellerOrders(props) {
   const [open, setOpen] = useState(false);
   const [employeeIds, setEmployeeIds] = useState([]);
   const [cartData, setCartData] = useState({});
-  const [selctDate, setSelctDate] = useState(new Date());
+  const [selctDate, setSelctDate] = useState("");
   const [searchSeller, setSearchSeller] = useState("");
   const [searchCustomer, setSearchCustomer] = useState("");
  const [currentPage, setCurrentPage] = useState(1);
@@ -206,7 +206,8 @@ function SellerOrders(props) {
           (res) => {
             props.loader(false);
             props.toaster({ type: "success", message: "Order deleted successfully" });
-            getOrderBySeller(null, currentPage, pageSize);
+            // Stay on same page with same filters
+            getOrderBySeller(selctDate, currentPage, pageSize, searchSeller, searchCustomer);
           },
           (err) => {
             props.loader(false);
@@ -216,7 +217,6 @@ function SellerOrders(props) {
       }
     });
   };
-
   // console.log("order seller ::", userRquestList);
 
   function indexID({ value }) {

@@ -488,6 +488,16 @@ function Sellers(props) {
                       <p className="text-sm font-semibold text-gray-800">
                         {popupData?.number}
                       </p>
+                      {popupData?.store?.companyName && (
+                        <p className="text-sm font-semibold text-blue-600 mt-1">
+                          Company: {popupData?.store?.companyName}
+                        </p>
+                      )}
+                      {popupData?.store?.companyName && (
+                        <p className="text-xs font-normal text-gray-600">
+                          Store Name: {popupData?.store?.companyName}
+                        </p>
+                      )}
                       {/* <button
                       className="text-white bg-custom-darkpurple rounded w-36 h-[30px] mt-2"
                       onClick={() =>
