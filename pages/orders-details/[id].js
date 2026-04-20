@@ -197,6 +197,7 @@ function OrdersDetails(props) {
                              <p className='text-black pt-2'>Shipping Address : {" "}<span className='font-normal text-custom-darkGray'>{mainProductsData?.shipping_address?.address}</span></p>
                              <p className='text-black pt-2'>City : {" "}<span className='font-normal text-custom-darkGray'>{mainProductsData?.shipping_address?.city}</span></p>
                             <p className='text-black pt-2'>Country : {" "}<span className='font-normal text-custom-darkGray'>{mainProductsData?.shipping_address?.country?.label}</span></p>
+                            <p className='text-black pt-2'>Payment Method : {" "}<span className='font-normal text-custom-darkGray uppercase'>{mainProductsData?.paymentmode || 'N/A'}</span></p>
                             </div>
                         
                              
