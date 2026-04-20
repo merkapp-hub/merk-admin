@@ -60,14 +60,16 @@ export default function Login(props) {
   const verifyOtpAndLogin = async (e) => {
     e.preventDefault();
 
-    if (!otp || otp.length !== 6) {
+    const trimmedOtp = otp.trim();
+    
+    if (!trimmedOtp || trimmedOtp.length !== 6) {
       props.toaster({ type: "error", message: "Please enter a valid 6-digit OTP" });
       return;
     }
 
     props.loader(true);
     Api("post", "auth/admin/verifyLoginOTP", { 
-      otp: otp, 
+      otp: trimmedOtp, 
       tempToken: tempToken 
     }, router).then(
       (res) => {
