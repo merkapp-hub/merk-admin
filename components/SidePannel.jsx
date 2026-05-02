@@ -205,20 +205,23 @@ const SidePannel = ({ setOpenTab, openTab }) => {
 
   return (
     <>
-      <div className="bg-custom-blue xl:w-[250px] fixed top-0 left-0 z-20  md:w-[250px] sm:w-[200px] hidden sm:grid grid-rows-5 h-screen overflow-hidden">
-        <div className="bg-custom-blueoverflow-y-scroll h-screen  scrollbar-hide">
-          <div className="bg-custom-blue min-h-screen h-full py-5 2xl:h-full">
-            <div className="bg-white  row-span-1 flex items-center justify-center cursor-pointer mx-5 py-3 rounded-lg" onClick={() => router.push("/")}>
-              <img 
-                className="object-contain" 
-                style={{width: '210px', height: '50px'}} 
-                src="/newimae.png" 
-                alt="" 
-              />
-            </div>
+      <div className="bg-custom-blue xl:w-[250px] fixed top-0 left-0 z-20 md:w-[250px] sm:w-[200px] hidden sm:flex flex-col h-screen overflow-hidden">
+        {/* Logo — fixed, nahi hilega */}
+        <div className="flex-shrink-0 py-5 px-5">
+          <div className="bg-white flex items-center justify-center cursor-pointer py-3 rounded-lg" onClick={() => router.push("/")}>
+            <img
+              className="object-contain"
+              style={{ width: '210px', height: '50px' }}
+              src="/newimae.png"
+              alt=""
+            />
+          </div>
+        </div>
 
-            <div className="flex flex-col justify-between row-span-4 pb-4 w-full">
-              <ul className="w-full flex flex-col text-left mt-5 space-y-1">
+        {/* Menu — scrollable */}
+        <nav className="flex-1 overflow-y-auto pb-4" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.2) transparent' }}>
+          <div className="flex flex-col w-full">
+            <ul className="w-full flex flex-col text-left mt-2 space-y-1">
                 {menuItems.map((item, i) => {
                   if (!hasAccess(item.access)) return null;
 
@@ -294,9 +297,8 @@ const SidePannel = ({ setOpenTab, openTab }) => {
                   );
                 })}
               </ul>
-            </div>
           </div>
-        </div>
+        </nav>
       </div>
 
       <div
@@ -322,8 +324,8 @@ const SidePannel = ({ setOpenTab, openTab }) => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col justify-center items-start row-span-2 h-full  w-full">
-          <ul className="w-full h-full flex flex-col text-left justify-start items-center border-t-2 border-white">
+        <div className="flex flex-col items-start flex-1 overflow-y-auto w-full">
+          <ul className="w-full flex flex-col text-left justify-start items-center border-t-2 border-white">
             {menuItems.map((item, i) => (
               <li key={i} className={`${item?.access?.includes(user?.role) ? "flex" : "hidden"
                 } w-full items-center text-white cursor-pointer group hover:bg-custom-lightGray hover:text-custom-blue  border-b-2 border-white`}
