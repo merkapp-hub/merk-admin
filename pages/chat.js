@@ -8,7 +8,7 @@ import { IoArrowBack, IoSend, IoChatbubbleEllipses } from 'react-icons/io5';
 import { MdShoppingBag } from 'react-icons/md';
 import moment from 'moment';
 
-const SOCKET_URL = 'https://api.merkapp.net/api/';
+const SOCKET_URL = 'https://api.merkapp.net';
 
 function SellerChat(props) {
   const [user] = useContext(userContext);
