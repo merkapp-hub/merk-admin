@@ -27,7 +27,8 @@ const isAuth = (Component) => {
         router?.pathname === "/AddSale" ||
         router?.pathname === "/commission-info" ||
         router?.pathname === "/wallet" ||
-        router?.pathname === "/seller-pending-orders"
+        router?.pathname === "/seller-pending-orders" ||
+        router?.pathname === "/chat"
       ) {
         auth =
           token && (u?.role === "admin" || u?.role === "seller") ? true : false;

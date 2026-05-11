@@ -199,6 +199,12 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       img: <PiHandWithdrawFill className="text-3xl" />,
       access: ["admin"],
     },
+    {
+      href: "/chat",
+      title: "Customer Chats",
+      img: <MdContentPaste className="text-3xl" />,
+      access: ["seller"],
+    },
   ];
 
  
