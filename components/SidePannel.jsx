@@ -200,9 +200,21 @@ const SidePannel = ({ setOpenTab, openTab }) => {
       access: ["admin"],
     },
     {
+      href: "/coupons",
+      title: "Coupons",
+      img: <BsCash className="text-3xl" />,
+      access: ["admin"],
+    },
+    {
       href: "/chat",
       title: "Customer Chats",
       img: <MdContentPaste className="text-3xl" />,
+      access: ["seller"],
+    },
+    {
+      href: "/coupons",
+      title: "My Coupons",
+      img: <BsCash className="text-3xl" />,
       access: ["seller"],
     },
   ];
