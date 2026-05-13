@@ -212,13 +212,13 @@ function ReturnedOrders(props) {
             setviewPopup(true);
             setPopupData((prev) => ({
               orderId: row.original._id,
+              orderDisplayId: row.original.orderId || row.original._id,
               productDetail: row.original.productDetail,
               productId: row.original.productId,
               shipping_address: row.original.shipping_address,
               seller_id: row.original.seller_id,
               returnReason: row.original.returnReason,
               returnRequestDate: row.original.returnRequestDate || row.original.returndate,
-              // Add order-level data for fallback
               orderData: row.original
             }));
           }}
@@ -465,7 +465,9 @@ function ReturnedOrders(props) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-gray-600">Order ID</p>
-                      <p className="font-medium text-gray-800">{popupData?.orderId}</p>
+                      <p className="font-medium text-gray-800">
+                        {popupData?.orderDisplayId || popupData?.orderId}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Return Date</p>
@@ -513,15 +515,25 @@ function ReturnedOrders(props) {
                               </div>
                               <div className="flex items-center space-x-2">
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                  item?.returnDetails?.returnStatus === 'Refunded' 
-                                    ? 'bg-green-100 text-green-800'
-                                    : item?.returnDetails?.returnStatus === 'Approved'
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : item?.returnDetails?.returnStatus === 'Rejected'
-                                    ? 'bg-red-100 text-red-800'
-                                    : 'bg-orange-100 text-orange-800'
+                                  (() => {
+                                    const rs = item?.returnDetails?.returnStatus;
+                                    const ost = popupData?.orderData?.status;
+                                    if (rs === "Cancel-requested" || ost === "Cancel Requested") return "bg-amber-100 text-amber-900";
+                                    if (rs === "Refunded") return "bg-green-100 text-green-800";
+                                    if (rs === "Approved") return "bg-blue-100 text-blue-800";
+                                    if (rs === "Rejected") return "bg-red-100 text-red-800";
+                                    return "bg-orange-100 text-orange-800";
+                                  })()
                                 }`}>
-                                  {item?.returnDetails?.returnStatus || 'Return Requested'}
+                                  {(() => {
+                                    const rs = item?.returnDetails?.returnStatus;
+                                    const ost = popupData?.orderData?.status;
+                                    if (rs === "Cancel-requested" || ost === "Cancel Requested") {
+                                      return "Cancel Requested";
+                                    }
+                                    if (rs === "Return-requested") return "Return Requested";
+                                    return item?.returnDetails?.returnStatus || "Return Requested";
+                                  })()}
                                 </span>
                                 <svg
                                   className={`w-5 h-5 text-gray-400 transform transition-transform ${
@@ -542,11 +554,12 @@ function ReturnedOrders(props) {
                             <div className="bg-gray-50 border-t border-gray-200 p-4">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                  <h5 className="font-semibold text-gray-700 mb-2">Return Reason</h5>
+                                  <h5 className="font-semibold text-gray-700 mb-2">Customer reason</h5>
                                   <p className="text-gray-600 bg-white p-3 rounded border">
-                                    {item?.returnDetails?.reason || 
-                                     popupData?.returnReason || 
-                                     'No reason provided'}
+                                    {item?.returnDetails?.reason ||
+                                     popupData?.returnReason ||
+                                     popupData?.orderData?.returnReason ||
+                                     "No reason provided"}
                                   </p>
                                 </div>
                                 <div>

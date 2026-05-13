@@ -278,7 +278,8 @@ function SellerOrders(props) {
       "Delivered": "text-green-500",
       "Cancelled": "text-red-500",
       "Returned": "text-red-600",
-      "Return Requested": "text-orange-600"
+      "Return Requested": "text-orange-600",
+      "Cancel Requested": "text-amber-600"
     };
     
     const statusLabels = {
@@ -289,7 +290,8 @@ function SellerOrders(props) {
       "Cancelled": "Cancelled",
       "Pending": "Pending",
       "Returned": "Returned",
-      "Return Requested": "Return Requested"
+      "Return Requested": "Return Requested",
+      "Cancel Requested": "Cancel Requested"
     };
     
     return (
@@ -722,6 +724,7 @@ function SellerOrders(props) {
                       selectedOrder?.status === "OutForDelivery" ? "text-yellow-600" :
                       selectedOrder?.status === "Delivered" ? "text-green-500" : 
                       selectedOrder?.status === "Cancelled" ? "text-red-500" : 
+                      selectedOrder?.status === "Cancel Requested" ? "text-amber-600" :
                       "text-blue-500"
                     }`}>
                       {selectedOrder?.status === "OutForDelivery" ? "Out for Delivery" : selectedOrder?.status}
